@@ -32,6 +32,7 @@ class Utils {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource)) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setNamespaceAware(true);
+            dbFactory.setIgnoringComments(true);
             dbFactory.setExpandEntityReferences(false);
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             return dBuilder.parse(is);
