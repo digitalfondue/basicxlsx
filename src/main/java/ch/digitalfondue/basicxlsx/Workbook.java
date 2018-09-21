@@ -38,7 +38,7 @@ public class Workbook {
             addFileWithContent(zos, "xl/_rels/workbook.xml.rels", buildWorkbookRels(sheets.size()));
 
             for (int i = 0; i < sheets.size(); i++) {
-                addFileWithContent(zos, "xl/worksheets/sheet" + (i + 1) + ".xml", buildSheet(i + 1));
+                addFileWithContent(zos, "xl/worksheets/sheet" + (i + 1) + ".xml", buildSheet(sheets.get(sheetNameOrder.get(i))));
             }
         }
     }
@@ -94,42 +94,29 @@ public class Workbook {
         for (int i = 0; i < sheetCount; i++) {
             Element sheet = doc.createElementNS("http://schemas.openxmlformats.org/spreadsheetml/2006/main", "sheet");
             sheet.setAttribute("name", sheetNameOrder.get(i));
-            sheet.setAttribute("sheetId", "" + (i + 1));
+            sheet.setAttribute("sheetId", Integer.toString(i + 1));
             sheet.setAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", "rId" + (i + 1));
             root.appendChild(sheet);
         }
         return Utils.fromDocument(doc);
     }
 
-    private static String buildSheet(int idx) {
-        //FIXME implement :D
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \n" +
-                "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"> \n" +
-                "<cols>\n" +
-                "<col min=\"1\" max=\"2\"/>" + //important
-                "</cols>" +
-                "<sheetData> \n" +
-                "<row r=\"1\"> \n" + // <- r=rowIdx
-                "<c r=\"B1\" t=\"inlineStr\"> \n" + // <-cell: r="B1" for example
-                "<is> \n" +
-                "<t>Name" + idx + "</t> \n" +
-                "</is> \n" +
-                "</c> \n" +
-                "</row> \n" +
-                "<row r=\"2\"> \n" +
-                "<c t=\"inlineStr\"> \n" +
-                "<is> \n" +
-                "<t>acrotray</t> \n" +
-                "</is> \n" +
-                "</c> \n" +
-                "</row> \n" +
-                "<row r=\"3\"> \n" +
-                "<c t=\"inlineStr\"> \n" +
-                "<is> \n" +
-                "<t>Name</t> \n" +
-                "</is> \n" +
-                "</c> \n" +
-                "</row> \n" +
-                "<sheetData> ";
+    private static String buildSheet(Sheet sheet) {
+        System.err.println("Sheet is " + sheet.getName());
+        System.err.println("max col is " + sheet.getMaxCol());
+        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml");
+        Element cols = (Element) doc.getElementsByTagNameNS("http://schemas.openxmlformats.org/spreadsheetml/2006/main", "cols").item(0);
+
+        final int colsCount = sheet.getMaxCol() + 1;
+        for (int i = 0; i < colsCount; i++) {
+            Element col = doc.createElementNS("http://schemas.openxmlformats.org/spreadsheetml/2006/main", "col");
+            col.setAttribute("min", Integer.toString(i + 1));
+            col.setAttribute("max", Integer.toString(i + 1));
+            cols.appendChild(col);
+        }
+
+
+        System.err.println(Utils.fromDocument(doc));
+        return Utils.fromDocument(doc);
     }
 }
