@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 class Utils {
 
+    static final String NS_SPREADSHEETML_2006_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
     static String readFromResource(String resource) {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
              BufferedReader b = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {

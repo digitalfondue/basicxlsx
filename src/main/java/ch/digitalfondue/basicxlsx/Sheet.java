@@ -30,6 +30,11 @@ public class Sheet {
         cells.computeIfAbsent(row, r -> new TreeMap<>()).put(column, cell);
     }
 
+    //set string
+    public void setValueAt(String value, int row, int column) {
+        setCellAt(new Cell.StringCell(value), row, column);
+    }
+
     public void removeCellAt(int row, int column) {
         if (cells.containsKey(row)) {
             cells.get(row).remove(column);

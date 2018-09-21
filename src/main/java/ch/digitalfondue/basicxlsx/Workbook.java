@@ -13,12 +13,10 @@ import java.util.zip.ZipOutputStream;
 
 public class Workbook {
 
-    public static final String NS_SPREADSHEETML_2006_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-
     private final Map<String, Sheet> sheets = new HashMap<>();
     private final List<String> sheetNameOrder = new ArrayList<>();
 
-    public Sheet openSheet(String name) {
+    public Sheet sheet(String name) {
         return sheets.computeIfAbsent(name, sheetName -> {
             sheetNameOrder.add(sheetName);
             return new Sheet(sheetName);
@@ -88,10 +86,10 @@ public class Workbook {
     private static String buildWorkbook(int sheetCount, List<String> sheetNameOrder) {
 
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/workbook_template.xml");
-        Node root = doc.getDocumentElement().getElementsByTagNameNS(NS_SPREADSHEETML_2006_MAIN, "sheets").item(0);
+        Node root = doc.getDocumentElement().getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheets").item(0);
         // <sheet name="Table0" sheetId="1" r:id="rId1"/>
         for (int i = 0; i < sheetCount; i++) {
-            Element sheet = doc.createElementNS(NS_SPREADSHEETML_2006_MAIN, "sheet");
+            Element sheet = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheet");
             sheet.setAttribute("name", sheetNameOrder.get(i));
             sheet.setAttribute("sheetId", Integer.toString(i + 1));
             sheet.setAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", "rId" + (i + 1));
@@ -102,38 +100,26 @@ public class Workbook {
 
     private static String buildSheet(Sheet sheet) {
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml");
-        Element cols = (Element) doc.getElementsByTagNameNS(NS_SPREADSHEETML_2006_MAIN, "cols").item(0);
+        Element cols = (Element) doc.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "cols").item(0);
 
         final int colsCount = sheet.getMaxCol() + 1;
         for (int i = 0; i < colsCount; i++) {
-            Element col = doc.createElementNS(NS_SPREADSHEETML_2006_MAIN, "col");
+            Element col = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "col");
             col.setAttribute("min", Integer.toString(i + 1));
             col.setAttribute("max", Integer.toString(i + 1));
             cols.appendChild(col);
         }
 
-        Element sheetData = (Element) doc.getElementsByTagNameNS(NS_SPREADSHEETML_2006_MAIN, "sheetData").item(0);
+        Element sheetData = (Element) doc.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheetData").item(0);
 
+        //row
         for (Map.Entry<Integer, SortedMap<Integer, Cell>> rowCells : sheet.cells.entrySet()) {
-            Element row = doc.createElementNS(NS_SPREADSHEETML_2006_MAIN, "row");
+            Element row = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "row");
             row.setAttribute("r", Integer.toString(rowCells.getKey() + 1));
 
-            for (Map.Entry<Integer, Cell> coordAndCell : rowCells.getValue().entrySet()) {
-                // <c r="B1" t="inlineStr">
-                //  <is>
-                //    <t>Name1</t>
-                //  </is>
-                // </c>
-                Element cell = doc.createElementNS(NS_SPREADSHEETML_2006_MAIN, "c");
-                cell.setAttribute("r", Utils.fromRowColumnToExcelCoordinates(rowCells.getKey(), coordAndCell.getKey()));
-                cell.setAttribute("t", "inlineStr");
-
-                Element is = doc.createElementNS(NS_SPREADSHEETML_2006_MAIN, "is");
-                Element t = doc.createElementNS(NS_SPREADSHEETML_2006_MAIN, "t");
-                t.setTextContent(coordAndCell.getValue().value);
-                is.appendChild(t);
-                cell.appendChild(is);
-                row.appendChild(cell);
+            //column -> cell
+            for (Map.Entry<Integer, Cell> colAndCell : rowCells.getValue().entrySet()) {
+                row.appendChild(colAndCell.getValue().toElement(doc, rowCells.getKey(), colAndCell.getKey()));
             }
             sheetData.appendChild(row);
         }
