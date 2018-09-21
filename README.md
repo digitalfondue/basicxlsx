@@ -1,4 +1,4 @@
-#basicxlx: when you only need to write simple xlsx
+# basicxlx: when you only need to write simple xlsx
 
 ## Why
 
