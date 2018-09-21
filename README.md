@@ -6,6 +6,12 @@ Apache POI, being a complete solution, is quite heavyweight.
 This library provide only the minimal amount of functionality to
 write xslx files.
 
+## TODO:
+
+ - support autoSizeColumn https://poi.apache.org/apidocs/org/apache/poi/xssf/usermodel/XSSFSheet.html#autoSizeColumn-int-
+ - support other column type
+ - support some styling
+
 ## Resources/examples about xlsx
 
 - http://officeopenxml.com/anatomyofOOXML-xlsx.php
