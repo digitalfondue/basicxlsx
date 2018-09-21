@@ -50,4 +50,15 @@ class Utils {
             throw new IllegalStateException(e);
         }
     }
+
+
+    //format from the row/column coordinate to the excel one (e.g. B26 or AA24)
+    //based from the code of https://github.com/mk-j/PHP_XLSXWriter/blob/master/xlsxwriter.class.php#L720
+    static String fromRowColumnToExcelCoordinates(int row, int column) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = column; i >= 0; i = (i / 26) - 1) {
+            sb.insert(0, (char) (i % 26 + 'A'));
+        }
+        return sb.append(Integer.toString(row + 1)).toString();
+    }
 }
