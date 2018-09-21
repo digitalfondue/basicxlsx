@@ -50,13 +50,13 @@ public class Workbook {
     }
 
     private static String buildRels() {
-        return Utils.readFromResource("ch/digitalfondue/basicxslx/rels_template.xml");
+        return Utils.readFromResource("ch/digitalfondue/basicxlsx/rels_template.xml");
     }
 
 
     private static String buildContentTypes(int sheetCount) {
 
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxslx/content_types_template.xml");
+        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/content_types_template.xml");
         Element root = doc.getDocumentElement();
 
         // Override elements for the sheets
@@ -72,7 +72,7 @@ public class Workbook {
 
     private static String buildWorkbookRels(int sheetCount) {
 
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxslx/workbook_rels_template.xml");
+        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/workbook_rels_template.xml");
         Element root = doc.getDocumentElement();
         // add for each sheet
         // <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="xl/worksheets/sheet1.xml"/>
@@ -88,7 +88,7 @@ public class Workbook {
 
     private static String buildWorkbook(int sheetCount, List<String> sheetNameOrder) {
 
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxslx/workbook_template.xml");
+        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/workbook_template.xml");
         Node root = doc.getDocumentElement().getElementsByTagNameNS("http://schemas.openxmlformats.org/spreadsheetml/2006/main", "sheets").item(0);
         // <sheet name="Table0" sheetId="1" r:id="rId1"/>
         for (int i = 0; i < sheetCount; i++) {

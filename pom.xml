@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ch.digitalfondue.basicxlsx</groupId>
-  <artifactId>basicxslx</artifactId>
+  <artifactId>basicxlsx</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <name>basicxslx</name>

@@ -17,7 +17,7 @@ public class WorkbookTest {
         Sheet s2 = w.openSheet("test2");
         s.setCellAt(new Cell("World"), 0, 1); //B1
 
-        try (FileOutputStream fos = new FileOutputStream("test.xslx")) {
+        try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
             w.write(fos);
         }
     }
