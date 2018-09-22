@@ -1,5 +1,6 @@
 package ch.digitalfondue.basicxlsx;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -34,6 +35,20 @@ public class Sheet {
     public void setValueAt(String value, int row, int column) {
         setCellAt(new Cell.StringCell(value), row, column);
     }
+
+    //numbers
+    public void setValueAt(long value, int row, int column) {
+        setCellAt(new Cell.NumberCell(value), row, column);
+    }
+
+    public void setValueAt(double value, int row, int column) {
+        setCellAt(new Cell.NumberCell(value), row, column);
+    }
+
+    public void setValueAt(BigDecimal value, int row, int column) {
+        setCellAt(new Cell.NumberCell(value), row, column);
+    }
+    //
 
     public void removeCellAt(int row, int column) {
         if (cells.containsKey(row)) {

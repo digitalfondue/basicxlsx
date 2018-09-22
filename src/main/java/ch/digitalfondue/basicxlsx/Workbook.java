@@ -26,32 +26,31 @@ public class Workbook {
     public void write(OutputStream os) throws IOException {
         try (ZipOutputStream zos = new ZipOutputStream(os, StandardCharsets.UTF_8)) {
 
-            addFileWithContent(zos, "[Content_Types].xml", buildContentTypes(sheets.size()));
+            addFileWithDocument(zos, "[Content_Types].xml", buildContentTypes(sheets.size()));
 
-            addFileWithContent(zos, "_rels/.rels", buildRels());
+            addFileWithDocument(zos, "_rels/.rels", buildRels());
 
-            addFileWithContent(zos, "xl/workbook.xml", buildWorkbook(sheets.size(), sheetNameOrder));
+            addFileWithDocument(zos, "xl/workbook.xml", buildWorkbook(sheets.size(), sheetNameOrder));
 
-            addFileWithContent(zos, "xl/_rels/workbook.xml.rels", buildWorkbookRels(sheets.size()));
+            addFileWithDocument(zos, "xl/_rels/workbook.xml.rels", buildWorkbookRels(sheets.size()));
 
             for (int i = 0; i < sheets.size(); i++) {
-                addFileWithContent(zos, "xl/worksheets/sheet" + (i + 1) + ".xml", buildSheet(sheets.get(sheetNameOrder.get(i))));
+                addFileWithDocument(zos, "xl/worksheets/sheet" + (i + 1) + ".xml", buildSheet(sheets.get(sheetNameOrder.get(i))));
             }
         }
     }
 
-    private static void addFileWithContent(ZipOutputStream zos, String file, String content) throws IOException {
-        zos.putNextEntry(new ZipEntry(file));
-        zos.write(content.getBytes(StandardCharsets.UTF_8));
+    private static void addFileWithDocument(ZipOutputStream zos, String fileName, Document doc) throws IOException {
+        zos.putNextEntry(new ZipEntry(fileName));
+        Utils.outputDocument(doc, zos);
         zos.closeEntry();
     }
 
-    private static String buildRels() {
-        return Utils.readFromResource("ch/digitalfondue/basicxlsx/rels_template.xml");
+    private static Document buildRels() {
+        return Utils.toDocument("ch/digitalfondue/basicxlsx/rels_template.xml");
     }
 
-
-    private static String buildContentTypes(int sheetCount) {
+    private static Document  buildContentTypes(int sheetCount) {
 
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/content_types_template.xml");
         Element root = doc.getDocumentElement();
@@ -64,10 +63,10 @@ public class Workbook {
             overrideElem.setAttribute("ContentType", "application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml");
             root.appendChild(overrideElem);
         }
-        return Utils.fromDocument(doc);
+        return doc;
     }
 
-    private static String buildWorkbookRels(int sheetCount) {
+    private static Document buildWorkbookRels(int sheetCount) {
 
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/workbook_rels_template.xml");
         Element root = doc.getDocumentElement();
@@ -80,10 +79,10 @@ public class Workbook {
             rel.setAttribute("Target", "/xl/worksheets/sheet" + (i + 1) + ".xml");
             root.appendChild(rel);
         }
-        return Utils.fromDocument(doc);
+        return doc;
     }
 
-    private static String buildWorkbook(int sheetCount, List<String> sheetNameOrder) {
+    private static Document buildWorkbook(int sheetCount, List<String> sheetNameOrder) {
 
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/workbook_template.xml");
         Node root = doc.getDocumentElement().getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheets").item(0);
@@ -95,10 +94,10 @@ public class Workbook {
             sheet.setAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", "rId" + (i + 1));
             root.appendChild(sheet);
         }
-        return Utils.fromDocument(doc);
+        return doc;
     }
 
-    private static String buildSheet(Sheet sheet) {
+    private static Document buildSheet(Sheet sheet) {
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml");
         Element cols = (Element) doc.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "cols").item(0);
 
@@ -123,6 +122,6 @@ public class Workbook {
             }
             sheetData.appendChild(row);
         }
-        return Utils.fromDocument(doc);
+        return doc;
     }
 }

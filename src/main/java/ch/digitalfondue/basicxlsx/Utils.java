@@ -11,22 +11,15 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 class Utils {
 
     static final String NS_SPREADSHEETML_2006_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
-
-    static String readFromResource(String resource) {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
-             BufferedReader b = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-            return b.lines().collect(Collectors.joining());
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
 
     static Document toDocument(String resource) {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource)) {
@@ -41,19 +34,16 @@ class Utils {
         }
     }
 
-    static String fromDocument(Document doc) {
+    static void outputDocument(Document doc, OutputStream os) {
         try {
             DOMSource domSource = new DOMSource(doc);
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            StringWriter sw = new StringWriter();
-            StreamResult sr = new StreamResult(sw);
+            StreamResult sr = new StreamResult(new OutputStreamWriter(os, StandardCharsets.UTF_8));
             transformer.transform(domSource, sr);
-            return sw.toString();
         } catch (TransformerException e) {
             throw new IllegalStateException(e);
         }
     }
-
 
     //format from the row/column coordinate to the excel one (e.g. B26 or AA24)
     //based from the code of https://github.com/mk-j/PHP_XLSXWriter/blob/master/xlsxwriter.class.php#L720
