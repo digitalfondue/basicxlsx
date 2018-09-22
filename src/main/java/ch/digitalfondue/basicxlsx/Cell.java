@@ -69,14 +69,36 @@ public abstract class Cell {
         @Override
         Element toElement(Document doc, int row, int column) {
 
-            Element cell = buildCell(doc, "n", row, column);
-            Element v = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "v");
-            v.setTextContent(number.toPlainString());
             // <c r="B2" t="n">
             //  <v>400</v>
             // </c>
+            Element cell = buildCell(doc, "n", row, column);
+            Element v = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "v");
+            v.setTextContent(number.toPlainString());
+
             cell.appendChild(v);
 
+            return cell;
+        }
+    }
+
+    //boolean
+    public static class BooleanCell extends Cell {
+        private final boolean value;
+
+        public BooleanCell(boolean value) {
+            this.value = value;
+        }
+
+        @Override
+        Element toElement(Document doc, int row, int column) {
+            // <c r="B2" t="b">
+            //  <v>1</v>
+            // </c>
+            Element cell = buildCell(doc, "b", row, column);
+            Element v = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "v");
+            v.setTextContent(value ? "1" : "0");
+            cell.appendChild(v);
             return cell;
         }
     }

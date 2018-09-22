@@ -14,13 +14,15 @@ write xslx files.
     - https://github.com/dtjohnson/xlsx-populate/issues/26#issuecomment-288796920
     - https://metacpan.org/pod/Spreadsheet::WriteExcel::Examples#Example:-autofit.pl
  - support other column type
-    - boolean
+    - [x] boolean
     - date
     - a specific subset of formula (sum, ?)
  - support some styling
+    - see https://xlsxwriter.readthedocs.io/format.html
 
 ## Resources/examples about xlsx
 
 - http://officeopenxml.com/anatomyofOOXML-xlsx.php
 - https://social.technet.microsoft.com/wiki/contents/articles/19601.powershell-generate-real-excel-xlsx-files-without-excel.aspx
 - https://github.com/mk-j/PHP_XLSXWriter
+- https://github.com/jmcnamara/XlsxWriter

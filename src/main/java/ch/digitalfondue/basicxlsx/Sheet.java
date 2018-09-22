@@ -7,17 +7,7 @@ import java.util.TreeMap;
 
 public class Sheet {
 
-    private final String name;
-
     final SortedMap<Integer, SortedMap<Integer, Cell>> cells = new TreeMap<>();
-
-    Sheet(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
 
     public int getMaxCol() {
         int max = 0;
@@ -47,6 +37,12 @@ public class Sheet {
 
     public void setValueAt(BigDecimal value, int row, int column) {
         setCellAt(new Cell.NumberCell(value), row, column);
+    }
+    //
+
+    //boolean
+    public void setValueAt(boolean value, int row, int column) {
+        setCellAt(new Cell.BooleanCell(value), row, column);
     }
     //
 

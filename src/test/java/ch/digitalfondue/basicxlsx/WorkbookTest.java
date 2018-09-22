@@ -19,9 +19,16 @@ public class WorkbookTest {
         s.setValueAt("A2", 1, 0);
         s.setValueAt("World!", 1, 1); //B2
 
-        s.setValueAt(42, 2,2); //C3
-        s.setValueAt(new BigDecimal("2.512351234324832"), 3,2); //C4
-        s.setValueAt(3.14, 4,2); //C5
+        //numbers
+        s.setValueAt("Numeric values", 0, 2); //C1
+        s.setValueAt(42, 1,2); //C2
+        s.setValueAt(new BigDecimal("2.512351234324832"), 2,2); //C3
+        s.setValueAt(3.14, 3,2); //C4
+
+        //boolean
+        s.setValueAt("Boolean values", 0, 3); //D1
+        s.setValueAt(true, 1, 3); //D2
+        s.setValueAt(false, 2, 3); //D3
 
         Sheet s2 = w.sheet("test2");
         s2.setValueAt("Hello", 1, 0); //A2

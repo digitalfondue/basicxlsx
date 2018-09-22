@@ -19,7 +19,7 @@ public class Workbook {
     public Sheet sheet(String name) {
         return sheets.computeIfAbsent(name, sheetName -> {
             sheetNameOrder.add(sheetName);
-            return new Sheet(sheetName);
+            return new Sheet();
         });
     }
 
