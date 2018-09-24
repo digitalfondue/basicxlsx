@@ -18,7 +18,8 @@ public class Sheet {
     }
 
     public Cell setCellAt(Cell cell, int row, int column) {
-        return cells.computeIfAbsent(row, r -> new TreeMap<>()).put(column, cell);
+        cells.computeIfAbsent(row, r -> new TreeMap<>()).put(column, cell);
+        return cell;
     }
 
     //set string

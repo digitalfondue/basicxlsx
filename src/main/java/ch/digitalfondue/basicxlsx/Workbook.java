@@ -32,6 +32,8 @@ public class Workbook {
 
             addFileWithDocument(zos, "xl/workbook.xml", buildWorkbook(sheets.size(), sheetNameOrder));
 
+            addFileWithDocument(zos, "xl/styles.xml", buildStyles());
+
             addFileWithDocument(zos, "xl/_rels/workbook.xml.rels", buildWorkbookRels(sheets.size()));
 
             for (int i = 0; i < sheets.size(); i++) {
@@ -44,6 +46,11 @@ public class Workbook {
         zos.putNextEntry(new ZipEntry(fileName));
         Utils.outputDocument(doc, zos);
         zos.closeEntry();
+    }
+
+    private static Document buildStyles() {
+        //FIXME implement
+        return Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
     }
 
     private static Document buildRels() {
