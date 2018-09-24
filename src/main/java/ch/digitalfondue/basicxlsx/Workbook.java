@@ -81,7 +81,7 @@ public class Workbook {
         // <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="xl/worksheets/sheet1.xml"/>
         for (int i = 0; i < sheetCount; i++) {
             Element rel = doc.createElementNS("http://schemas.openxmlformats.org/package/2006/relationships", "Relationship");
-            rel.setAttribute("Id", "rId" + (i + 1));
+            rel.setAttribute("Id", "rId" + (i + 2)); //rdId1 it's the style.xml file
             rel.setAttribute("Type", "http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet");
             rel.setAttribute("Target", "/xl/worksheets/sheet" + (i + 1) + ".xml");
             root.appendChild(rel);
@@ -98,7 +98,7 @@ public class Workbook {
             Element sheet = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheet");
             sheet.setAttribute("name", sheetNameOrder.get(i));
             sheet.setAttribute("sheetId", Integer.toString(i + 1));
-            sheet.setAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", "rId" + (i + 1));
+            sheet.setAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", "rId" + (i + 2)); //rdId1 it's the style.xml file
             root.appendChild(sheet);
         }
         return doc;

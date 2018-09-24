@@ -19,10 +19,11 @@ public abstract class Cell {
         return style;
     }
 
-    private static Element buildCell(Document doc, String type, int row, int column) {
+    private static Element buildCell(Document doc, String type, int row, int column, int styleId) {
         Element cell = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "c");
         cell.setAttribute("r", Utils.fromRowColumnToExcelCoordinates(row, column));
         cell.setAttribute("t", type);
+        cell.setAttribute("s", Integer.toString(styleId));
         return cell;
     }
 
@@ -44,7 +45,7 @@ public abstract class Cell {
             //    <t>Name1</t>
             //  </is>
             // </c>
-            Element cell = buildCell(doc, "inlineStr", row, column);
+            Element cell = buildCell(doc, "inlineStr", row, column, 0); //FIXME get the styleId
 
             Element is = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "is");
             Element t = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "t");
@@ -80,7 +81,7 @@ public abstract class Cell {
             // <c r="B2" t="n">
             //  <v>400</v>
             // </c>
-            Element cell = buildCell(doc, "n", row, column);
+            Element cell = buildCell(doc, "n", row, column, 0);
             Element v = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "v");
             v.setTextContent(number.toPlainString());
 
@@ -103,7 +104,7 @@ public abstract class Cell {
             // <c r="B2" t="b">
             //  <v>1</v>
             // </c>
-            Element cell = buildCell(doc, "b", row, column);
+            Element cell = buildCell(doc, "b", row, column, 0);
             Element v = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "v");
             v.setTextContent(value ? "1" : "0");
             cell.appendChild(v);
