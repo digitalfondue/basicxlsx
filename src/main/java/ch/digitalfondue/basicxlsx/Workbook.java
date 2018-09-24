@@ -15,12 +15,18 @@ public class Workbook {
 
     private final Map<String, Sheet> sheets = new HashMap<>();
     private final List<String> sheetNameOrder = new ArrayList<>();
+    private final List<Style> styles = new ArrayList<>();
 
     public Sheet sheet(String name) {
         return sheets.computeIfAbsent(name, sheetName -> {
             sheetNameOrder.add(sheetName);
             return new Sheet();
         });
+    }
+
+
+    public Style.StyleBuilder defineStyle() {
+        return Style.define(styles::add);
     }
 
     public void write(OutputStream os) throws IOException {

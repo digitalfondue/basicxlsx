@@ -1,5 +1,7 @@
 package ch.digitalfondue.basicxlsx;
 
+import java.util.function.Function;
+
 //based on https://xlsxwriter.readthedocs.io/format.html
 public class Style {
 
@@ -8,9 +10,11 @@ public class Style {
 
     public static class StyleBuilder {
 
+        private final Function<Style, Boolean> register;
         private FontBuilder fontBuilder;
 
-        private StyleBuilder() {
+        private StyleBuilder(Function<Style, Boolean> register) {
+            this.register = register;
         }
 
         public FontBuilder font() {
@@ -21,18 +25,20 @@ public class Style {
         }
 
         public Style build() {
-            return new Style();
+            Style s =  new Style();
+            register.apply(s);
+            return s;
         }
     }
 
     public static class FontBuilder {
-        String name;
-        Integer size;
+        String name = "Arial";
+        int size = 10;//default
         String color;
-        Boolean bold;
-        Boolean italic;
+        boolean bold;
+        boolean italic;
         FontUnderlineStyle fontUnderlineStyle;
-        Boolean strikeOut;
+        boolean strikeOut;
 
         private final StyleBuilder styleBuilder;
 
@@ -60,7 +66,7 @@ public class Style {
     }
 
 
-    public static StyleBuilder define() {
-        return new StyleBuilder();
+    static StyleBuilder define(Function<Style, Boolean> register) {
+        return new StyleBuilder(register);
     }
 }

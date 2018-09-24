@@ -11,9 +11,9 @@ public class WorkbookTest {
     @Test
     public void testWorkbookCreation() throws IOException {
 
-        Style bold = Style.define().font().bold(true).and().build();
-
         Workbook w = new Workbook();
+
+        Style bold = w.defineStyle().font().bold(true).and().build();
 
         Sheet s = w.sheet("test");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(bold); //A1
