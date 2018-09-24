@@ -7,9 +7,17 @@ import java.math.BigDecimal;
 
 public abstract class Cell {
 
+    private Style style;
 
     abstract Element toElement(Document doc, int row, int column);
 
+    public void withStyle(Style style) {
+        this.style = style;
+    }
+
+    Style getStyle() {
+        return style;
+    }
 
     private static Element buildCell(Document doc, String type, int row, int column) {
         Element cell = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "c");

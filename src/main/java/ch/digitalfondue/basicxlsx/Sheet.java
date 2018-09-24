@@ -17,32 +17,32 @@ public class Sheet {
         return max;
     }
 
-    public void setCellAt(Cell cell, int row, int column) {
-        cells.computeIfAbsent(row, r -> new TreeMap<>()).put(column, cell);
+    public Cell setCellAt(Cell cell, int row, int column) {
+        return cells.computeIfAbsent(row, r -> new TreeMap<>()).put(column, cell);
     }
 
     //set string
-    public void setValueAt(String value, int row, int column) {
-        setCellAt(new Cell.StringCell(value), row, column);
+    public Cell setValueAt(String value, int row, int column) {
+        return setCellAt(new Cell.StringCell(value), row, column);
     }
 
     //numbers
-    public void setValueAt(long value, int row, int column) {
-        setCellAt(new Cell.NumberCell(value), row, column);
+    public Cell setValueAt(long value, int row, int column) {
+        return setCellAt(new Cell.NumberCell(value), row, column);
     }
 
-    public void setValueAt(double value, int row, int column) {
-        setCellAt(new Cell.NumberCell(value), row, column);
+    public Cell setValueAt(double value, int row, int column) {
+        return setCellAt(new Cell.NumberCell(value), row, column);
     }
 
-    public void setValueAt(BigDecimal value, int row, int column) {
-        setCellAt(new Cell.NumberCell(value), row, column);
+    public Cell setValueAt(BigDecimal value, int row, int column) {
+        return setCellAt(new Cell.NumberCell(value), row, column);
     }
     //
 
     //boolean
-    public void setValueAt(boolean value, int row, int column) {
-        setCellAt(new Cell.BooleanCell(value), row, column);
+    public Cell setValueAt(boolean value, int row, int column) {
+        return setCellAt(new Cell.BooleanCell(value), row, column);
     }
     //
 

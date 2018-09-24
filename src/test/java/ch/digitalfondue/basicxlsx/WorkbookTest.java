@@ -10,10 +10,13 @@ public class WorkbookTest {
 
     @Test
     public void testWorkbookCreation() throws IOException {
+
+        Style bold = Style.define().font().bold(true).and().build();
+
         Workbook w = new Workbook();
 
         Sheet s = w.sheet("test");
-        s.setValueAt("Hello éé èè Michał", 0, 0); //A1
+        s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(bold); //A1
         s.setValueAt("B1", 0, 1);
 
         s.setValueAt("A2", 1, 0);
