@@ -1,5 +1,7 @@
 package ch.digitalfondue.basicxlsx;
 
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +45,6 @@ public class WorkbookTest {
         s2.setValueAt("World", 0, 1); //B1
 
 
-
         ByteArrayInputStream bis;
         //try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
@@ -59,7 +60,20 @@ public class WorkbookTest {
 
         //check sheet 1 content
         org.apache.poi.ss.usermodel.Sheet sheet1 = workbook.getSheet("test");
+        Assert.assertEquals("Hello éé èè Michał", sheet1.getRow(0).getCell(0).getStringCellValue());
+        Assert.assertEquals(CellType.STRING, sheet1.getRow(0).getCell(0).getCellType());
+
+        //italic, size 10, Arial (size + name = default)
+        Font italicFontPoi = workbook.getFontAt(sheet1.getRow(0).getCell(0).getCellStyle().getFontIndexAsInt());
+        Assert.assertTrue(italicFontPoi.getItalic());
+        Assert.assertFalse(italicFontPoi.getBold());
+        Assert.assertEquals(10, italicFontPoi.getFontHeightInPoints());
+        Assert.assertEquals("Arial", italicFontPoi.getFontName());
+
         //TODO: complete check here
+
+
+
         //check sheet 2 content
         org.apache.poi.ss.usermodel.Sheet sheet2 = workbook.getSheet("test2");
         Assert.assertEquals("Hello", sheet2.getRow(1).getCell(0).getStringCellValue());
