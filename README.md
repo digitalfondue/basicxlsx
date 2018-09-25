@@ -39,3 +39,12 @@ write xslx files.
 - https://social.technet.microsoft.com/wiki/contents/articles/19601.powershell-generate-real-excel-xlsx-files-without-excel.aspx
 - https://github.com/mk-j/PHP_XLSXWriter
 - https://github.com/jmcnamara/XlsxWriter
+
+## Notes
+
+### License format
+- `mvn com.mycila:license-maven-plugin:format`
+
+### Check updates
+- `mvn versions:display-dependency-updates`
+- `mvn versions:display-plugin-updates`
