@@ -25,7 +25,7 @@ write xslx files.
     - [x] italic
     - [x] size
     - [x] font name
-    - [ ] font color
+    - [x] font color (currently supporting RGB, but it seems that ARGB is possible)
     - [ ] font underline
     - [ ] font strikeout
     - [ ] alignment 

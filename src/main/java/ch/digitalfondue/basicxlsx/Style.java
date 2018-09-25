@@ -18,6 +18,7 @@ package ch.digitalfondue.basicxlsx;
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -30,10 +31,15 @@ public class Style {
         this.fontBuilder = fontBuilder;
     }
 
-    private static Element elementWithVal(Function<String, Element> elementBuilder, String name, String value) {
+
+    private static Element elementWithAttr(Function<String, Element> elementBuilder, String name, String attr, String value) {
         Element element = elementBuilder.apply(name);
-        element.setAttribute("val", value);
+        element.setAttribute(attr, value);
         return element;
+    }
+
+    private static Element elementWithVal(Function<String, Element> elementBuilder, String name, String value) {
+        return elementWithAttr(elementBuilder, name, "val", value);
     }
 
     int register(Function<String, Element> elementBuilder, Element fonts, Element cellXfs) {
@@ -58,6 +64,14 @@ public class Style {
 
             if (fontBuilder.italic) {
                 font.appendChild(elementWithVal(elementBuilder, "i", "true"));
+            }
+
+            if (fontBuilder.color != null) {
+                String color = fontBuilder.color;
+                if (color.startsWith("#")) {
+                    color = color.substring(1);
+                }
+                font.appendChild(elementWithAttr(elementBuilder, "color", "rgb", "FF" + color.toUpperCase(Locale.ENGLISH)));
             }
 
             font.appendChild(elementWithVal(elementBuilder, "sz", fontBuilder.size.toPlainString()));
@@ -165,6 +179,15 @@ public class Style {
             return this;
         }
 
+        public FontBuilder color(String color) {
+            this.color = color;
+            return this;
+        }
+
+        public FontBuilder color(Color color) {
+            return color(color.color);
+        }
+
         public FontBuilder size(int size) {
             this.size = BigDecimal.valueOf(size);
             return this;
@@ -183,6 +206,32 @@ public class Style {
 
     public enum FontUnderlineStyle {
         NONE, SINGLE, DOUBLE, SINGLE_ACCOUNTING_UNDERLINE, DOUBLE_ACCOUNTING_UNDERLINE;
+    }
+
+    //color list imported from https://github.com/jmcnamara/XlsxWriter/blob/master/xlsxwriter/format.py#L959
+    public enum Color {
+        BLACK("#000000"),
+        BLUE("#0000FF"),
+        BROWN("#800000"),
+        CYAN("#00FFFF"),
+        GRAY("#808080"),
+        GREEN("#008000"),
+        LIME("#00FF00"),
+        MAGENTA("#FF00FF"),
+        NAVY("#000080"),
+        ORANGE("#FF6600"),
+        PINK("#FF00FF"),
+        PURPLE("#800080"),
+        RED("#FF0000"),
+        SILVER("#C0C0C0"),
+        WHITE("#FFFFFF"),
+        YELLOW("#FFFF00");
+
+        private final String color;
+
+        Color(String color) {
+            this.color = color;
+        }
     }
 
 

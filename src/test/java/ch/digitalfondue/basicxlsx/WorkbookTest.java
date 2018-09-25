@@ -18,23 +18,27 @@ package ch.digitalfondue.basicxlsx;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 
 public class WorkbookTest {
+
+    private static boolean OUTPUT_FILE = false;
 
     @Test
     public void testWorkbookCreation() throws IOException {
 
         Workbook w = new Workbook();
 
-        Style bold = w.defineStyle().font().bold(true).build();
-        Style italic = w.defineStyle().font().italic(true).build();
+        Style bold = w.defineStyle().font().color("#ffcc00").bold(true).build();
+        Style italic = w.defineStyle().font().color(Style.Color.GREEN).italic(true).build();
         Style timesNewRomanBoldAndItalic = w.defineStyle().font().name("Times New Roman").size(15).italic(true).bold(true).build();
 
         Sheet s = w.sheet("test");
@@ -61,10 +65,16 @@ public class WorkbookTest {
 
 
         ByteArrayInputStream bis;
-        //try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
         try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
             w.write(os);
             bis = new ByteArrayInputStream(os.toByteArray());
+
+            if (OUTPUT_FILE) {
+                try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
+                    fos.write(os.toByteArray());
+                }
+            }
+
         }
 
 
@@ -79,9 +89,12 @@ public class WorkbookTest {
         Assert.assertEquals(CellType.STRING, sheet1.getRow(0).getCell(0).getCellType());
 
         //italic, size 10, Arial (size + name = default)
-        Font italicFontPoi = workbook.getFontAt(sheet1.getRow(0).getCell(0).getCellStyle().getFontIndexAsInt());
+        XSSFFont italicFontPoi = (XSSFFont) workbook.getFontAt(sheet1.getRow(0).getCell(0).getCellStyle().getFontIndexAsInt());
         Assert.assertTrue(italicFontPoi.getItalic());
         Assert.assertFalse(italicFontPoi.getBold());
+        //0x008000 -> green, quite surprisingly, using getColor() return 0, but going through the XSSFColor we have the correct value, why?
+        Assert.assertEquals("FF008000", italicFontPoi.getXSSFColor().getARGBHex());
+        //
         Assert.assertEquals(10, italicFontPoi.getFontHeightInPoints());
         Assert.assertEquals("Arial", italicFontPoi.getFontName());
 
