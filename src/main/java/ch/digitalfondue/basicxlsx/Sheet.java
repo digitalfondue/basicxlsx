@@ -1,6 +1,7 @@
 package ch.digitalfondue.basicxlsx;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -8,6 +9,11 @@ import java.util.TreeMap;
 public class Sheet {
 
     final SortedMap<Integer, SortedMap<Integer, Cell>> cells = new TreeMap<>();
+    Map<Cell, Style> styleRegistry;
+
+    Sheet(Map<Cell, Style> styleRegistry) {
+        this.styleRegistry = styleRegistry;
+    }
 
     public int getMaxCol() {
         int max = 0;
@@ -18,6 +24,8 @@ public class Sheet {
     }
 
     public Cell setCellAt(Cell cell, int row, int column) {
+        cell.styleRegistrator = styleRegistry::put;
+        cell.styleRegistry = styleRegistry::get;
         cells.computeIfAbsent(row, r -> new TreeMap<>()).put(column, cell);
         return cell;
     }
@@ -49,7 +57,12 @@ public class Sheet {
 
     public void removeCellAt(int row, int column) {
         if (cells.containsKey(row)) {
-            cells.get(row).remove(column);
+            Cell cell = cells.get(row).remove(column);
+            if (cell != null) {
+                cell.styleRegistrator = null;
+                cell.styleRegistry = null;
+                styleRegistry.remove(cell);
+            }
         }
     }
 

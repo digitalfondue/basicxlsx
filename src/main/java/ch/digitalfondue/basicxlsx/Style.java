@@ -1,11 +1,16 @@
 package ch.digitalfondue.basicxlsx;
 
+import org.w3c.dom.Element;
+
 import java.util.function.Function;
 
 //based on https://xlsxwriter.readthedocs.io/format.html
 public class Style {
 
     private Style() {
+    }
+
+    void register(Element fonts, Element cellXfs) {
     }
 
     public static class StyleBuilder {

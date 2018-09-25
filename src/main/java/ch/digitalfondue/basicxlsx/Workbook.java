@@ -2,7 +2,6 @@ package ch.digitalfondue.basicxlsx;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,11 +15,12 @@ public class Workbook {
     private final Map<String, Sheet> sheets = new HashMap<>();
     private final List<String> sheetNameOrder = new ArrayList<>();
     private final List<Style> styles = new ArrayList<>();
+    final Map<Cell, Style> styledCells = new IdentityHashMap<>();
 
     public Sheet sheet(String name) {
         return sheets.computeIfAbsent(name, sheetName -> {
             sheetNameOrder.add(sheetName);
-            return new Sheet();
+            return new Sheet(styledCells);
         });
     }
 
@@ -38,7 +38,7 @@ public class Workbook {
 
             addFileWithDocument(zos, "xl/workbook.xml", buildWorkbook(sheets.size(), sheetNameOrder));
 
-            addFileWithDocument(zos, "xl/styles.xml", buildStyles());
+            addFileWithDocument(zos, "xl/styles.xml", buildStyles(styles));
 
             addFileWithDocument(zos, "xl/_rels/workbook.xml.rels", buildWorkbookRels(sheets.size()));
 
@@ -54,16 +54,42 @@ public class Workbook {
         zos.closeEntry();
     }
 
-    private static Document buildStyles() {
+    private static Element getElement(Element element, String name) {
+        return (Element) element.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, name).item(0);
+    }
+
+    private static Element getElement(Document doc, String name) {
+        return getElement(doc.getDocumentElement(), name);
+    }
+
+    private static void adjustCount(Element element, String childName) {
+        element.setAttribute("count", Integer.toString(element.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, childName).getLength()));
+    }
+
+    private static Document buildStyles(List<Style> styles) {
         //FIXME implement
-        return Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
+        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
+
+        Element fonts = getElement(doc, "fonts");
+        Element cellXfs = getElement(doc, "cellXfs");
+
+        for (Style style : styles) {
+            style.register(fonts, cellXfs);
+        }
+
+
+        //
+        adjustCount(fonts, "font");
+        adjustCount(cellXfs, "xf");
+        //
+        return doc;
     }
 
     private static Document buildRels() {
         return Utils.toDocument("ch/digitalfondue/basicxlsx/rels_template.xml");
     }
 
-    private static Document  buildContentTypes(int sheetCount) {
+    private static Document buildContentTypes(int sheetCount) {
 
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/content_types_template.xml");
         Element root = doc.getDocumentElement();
@@ -98,7 +124,7 @@ public class Workbook {
     private static Document buildWorkbook(int sheetCount, List<String> sheetNameOrder) {
 
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/workbook_template.xml");
-        Node root = doc.getDocumentElement().getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheets").item(0);
+        Element root = getElement(doc, "sheets");
         // <sheet name="Table0" sheetId="1" r:id="rId1"/>
         for (int i = 0; i < sheetCount; i++) {
             Element sheet = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheet");
@@ -112,7 +138,7 @@ public class Workbook {
 
     private static Document buildSheet(Sheet sheet) {
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml");
-        Element cols = (Element) doc.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "cols").item(0);
+        Element cols = getElement(doc, "cols");
 
         final int colsCount = sheet.getMaxCol() + 1;
         for (int i = 0; i < colsCount; i++) {
@@ -122,7 +148,7 @@ public class Workbook {
             cols.appendChild(col);
         }
 
-        Element sheetData = (Element) doc.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheetData").item(0);
+        Element sheetData = getElement(doc, "sheetData");
 
         //row
         for (Map.Entry<Integer, SortedMap<Integer, Cell>> rowCells : sheet.cells.entrySet()) {

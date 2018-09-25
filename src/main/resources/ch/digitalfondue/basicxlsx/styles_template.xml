@@ -5,7 +5,7 @@
         <!-- based from openoffice output -->
         <numFmt numFmtId="164" formatCode="General"/>
     </numFmts>
-    <fonts count="6">
+    <fonts count="4">
         <!-- based from https://github.com/mk-j/PHP_XLSXWriter/blob/master/xlsxwriter.class.php#L472 and openoffice output -->
         <font>
             <sz val="10"/>
@@ -29,18 +29,18 @@
         </font>
 
         <!-- hardcoded test -->
-        <font><!-- bold -->
+        <!-- bold --><!--<font>
             <b val="true"/>
             <sz val="10"/>
             <name val="Arial"/>
             <family val="2"/>
-        </font>
-        <font><!-- italic -->
+        </font>-->
+        <!-- italic --><!--<font>
             <i val="true"/>
             <sz val="10"/>
             <name val="Arial"/>
             <family val="2"/>
-        </font>
+        </font>-->
         <!-- -->
     </fonts>
     <fills count="2">
@@ -78,7 +78,7 @@
         <xf numFmtId="42" fontId="1" fillId="0" borderId="0" applyFont="true" applyBorder="false" applyAlignment="false" applyProtection="false"/>
         <xf numFmtId="9" fontId="1" fillId="0" borderId="0" applyFont="true" applyBorder="false" applyAlignment="false" applyProtection="false"/>
     </cellStyleXfs>
-    <cellXfs count="3">
+    <cellXfs count="1">
         <!-- based from openoffice output -->
         <!-- default -->
         <xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyFont="false" applyBorder="false" applyAlignment="false" applyProtection="false">
@@ -87,16 +87,16 @@
         </xf>
 
         <!-- hardcoded test -->
-        <!-- bold -->
+        <!-- bold --><!--
         <xf numFmtId="164" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="true" applyBorder="false" applyAlignment="false" applyProtection="false">
             <alignment horizontal="general" vertical="bottom" textRotation="0" wrapText="false" indent="0" shrinkToFit="false"/>
             <protection locked="true" hidden="false"/>
-        </xf>
-        <!-- italic -->
+        </xf>-->
+        <!-- italic --><!--
         <xf numFmtId="164" fontId="5" fillId="0" borderId="0" xfId="0" applyFont="true" applyBorder="false" applyAlignment="false" applyProtection="false">
             <alignment horizontal="general" vertical="bottom" textRotation="0" wrapText="false" indent="0" shrinkToFit="false"/>
             <protection locked="true" hidden="false"/>
-        </xf>
+        </xf>-->
         <!-- -->
     </cellXfs>
     <cellStyles>

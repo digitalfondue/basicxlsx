@@ -4,20 +4,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public abstract class Cell {
 
-    private Style style;
-
     abstract Element toElement(Document doc, int row, int column);
 
-    public void withStyle(Style style) {
-        this.style = style;
-    }
-
-    Style getStyle() {
-        return style;
-    }
+    BiFunction<Cell, Style, Style> styleRegistrator;
+    Function<Cell, Style> styleRegistry;
 
     private static Element buildCell(Document doc, String type, int row, int column, int styleId) {
         Element cell = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "c");
@@ -25,6 +20,21 @@ public abstract class Cell {
         cell.setAttribute("t", type);
         cell.setAttribute("s", Integer.toString(styleId));
         return cell;
+    }
+
+    public final Cell withStyle(Style style) {
+        if (styleRegistrator == null) {
+            throw new IllegalStateException("Cell cannot be styled if not registered in a sheet");
+        }
+        styleRegistrator.apply(this, style);
+        return this;
+    }
+
+    public final Style getStyle() {
+        if (styleRegistry == null) {
+            throw new IllegalStateException("Cell cannot be styled if not registered in a sheet");
+        }
+        return styleRegistry.apply(this);
     }
 
     //inline string element
