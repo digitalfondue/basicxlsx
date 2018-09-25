@@ -2,6 +2,8 @@ package ch.digitalfondue.basicxlsx;
 
 import org.w3c.dom.Element;
 
+import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.function.Function;
 
 //based on https://xlsxwriter.readthedocs.io/format.html
@@ -43,7 +45,7 @@ public class Style {
                 font.appendChild(elementWithVal(elementBuilder, "i", "true"));
             }
 
-            font.appendChild(elementWithVal(elementBuilder, "sz", Integer.toString(fontBuilder.size)));
+            font.appendChild(elementWithVal(elementBuilder, "sz", fontBuilder.size.toPlainString()));
             font.appendChild(elementWithVal(elementBuilder, "name", fontBuilder.name));
             font.appendChild(elementWithVal(elementBuilder, "family", "2")); //<- hardcoded, what it is?
 
@@ -111,7 +113,7 @@ public class Style {
 
     public static class FontBuilder {
         String name = "Arial";
-        int size = 10;//default
+        BigDecimal size = BigDecimal.TEN;//default
         String color;
         boolean bold;
         boolean italic;
@@ -139,6 +141,27 @@ public class Style {
 
         public FontBuilder italic(boolean italic) {
             this.italic = italic;
+            return this;
+        }
+
+        public FontBuilder name(String name) {
+            Objects.requireNonNull(name);
+            this.name = name;
+            return this;
+        }
+
+        public FontBuilder size(int size) {
+            this.size = BigDecimal.valueOf(size);
+            return this;
+        }
+
+        public FontBuilder size(double size) {
+            this.size = BigDecimal.valueOf(size);
+            return this;
+        }
+
+        public FontBuilder size(BigDecimal size) {
+            this.size = size;
             return this;
         }
     }

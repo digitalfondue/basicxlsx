@@ -21,10 +21,14 @@ write xslx files.
  - support some styling
     - [x] bold
     - [x] italic
-    - [ ] size
-    - [ ] font name
+    - [x] size
+    - [x] font name
     - [ ] font color
-    - ...
+    - [ ] font underline
+    - [ ] font strikeout
+    - [ ] alignment 
+    - [ ] cell background
+    - [ ] cell border
     - see https://xlsxwriter.readthedocs.io/format.html
 
 ## Resources/examples about xlsx

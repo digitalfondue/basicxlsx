@@ -15,7 +15,7 @@ public class WorkbookTest {
 
         Style bold = w.defineStyle().font().bold(true).build();
         Style italic = w.defineStyle().font().italic(true).build();
-        Style boldAndItalic = w.defineStyle().font().italic(true).bold(true).build();
+        Style timesNewRomanBoldAndItalic = w.defineStyle().font().name("Times New Roman").size(15).italic(true).bold(true).build();
 
         Sheet s = w.sheet("test");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1
@@ -25,7 +25,7 @@ public class WorkbookTest {
         s.setValueAt("World!", 1, 1).withStyle(bold); //B2
 
         //numbers
-        s.setValueAt("Numeric values", 0, 2).withStyle(boldAndItalic); //C1
+        s.setValueAt("Numeric values", 0, 2).withStyle(timesNewRomanBoldAndItalic); //C1
         s.setValueAt(42, 1,2); //C2
         s.setValueAt(new BigDecimal("2.512351234324832"), 2,2); //C3
         s.setValueAt(3.14, 3,2); //C4
