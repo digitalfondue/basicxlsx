@@ -1,6 +1,7 @@
 package ch.digitalfondue.basicxlsx;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -16,10 +17,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Function;
 
 class Utils {
 
     static final String NS_SPREADSHEETML_2006_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
+    static Function<String, Element> toElementBuilder(Document doc) {
+        return (elemName) -> doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, elemName);
+    }
 
     static Document toDocument(String resource) {
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource)) {

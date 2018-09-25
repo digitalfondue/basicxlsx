@@ -18,6 +18,12 @@ write xslx files.
     - date
     - a specific subset of formula (sum, ?)
  - support some styling
+    - [x] bold
+    - [x] italic
+    - [ ] size
+    - [ ] font name
+    - [ ] font color
+    - ...
     - see https://xlsxwriter.readthedocs.io/format.html
 
 ## Resources/examples about xlsx

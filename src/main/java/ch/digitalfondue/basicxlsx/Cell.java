@@ -1,6 +1,5 @@
 package ch.digitalfondue.basicxlsx;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
@@ -9,7 +8,7 @@ import java.util.function.Function;
 
 public abstract class Cell {
 
-    abstract Element toElement(Function<String, Element> elementBuilder, int row, int column);
+    abstract Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId);
 
     BiFunction<Cell, Style, Style> styleRegistrator;
     Function<Cell, Style> styleRegistry;
@@ -48,14 +47,14 @@ public abstract class Cell {
 
         //http://officeopenxml.com/SScontentOverview.php
         @Override
-        Element toElement(Function<String, Element> elementBuilder, int row, int column) {
+        Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
 
             // <c r="B1" t="inlineStr">
             //  <is>
             //    <t>Name1</t>
             //  </is>
             // </c>
-            Element cell = buildCell(elementBuilder, "inlineStr", row, column, 0); //FIXME get the styleId
+            Element cell = buildCell(elementBuilder, "inlineStr", row, column, styleId);
 
             Element is = elementBuilder.apply("is");
             Element t = elementBuilder.apply("t");
@@ -86,12 +85,12 @@ public abstract class Cell {
 
         //http://officeopenxml.com/SScontentOverview.php
         @Override
-        Element toElement(Function<String, Element> elementBuilder, int row, int column) {
+        Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
 
             // <c r="B2" t="n">
             //  <v>400</v>
             // </c>
-            Element cell = buildCell(elementBuilder, "n", row, column, 0);
+            Element cell = buildCell(elementBuilder, "n", row, column, styleId);
             Element v = elementBuilder.apply("v");
             v.setTextContent(number.toPlainString());
 
@@ -110,11 +109,11 @@ public abstract class Cell {
         }
 
         @Override
-        Element toElement(Function<String, Element> elementBuilder, int row, int column) {
+        Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
             // <c r="B2" t="b">
             //  <v>1</v>
             // </c>
-            Element cell = buildCell(elementBuilder, "b", row, column, 0);
+            Element cell = buildCell(elementBuilder, "b", row, column, styleId);
             Element v = elementBuilder.apply("v");
             v.setTextContent(value ? "1" : "0");
             cell.appendChild(v);

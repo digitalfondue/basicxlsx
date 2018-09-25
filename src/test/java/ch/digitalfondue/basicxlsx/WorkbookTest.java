@@ -14,16 +14,18 @@ public class WorkbookTest {
         Workbook w = new Workbook();
 
         Style bold = w.defineStyle().font().bold(true).and().build();
+        Style italic = w.defineStyle().font().italic(true).and().build();
+        Style boldAndItalic = w.defineStyle().font().italic(true).bold(true).and().build();
 
         Sheet s = w.sheet("test");
-        s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(bold); //A1
-        s.setValueAt("B1", 0, 1);
+        s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1
+        s.setValueAt("B1", 0, 1).withStyle(italic);
 
-        s.setValueAt("A2", 1, 0);
-        s.setValueAt("World!", 1, 1); //B2
+        s.setValueAt("A2", 1, 0).withStyle(bold);
+        s.setValueAt("World!", 1, 1).withStyle(bold); //B2
 
         //numbers
-        s.setValueAt("Numeric values", 0, 2); //C1
+        s.setValueAt("Numeric values", 0, 2).withStyle(boldAndItalic); //C1
         s.setValueAt(42, 1,2); //C2
         s.setValueAt(new BigDecimal("2.512351234324832"), 2,2); //C3
         s.setValueAt(3.14, 3,2); //C4

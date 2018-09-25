@@ -17,12 +17,22 @@ public class Workbook {
     private final List<String> sheetNameOrder = new ArrayList<>();
     private final List<Style> styles = new ArrayList<>();
     final Map<Cell, Style> styledCells = new IdentityHashMap<>();
+    final Map<Style, Integer> styleToIdMapping = new IdentityHashMap();
 
     public Sheet sheet(String name) {
         return sheets.computeIfAbsent(name, sheetName -> {
             sheetNameOrder.add(sheetName);
             return new Sheet(styledCells);
         });
+    }
+
+    private int styleIdSupplier(Cell cell) {
+        if (styledCells.containsKey(cell)) {
+            Integer r = styleToIdMapping.get(styledCells.get(cell));
+            return r != null ? r : 0;
+        } else {
+            return 0;//default id
+        }
     }
 
 
@@ -39,12 +49,12 @@ public class Workbook {
 
             addFileWithDocument(zos, "xl/workbook.xml", buildWorkbook(sheets.size(), sheetNameOrder));
 
-            addFileWithDocument(zos, "xl/styles.xml", buildStyles(styles));
+            addFileWithDocument(zos, "xl/styles.xml", buildStyles(styles, styleToIdMapping));
 
             addFileWithDocument(zos, "xl/_rels/workbook.xml.rels", buildWorkbookRels(sheets.size()));
 
             for (int i = 0; i < sheets.size(); i++) {
-                addFileWithDocument(zos, "xl/worksheets/sheet" + (i + 1) + ".xml", buildSheet(sheets.get(sheetNameOrder.get(i))));
+                addFileWithDocument(zos, "xl/worksheets/sheet" + (i + 1) + ".xml", buildSheet(sheets.get(sheetNameOrder.get(i)), this::styleIdSupplier));
             }
         }
     }
@@ -67,15 +77,17 @@ public class Workbook {
         element.setAttribute("count", Integer.toString(element.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, childName).getLength()));
     }
 
-    private static Document buildStyles(List<Style> styles) {
+    private static Document buildStyles(List<Style> styles, Map<Style, Integer> styleToIdMapping) {
         //FIXME implement
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
+        Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
 
         Element fonts = getElement(doc, "fonts");
         Element cellXfs = getElement(doc, "cellXfs");
 
         for (Style style : styles) {
-            style.register(fonts, cellXfs);
+            int styleId = style.register(elementBuilder, fonts, cellXfs);
+            styleToIdMapping.put(style, styleId);
         }
 
 
@@ -137,10 +149,10 @@ public class Workbook {
         return doc;
     }
 
-    private static Document buildSheet(Sheet sheet) {
+    private static Document buildSheet(Sheet sheet, Function<Cell, Integer> styleIdSupplier) {
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml");
         Element cols = getElement(doc, "cols");
-        Function<String, Element> elementBuilder = (elemName) -> doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, elemName);
+        Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
 
         final int colsCount = sheet.getMaxCol() + 1;
         for (int i = 0; i < colsCount; i++) {
@@ -159,7 +171,9 @@ public class Workbook {
 
             //column -> cell
             for (Map.Entry<Integer, Cell> colAndCell : rowCells.getValue().entrySet()) {
-                row.appendChild(colAndCell.getValue().toElement(elementBuilder, rowCells.getKey(), colAndCell.getKey()));
+                Cell cell = colAndCell.getValue();
+                int styleId = styleIdSupplier.apply(cell);
+                row.appendChild(cell.toElement(elementBuilder, rowCells.getKey(), colAndCell.getKey(), styleId));
             }
             sheetData.appendChild(row);
         }
