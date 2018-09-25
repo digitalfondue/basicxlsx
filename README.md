@@ -1,5 +1,7 @@
 # basicxlsx: when you only need to write simple xlsx
 
+[![Build Status](https://travis-ci.org/digitalfondue/basicxlsx.svg?branch=master)](https://travis-ci.org/digitalfondue/basicxlsx) [![Coverage Status](https://coveralls.io/repos/github/digitalfondue/basicxlsx/badge.svg?branch=master)](https://coveralls.io/github/digitalfondue/basicxlsx?branch=master)
+
 ## Why
 
 Apache POI, being a complete solution, is quite heavyweight.
