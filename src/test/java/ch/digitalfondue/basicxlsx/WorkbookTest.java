@@ -13,9 +13,9 @@ public class WorkbookTest {
 
         Workbook w = new Workbook();
 
-        Style bold = w.defineStyle().font().bold(true).and().build();
-        Style italic = w.defineStyle().font().italic(true).and().build();
-        Style boldAndItalic = w.defineStyle().font().italic(true).bold(true).and().build();
+        Style bold = w.defineStyle().font().bold(true).build();
+        Style italic = w.defineStyle().font().italic(true).build();
+        Style boldAndItalic = w.defineStyle().font().italic(true).bold(true).build();
 
         Sheet s = w.sheet("test");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1

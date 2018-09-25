@@ -125,7 +125,11 @@ public class Style {
         }
 
         public StyleBuilder and() {
-            return this.styleBuilder;
+            return styleBuilder;
+        }
+
+        public Style build() {
+            return styleBuilder.build();
         }
 
         public FontBuilder bold(boolean bold) {
