@@ -179,6 +179,12 @@ public class Style {
             return this;
         }
 
+        /**
+         * Set the font with a given color.
+         *
+         * @param color: format is "#ffcc00" or simply "ffcc00"
+         * @return
+         */
         public FontBuilder color(String color) {
             this.color = color;
             return this;

@@ -21,6 +21,7 @@ write xslx files.
     - a specific subset of formula (sum, ?)
  - add test (WIP)
  - support some styling
+    - [ ] check default, in apache poi it's Calibri+11 size
     - [x] bold
     - [x] italic
     - [x] size
