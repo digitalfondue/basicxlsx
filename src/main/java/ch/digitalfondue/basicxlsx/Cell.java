@@ -9,13 +9,13 @@ import java.util.function.Function;
 
 public abstract class Cell {
 
-    abstract Element toElement(Document doc, int row, int column);
+    abstract Element toElement(Function<String, Element> elementBuilder, int row, int column);
 
     BiFunction<Cell, Style, Style> styleRegistrator;
     Function<Cell, Style> styleRegistry;
 
-    private static Element buildCell(Document doc, String type, int row, int column, int styleId) {
-        Element cell = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "c");
+    private static Element buildCell(Function<String, Element> elementBuilder, String type, int row, int column, int styleId) {
+        Element cell = elementBuilder.apply("c");
         cell.setAttribute("r", Utils.fromRowColumnToExcelCoordinates(row, column));
         cell.setAttribute("t", type);
         cell.setAttribute("s", Integer.toString(styleId));
@@ -48,17 +48,17 @@ public abstract class Cell {
 
         //http://officeopenxml.com/SScontentOverview.php
         @Override
-        Element toElement(Document doc, int row, int column) {
+        Element toElement(Function<String, Element> elementBuilder, int row, int column) {
 
             // <c r="B1" t="inlineStr">
             //  <is>
             //    <t>Name1</t>
             //  </is>
             // </c>
-            Element cell = buildCell(doc, "inlineStr", row, column, 0); //FIXME get the styleId
+            Element cell = buildCell(elementBuilder, "inlineStr", row, column, 0); //FIXME get the styleId
 
-            Element is = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "is");
-            Element t = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "t");
+            Element is = elementBuilder.apply("is");
+            Element t = elementBuilder.apply("t");
             t.setTextContent(value);
             is.appendChild(t);
             cell.appendChild(is);
@@ -86,13 +86,13 @@ public abstract class Cell {
 
         //http://officeopenxml.com/SScontentOverview.php
         @Override
-        Element toElement(Document doc, int row, int column) {
+        Element toElement(Function<String, Element> elementBuilder, int row, int column) {
 
             // <c r="B2" t="n">
             //  <v>400</v>
             // </c>
-            Element cell = buildCell(doc, "n", row, column, 0);
-            Element v = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "v");
+            Element cell = buildCell(elementBuilder, "n", row, column, 0);
+            Element v = elementBuilder.apply("v");
             v.setTextContent(number.toPlainString());
 
             cell.appendChild(v);
@@ -110,12 +110,12 @@ public abstract class Cell {
         }
 
         @Override
-        Element toElement(Document doc, int row, int column) {
+        Element toElement(Function<String, Element> elementBuilder, int row, int column) {
             // <c r="B2" t="b">
             //  <v>1</v>
             // </c>
-            Element cell = buildCell(doc, "b", row, column, 0);
-            Element v = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "v");
+            Element cell = buildCell(elementBuilder, "b", row, column, 0);
+            Element v = elementBuilder.apply("v");
             v.setTextContent(value ? "1" : "0");
             cell.appendChild(v);
             return cell;

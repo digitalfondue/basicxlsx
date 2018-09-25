@@ -7,10 +7,15 @@ import java.util.function.Function;
 //based on https://xlsxwriter.readthedocs.io/format.html
 public class Style {
 
-    private Style() {
+    private final FontBuilder fontBuilder;
+
+    private Style(FontBuilder fontBuilder) {
+        this.fontBuilder = fontBuilder;
     }
 
     void register(Element fonts, Element cellXfs) {
+        if (fontBuilder != null) {
+        }
     }
 
     public static class StyleBuilder {
@@ -30,7 +35,7 @@ public class Style {
         }
 
         public Style build() {
-            Style s =  new Style();
+            Style s = new Style(fontBuilder);
             register.apply(s);
             return s;
         }

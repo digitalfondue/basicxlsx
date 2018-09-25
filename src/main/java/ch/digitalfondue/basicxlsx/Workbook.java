@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -139,10 +140,11 @@ public class Workbook {
     private static Document buildSheet(Sheet sheet) {
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml");
         Element cols = getElement(doc, "cols");
+        Function<String, Element> elementBuilder = (elemName) -> doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, elemName);
 
         final int colsCount = sheet.getMaxCol() + 1;
         for (int i = 0; i < colsCount; i++) {
-            Element col = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "col");
+            Element col = elementBuilder.apply("col");
             col.setAttribute("min", Integer.toString(i + 1));
             col.setAttribute("max", Integer.toString(i + 1));
             cols.appendChild(col);
@@ -152,12 +154,12 @@ public class Workbook {
 
         //row
         for (Map.Entry<Integer, SortedMap<Integer, Cell>> rowCells : sheet.cells.entrySet()) {
-            Element row = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "row");
+            Element row = elementBuilder.apply("row");
             row.setAttribute("r", Integer.toString(rowCells.getKey() + 1));
 
             //column -> cell
             for (Map.Entry<Integer, Cell> colAndCell : rowCells.getValue().entrySet()) {
-                row.appendChild(colAndCell.getValue().toElement(doc, rowCells.getKey(), colAndCell.getKey()));
+                row.appendChild(colAndCell.getValue().toElement(elementBuilder, rowCells.getKey(), colAndCell.getKey()));
             }
             sheetData.appendChild(row);
         }
