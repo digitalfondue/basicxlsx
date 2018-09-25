@@ -17,7 +17,7 @@ write xslx files.
     - [x] boolean
     - date
     - a specific subset of formula (sum, ?)
- - add test (use POI to read the result and check if it's correct!)
+ - add test (WIP)
  - support some styling
     - [x] bold
     - [x] italic

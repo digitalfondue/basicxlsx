@@ -1,8 +1,11 @@
 package ch.digitalfondue.basicxlsx;
 
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -26,9 +29,9 @@ public class WorkbookTest {
 
         //numbers
         s.setValueAt("Numeric values", 0, 2).withStyle(timesNewRomanBoldAndItalic); //C1
-        s.setValueAt(42, 1,2); //C2
-        s.setValueAt(new BigDecimal("2.512351234324832"), 2,2); //C3
-        s.setValueAt(3.14, 3,2); //C4
+        s.setValueAt(42, 1, 2); //C2
+        s.setValueAt(new BigDecimal("2.512351234324832"), 2, 2); //C3
+        s.setValueAt(3.14, 3, 2); //C4
 
         //boolean
         s.setValueAt("Boolean values", 0, 3); //D1
@@ -39,8 +42,28 @@ public class WorkbookTest {
         s2.setValueAt("Hello", 1, 0); //A2
         s2.setValueAt("World", 0, 1); //B1
 
-        try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
-            w.write(fos);
+
+
+        ByteArrayInputStream bis;
+        //try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
+            w.write(os);
+            bis = new ByteArrayInputStream(os.toByteArray());
         }
+
+
+        //check content
+        org.apache.poi.ss.usermodel.Workbook workbook = WorkbookFactory.create(bis);
+        Assert.assertEquals("test", workbook.getSheetName(0));
+        Assert.assertEquals("test2", workbook.getSheetName(1));
+
+        //check sheet 1 content
+        org.apache.poi.ss.usermodel.Sheet sheet1 = workbook.getSheet("test");
+        //TODO: complete check here
+        //check sheet 2 content
+        org.apache.poi.ss.usermodel.Sheet sheet2 = workbook.getSheet("test2");
+        Assert.assertEquals("Hello", sheet2.getRow(1).getCell(0).getStringCellValue());
+        Assert.assertEquals("World", sheet2.getRow(0).getCell(1).getStringCellValue());
+
     }
 }
