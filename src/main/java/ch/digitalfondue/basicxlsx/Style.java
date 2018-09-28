@@ -25,10 +25,14 @@ import java.util.function.Function;
 //based on https://xlsxwriter.readthedocs.io/format.html
 public class Style {
 
-    private final FontBuilder fontBuilder;
+    private final String numericFormat;
+    private final Integer numericFormatIndex;
+    private final FontDesc fontDesc;
 
-    private Style(FontBuilder fontBuilder) {
-        this.fontBuilder = fontBuilder;
+    public Style(String numericFormat, Integer numericFormatIndex, FontDesc fontDesc) {
+        this.numericFormat = numericFormat;
+        this.numericFormatIndex = numericFormatIndex;
+        this.fontDesc = fontDesc;
     }
 
 
@@ -42,11 +46,21 @@ public class Style {
         return elementWithAttr(elementBuilder, name, "val", value);
     }
 
-    int register(Function<String, Element> elementBuilder, Element fonts, Element cellXfs) {
+    int register(Function<String, Element> elementBuilder, Element fonts, Element cellXfs, Element numFmts) {
 
         int fontId = 0;
+        int numFmtId = 164;//default value
+        if (numericFormatIndex != null) {
+            numFmtId = numericFormatIndex; //builtin formatting
+        } else if (numericFormat != null) {
+            Element numFmt = elementWithAttr(elementBuilder, "numFmt", "formatCode", numericFormat);
+            int count = numFmts.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "numFmt").getLength();
+            numFmtId = 164 + count; //custom formatting
+            numFmt.setAttribute("numFmtId", Integer.toString(numFmtId));
+            numFmts.appendChild(numFmt);
+        }
 
-        if (fontBuilder != null) {
+        if (fontDesc != null) {
             // <font>
             //   <b val="true"/> //<- bold
             //   <i val="true"/> //<- italic
@@ -58,27 +72,27 @@ public class Style {
 
             Element font = elementBuilder.apply("font");
 
-            if (fontBuilder.bold) {
+            if (fontDesc.bold) {
                 font.appendChild(elementWithVal(elementBuilder, "b", "true"));
             }
 
-            if (fontBuilder.italic) {
+            if (fontDesc.italic) {
                 font.appendChild(elementWithVal(elementBuilder, "i", "true"));
             }
 
-            if (fontBuilder.color != null) {
-                String color = fontBuilder.color;
+            if (fontDesc.color != null) {
+                String color = fontDesc.color;
                 if (color.startsWith("#")) {
                     color = color.substring(1);
                 }
                 font.appendChild(elementWithAttr(elementBuilder, "color", "rgb", "FF" + color.toUpperCase(Locale.ENGLISH)));
             }
 
-            if (fontBuilder.strikeOut) {
+            if (fontDesc.strikeOut) {
                 font.appendChild(elementBuilder.apply("strike"));
             }
 
-            FontUnderlineStyle underline = fontBuilder.fontUnderlineStyle;
+            FontUnderlineStyle underline = fontDesc.fontUnderlineStyle;
             if (underline != null && underline.hasUElement) {
                 if (underline.hasValAttribute) {
                     font.appendChild(elementWithVal(elementBuilder, "u", underline.val));
@@ -87,8 +101,8 @@ public class Style {
                 }
             }
 
-            font.appendChild(elementWithVal(elementBuilder, "sz", fontBuilder.size.toPlainString()));
-            font.appendChild(elementWithVal(elementBuilder, "name", fontBuilder.name));
+            font.appendChild(elementWithVal(elementBuilder, "sz", fontDesc.size.toPlainString()));
+            font.appendChild(elementWithVal(elementBuilder, "name", fontDesc.name));
             font.appendChild(elementWithVal(elementBuilder, "family", "2")); //<- hardcoded, what it is?
 
 
@@ -103,7 +117,7 @@ public class Style {
         //  <protection locked="true" hidden="false"/>
         // </xf>
         Element xf = elementBuilder.apply("xf");
-        xf.setAttribute("numFmtId", "164");
+        xf.setAttribute("numFmtId", Integer.toString(numFmtId));
         xf.setAttribute("fontId", Integer.toString(fontId));
         xf.setAttribute("fillId", "0");
         xf.setAttribute("borderId", "0");
@@ -134,6 +148,8 @@ public class Style {
 
         private final Function<Style, Boolean> register;
         private FontBuilder fontBuilder;
+        private String numericFormat;
+        private Integer numericFormatIndex;
 
         private StyleBuilder(Function<Style, Boolean> register) {
             this.register = register;
@@ -146,11 +162,93 @@ public class Style {
             return fontBuilder;
         }
 
+        /**
+         * <p>Use the built in numeric format.</p>
+         *
+         *       0, "General"<br>
+         *       1, "0"<br>
+         *       2, "0.00"<br>
+         *       3, "#,##0"<br>
+         *       4, "#,##0.00"<br>
+         *       5, "$#,##0_);($#,##0)"<br>
+         *       6, "$#,##0_);[Red]($#,##0)"<br>
+         *       7, "$#,##0.00);($#,##0.00)"<br>
+         *       8, "$#,##0.00_);[Red]($#,##0.00)"<br>
+         *       9, "0%"<br>
+         *       0xa, "0.00%"<br>
+         *       0xb, "0.00E+00"<br>
+         *       0xc, "# ?/?"<br>
+         *       0xd, "# ??/??"<br>
+         *       0xe, "m/d/yy"<br>
+         *       0xf, "d-mmm-yy"<br>
+         *       0x10, "d-mmm"<br>
+         *       0x11, "mmm-yy"<br>
+         *       0x12, "h:mm AM/PM"<br>
+         *       0x13, "h:mm:ss AM/PM"<br>
+         *       0x14, "h:mm"<br>
+         *       0x15, "h:mm:ss"<br>
+         *       0x16, "m/d/yy h:mm"<br>
+         *<p>
+         *       // 0x17 - 0x24 reserved for international and undocumented
+         *       0x25, "#,##0_);(#,##0)"<br>
+         *       0x26, "#,##0_);[Red](#,##0)"<br>
+         *       0x27, "#,##0.00_);(#,##0.00)"<br>
+         *       0x28, "#,##0.00_);[Red](#,##0.00)"<br>
+         *       0x29, "_(* #,##0_);_(* (#,##0);_(* \"-\"_);_(@_)"<br>
+         *       0x2a, "_($* #,##0_);_($* (#,##0);_($* \"-\"_);_(@_)"<br>
+         *       0x2b, "_(* #,##0.00_);_(* (#,##0.00);_(* \"-\"??_);_(@_)"<br>
+         *       0x2c, "_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"<br>
+         *       0x2d, "mm:ss"<br>
+         *       0x2e, "[h]:mm:ss"<br>
+         *       0x2f, "mm:ss.0"<br>
+         *       0x30, "##0.0E+0"<br>
+         *       0x31, "@" - This is text format.<br>
+         *       0x31  "text" - Alias for "@"<br>
+         *
+         * @param idx
+         * @return
+         */
+        public StyleBuilder numericFormat(int idx) {
+            if (idx < 0 || (idx >= 0x17 && idx <= 0x24) || idx > 0x31) {
+                throw new IllegalArgumentException("idx must be between [0,0x16] - [0x25,0x31]");
+            }
+            this.numericFormatIndex = idx;
+            return this;
+        }
+
+        public StyleBuilder numericFormat(String numericFormat) {
+            this.numericFormat = numericFormat;
+            return this;
+        }
+
         public Style build() {
-            Style s = new Style(fontBuilder);
+            FontDesc fd = fontBuilder != null ? new FontDesc(fontBuilder.name, fontBuilder.size, fontBuilder.color, fontBuilder.bold,
+                    fontBuilder.italic, fontBuilder.fontUnderlineStyle, fontBuilder.strikeOut) : null;
+            Style s = new Style(numericFormat, numericFormatIndex, fd);
             register.apply(s);
             return s;
         }
+    }
+
+    private static class FontDesc {
+        final String name;
+        final BigDecimal size;
+        final String color;
+        final boolean bold;
+        final boolean italic;
+        final FontUnderlineStyle fontUnderlineStyle;
+        final boolean strikeOut;
+
+        public FontDesc(String name, BigDecimal size, String color, boolean bold, boolean italic, FontUnderlineStyle fontUnderlineStyle, boolean strikeOut) {
+            this.name = name;
+            this.size = size;
+            this.color = color;
+            this.bold = bold;
+            this.italic = italic;
+            this.fontUnderlineStyle = fontUnderlineStyle;
+            this.strikeOut = strikeOut;
+        }
+
     }
 
     public static class FontBuilder {

@@ -99,9 +99,10 @@ public class Workbook {
 
         Element fonts = getElement(doc, "fonts");
         Element cellXfs = getElement(doc, "cellXfs");
+        Element numFmts = getElement(doc, "numFmts");
 
         for (Style style : styles) {
-            int styleId = style.register(elementBuilder, fonts, cellXfs);
+            int styleId = style.register(elementBuilder, fonts, cellXfs, numFmts);
             styleToIdMapping.put(style, styleId);
         }
 
@@ -109,6 +110,7 @@ public class Workbook {
         //
         adjustCount(fonts, "font");
         adjustCount(cellXfs, "xf");
+        adjustCount(numFmts, "numFmt");
         //
         return doc;
     }

@@ -42,6 +42,9 @@ public class WorkbookTest {
         Style italic = w.defineStyle().font().color(Style.Color.GREEN).underline(Style.FontUnderlineStyle.DOUBLE_ACCOUNTING_UNDERLINE).italic(true).build();
         Style timesNewRomanBoldAndItalic = w.defineStyle().font().name("Times New Roman").size(15).italic(true).bold(true).strikeOut(true).build();
 
+        Style twoDecimal = w.defineStyle().numericFormat("0.00").build();
+        Style twoDecimalBuiltin = w.defineStyle().numericFormat(2).build();
+
         Sheet s = w.sheet("test");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1
         s.setValueAt("B1", 0, 1).withStyle(italic);
@@ -52,8 +55,9 @@ public class WorkbookTest {
         //numbers
         s.setValueAt("Numeric values", 0, 2).withStyle(timesNewRomanBoldAndItalic); //C1
         s.setValueAt(42, 1, 2); //C2
-        s.setValueAt(new BigDecimal("2.512351234324832"), 2, 2); //C3
+        s.setValueAt(new BigDecimal("2.512351234324832"), 2, 2).withStyle(twoDecimal); //C3
         s.setValueAt(3.14, 3, 2); //C4
+        s.setValueAt(new BigDecimal("1.234567890"), 4, 2).withStyle(twoDecimalBuiltin); //C5
 
         //boolean
         s.setValueAt("Boolean values", 0, 3); //D1
@@ -111,7 +115,13 @@ public class WorkbookTest {
         Assert.assertEquals("Times New Roman", timesNewRomanBoldAndItalicPoi.getFontName());
         Assert.assertTrue(timesNewRomanBoldAndItalicPoi.getStrikeout());
 
-        //TODO: complete check here
+
+        //check data format
+        Assert.assertEquals(165, sheet1.getRow(2).getCell(2).getCellStyle().getDataFormat());
+        Assert.assertEquals("0.00", sheet1.getRow(2).getCell(2).getCellStyle().getDataFormatString());
+        Assert.assertEquals(2, sheet1.getRow(4).getCell(2).getCellStyle().getDataFormat());
+        Assert.assertEquals("0.00", sheet1.getRow(4).getCell(2).getCellStyle().getDataFormatString());
+        //
 
 
         //check sheet 2 content

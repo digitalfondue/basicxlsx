@@ -31,6 +31,7 @@ write xslx files.
     - [ ] alignment 
     - [ ] cell background
     - [ ] cell border
+    - [x] number and date formatting
     - see https://xlsxwriter.readthedocs.io/format.html
 
 ## Resources/examples about xlsx
