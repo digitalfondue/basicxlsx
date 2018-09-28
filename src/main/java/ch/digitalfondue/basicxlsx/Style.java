@@ -74,6 +74,19 @@ public class Style {
                 font.appendChild(elementWithAttr(elementBuilder, "color", "rgb", "FF" + color.toUpperCase(Locale.ENGLISH)));
             }
 
+            if (fontBuilder.strikeOut) {
+                font.appendChild(elementBuilder.apply("strike"));
+            }
+
+            FontUnderlineStyle underline = fontBuilder.fontUnderlineStyle;
+            if (underline != null && underline.hasUElement) {
+                if (underline.hasValAttribute) {
+                    font.appendChild(elementWithVal(elementBuilder, "u", underline.val));
+                } else {
+                    font.appendChild(elementBuilder.apply("u"));
+                }
+            }
+
             font.appendChild(elementWithVal(elementBuilder, "sz", fontBuilder.size.toPlainString()));
             font.appendChild(elementWithVal(elementBuilder, "name", fontBuilder.name));
             font.appendChild(elementWithVal(elementBuilder, "family", "2")); //<- hardcoded, what it is?
@@ -141,8 +154,8 @@ public class Style {
     }
 
     public static class FontBuilder {
-        String name = "Arial";
-        BigDecimal size = BigDecimal.TEN;//default
+        String name = "Calibri";
+        BigDecimal size = BigDecimal.valueOf(11);//default
         String color;
         boolean bold;
         boolean italic;
@@ -179,6 +192,17 @@ public class Style {
             return this;
         }
 
+        public FontBuilder underline(FontUnderlineStyle fontUnderlineStyle) {
+            Objects.requireNonNull(fontUnderlineStyle);
+            this.fontUnderlineStyle = fontUnderlineStyle;
+            return this;
+        }
+
+        public FontBuilder strikeOut(boolean strikeOut) {
+            this.strikeOut = strikeOut;
+            return this;
+        }
+
         /**
          * Set the font with a given color.
          *
@@ -211,7 +235,21 @@ public class Style {
     }
 
     public enum FontUnderlineStyle {
-        NONE, SINGLE, DOUBLE, SINGLE_ACCOUNTING_UNDERLINE, DOUBLE_ACCOUNTING_UNDERLINE;
+        NONE(null, false, false), SINGLE(null, false, true), DOUBLE("double"), SINGLE_ACCOUNTING_UNDERLINE("singleAccounting"), DOUBLE_ACCOUNTING_UNDERLINE("doubleAccounting");
+
+        final String val;
+        final boolean hasValAttribute;
+        final boolean hasUElement;
+
+        FontUnderlineStyle(String val) {
+            this(val, true, true);
+        }
+
+        FontUnderlineStyle(String val, boolean hasValAttribute, boolean hasUElement) {
+            this.val = val;
+            this.hasValAttribute = hasValAttribute;
+            this.hasUElement = hasUElement;
+        }
     }
 
     //color list imported from https://github.com/jmcnamara/XlsxWriter/blob/master/xlsxwriter/format.py#L959

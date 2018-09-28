@@ -17,6 +17,7 @@ package ch.digitalfondue.basicxlsx;
 
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.junit.Assert;
@@ -38,8 +39,8 @@ public class WorkbookTest {
         Workbook w = new Workbook();
 
         Style bold = w.defineStyle().font().color("#ffcc00").bold(true).build();
-        Style italic = w.defineStyle().font().color(Style.Color.GREEN).italic(true).build();
-        Style timesNewRomanBoldAndItalic = w.defineStyle().font().name("Times New Roman").size(15).italic(true).bold(true).build();
+        Style italic = w.defineStyle().font().color(Style.Color.GREEN).underline(Style.FontUnderlineStyle.DOUBLE_ACCOUNTING_UNDERLINE).italic(true).build();
+        Style timesNewRomanBoldAndItalic = w.defineStyle().font().name("Times New Roman").size(15).italic(true).bold(true).strikeOut(true).build();
 
         Sheet s = w.sheet("test");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1
@@ -95,8 +96,9 @@ public class WorkbookTest {
         //0x008000 -> green, quite surprisingly, using getColor() return 0, but going through the XSSFColor we have the correct value, why?
         Assert.assertEquals("FF008000", italicFontPoi.getXSSFColor().getARGBHex());
         //
-        Assert.assertEquals(10, italicFontPoi.getFontHeightInPoints());
-        Assert.assertEquals("Arial", italicFontPoi.getFontName());
+        Assert.assertEquals(11, italicFontPoi.getFontHeightInPoints());
+        Assert.assertEquals("Calibri", italicFontPoi.getFontName());
+        Assert.assertEquals(FontUnderline.DOUBLE_ACCOUNTING.getByteValue(), italicFontPoi.getUnderline());
 
 
         // Check numeric section
@@ -107,6 +109,7 @@ public class WorkbookTest {
         Assert.assertTrue(timesNewRomanBoldAndItalicPoi.getBold());
         Assert.assertEquals(15, timesNewRomanBoldAndItalicPoi.getFontHeightInPoints());
         Assert.assertEquals("Times New Roman", timesNewRomanBoldAndItalicPoi.getFontName());
+        Assert.assertTrue(timesNewRomanBoldAndItalicPoi.getStrikeout());
 
         //TODO: complete check here
 

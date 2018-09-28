@@ -21,14 +21,13 @@ write xslx files.
     - a specific subset of formula (sum, ?)
  - add test (WIP)
  - support some styling
-    - [ ] check default, in apache poi it's Calibri+11 size
     - [x] bold
     - [x] italic
     - [x] size
     - [x] font name
     - [x] font color (currently supporting RGB, but it seems that ARGB is possible)
-    - [ ] font underline
-    - [ ] font strikeout
+    - [x] font underline
+    - [x] font strikeout
     - [ ] alignment 
     - [ ] cell background
     - [ ] cell border
