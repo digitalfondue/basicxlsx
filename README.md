@@ -17,8 +17,8 @@ write xslx files.
     - https://metacpan.org/pod/Spreadsheet::WriteExcel::Examples#Example:-autofit.pl
  - support other column type
     - [x] boolean
-    - date
-    - a specific subset of formula (sum, ?)
+    - [ ] date
+    - [ ] a specific subset of formula (sum, ?)
  - add test (WIP)
  - support some styling
     - [x] bold
