@@ -16,10 +16,8 @@
 package ch.digitalfondue.basicxlsx;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Optional;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class Sheet {
 
@@ -67,6 +65,17 @@ public class Sheet {
     //boolean
     public Cell setValueAt(boolean value, int row, int column) {
         return setCellAt(new Cell.BooleanCell(value), row, column);
+    }
+    //
+
+
+    //date
+    public Cell setValueAt(Date date, int row, int column) {
+        return setCellAt(new Cell.DateCell(date), row, column);
+    }
+
+    public Cell setValueAt(LocalDateTime localDateTime, int row, int column) {
+        return setCellAt(new Cell.LocalDateTimeCell(localDateTime), row, column);
     }
     //
 
