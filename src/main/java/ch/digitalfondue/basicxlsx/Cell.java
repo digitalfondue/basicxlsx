@@ -18,6 +18,8 @@ package ch.digitalfondue.basicxlsx;
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -133,6 +135,36 @@ public abstract class Cell {
             v.setTextContent(value ? "1" : "0");
             cell.appendChild(v);
             return cell;
+        }
+    }
+
+    // date
+    public static class DateCell extends Cell {
+
+        public final Date value;
+
+        public DateCell(Date value) {
+            this.value = value;
+        }
+
+        @Override
+        Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
+            throw new IllegalStateException("to implement");
+        }
+    }
+
+    // date variant
+    public static class LocalDateTimeCell extends Cell {
+
+        public final LocalDateTime value;
+
+        public LocalDateTimeCell(LocalDateTime value) {
+            this.value = value;
+        }
+
+        @Override
+        Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
+            throw new IllegalStateException("to implement");
         }
     }
 }
