@@ -15,6 +15,7 @@
  */
 package ch.digitalfondue.basicxlsx;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FontUnderline;
@@ -28,13 +29,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
 
 public class WorkbookTest {
 
     private static boolean OUTPUT_FILE = false;
 
     @Test
-    public void testWorkbookCreation() throws IOException {
+    public void testWorkbookCreation() throws IOException, ParseException {
 
         Workbook w = new Workbook();
 
@@ -67,6 +69,11 @@ public class WorkbookTest {
         Sheet s2 = w.sheet("test2");
         s2.setValueAt("Hello", 1, 0); //A2
         s2.setValueAt("World", 0, 1); //B1
+
+
+        Style dateFormat = w.defineStyle().numericFormat(0xe).build();
+
+        s2.setValueAt(DateUtils.parseDateStrictly("2015-03-07 13:26:24", "yyyy-MM-dd HH:mm:ss"), 1, 3).withStyle(dateFormat);
 
 
         ByteArrayInputStream bis;

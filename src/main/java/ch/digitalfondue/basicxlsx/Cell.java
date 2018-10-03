@@ -149,7 +149,14 @@ public abstract class Cell {
 
         @Override
         Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
-            throw new IllegalStateException("to implement");
+            // <c r="B2" t="n">
+            //  <v>400</v>
+            // </c>
+            Element cell = buildCell(elementBuilder, "n", row, column, styleId);
+            Element v = elementBuilder.apply("v");
+            v.setTextContent(Utils.getExcelDate(value).toPlainString());
+            cell.appendChild(v);
+            return cell;
         }
     }
 
@@ -164,7 +171,11 @@ public abstract class Cell {
 
         @Override
         Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
-            throw new IllegalStateException("to implement");
+            Element cell = buildCell(elementBuilder, "n", row, column, styleId);
+            Element v = elementBuilder.apply("v");
+            v.setTextContent(Utils.getExcelDate(value).toPlainString());
+            cell.appendChild(v);
+            return cell;
         }
     }
 }
