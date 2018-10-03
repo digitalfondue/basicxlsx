@@ -15,8 +15,14 @@
  */
 package ch.digitalfondue.basicxlsx;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class UtilsTest {
 
@@ -32,5 +38,25 @@ public class UtilsTest {
         Assert.assertEquals("ZZ3", Utils.fromRowColumnToExcelCoordinates(2,701));
         //AAA3
         Assert.assertEquals("AAA3", Utils.fromRowColumnToExcelCoordinates(2,702));
+    }
+
+    //test data imported from https://github.com/dtjohnson/xlsx-populate/blob/master/test/unit/dateConverter.spec.js
+    @Test
+    public void dateTest() throws ParseException {
+        Assert.assertEquals(BigDecimal.valueOf(1), Utils.getExcelDate(DateUtils.parseDateStrictly("1900-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss")));
+        Assert.assertEquals(BigDecimal.valueOf(59), Utils.getExcelDate(DateUtils.parseDateStrictly("1900-02-28 00:00:00", "yyyy-MM-dd HH:mm:ss")));
+        Assert.assertEquals(BigDecimal.valueOf(61), Utils.getExcelDate(DateUtils.parseDateStrictly("1900-03-01 00:00:00", "yyyy-MM-dd HH:mm:ss")));
+        Assert.assertEquals(new BigDecimal("42070.5599999999976716935634613037109375"), Utils.getExcelDate(DateUtils.parseDateStrictly("2015-03-07 13:26:24", "yyyy-MM-dd HH:mm:ss")));
+        Assert.assertEquals(new BigDecimal("42829.8333333333357586525380611419677734375"), Utils.getExcelDate(DateUtils.parseDateStrictly("2017-04-04 20:00:00", "yyyy-MM-dd HH:mm:ss")));
+    }
+
+    @Test
+    public void localDateTimeTest() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Assert.assertEquals(BigDecimal.valueOf(1), Utils.getExcelDate(LocalDateTime.parse("1900-01-01 00:00:00", formatter)));
+        Assert.assertEquals(BigDecimal.valueOf(59), Utils.getExcelDate(LocalDateTime.parse("1900-02-28 00:00:00", formatter)));
+        Assert.assertEquals(BigDecimal.valueOf(61), Utils.getExcelDate(LocalDateTime.parse("1900-03-01 00:00:00", formatter)));
+        Assert.assertEquals(new BigDecimal("42070.5599999999976716935634613037109375"), Utils.getExcelDate(LocalDateTime.parse("2015-03-07 13:26:24", formatter)));
+        Assert.assertEquals(new BigDecimal("42829.8333333333357586525380611419677734375"), Utils.getExcelDate(LocalDateTime.parse("2017-04-04 20:00:00", formatter)));
     }
 }
