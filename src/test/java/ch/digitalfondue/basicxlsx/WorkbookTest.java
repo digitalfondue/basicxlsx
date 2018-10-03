@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.Date;
 
 public class WorkbookTest {
 
@@ -71,9 +72,10 @@ public class WorkbookTest {
         s2.setValueAt("World", 0, 1); //B1
 
 
-        Style dateFormat = w.defineStyle().numericFormat(0xe).build();
+        Style dateFormat = w.defineStyle().numericFormat("dd-mm-yyyy HH:mm:ss").build();
 
-        s2.setValueAt(DateUtils.parseDateStrictly("2015-03-07 13:26:24", "yyyy-MM-dd HH:mm:ss"), 1, 3).withStyle(dateFormat);
+        Date dateForSheet2Row1Col3 = DateUtils.parseDateStrictly("2015-03-07 13:26:24", "yyyy-MM-dd HH:mm:ss");
+        s2.setValueAt(dateForSheet2Row1Col3, 1, 3).withStyle(dateFormat);
 
 
         ByteArrayInputStream bis;
@@ -136,5 +138,8 @@ public class WorkbookTest {
         Assert.assertEquals("Hello", sheet2.getRow(1).getCell(0).getStringCellValue());
         Assert.assertEquals("World", sheet2.getRow(0).getCell(1).getStringCellValue());
 
+        //check date
+        Assert.assertEquals(dateForSheet2Row1Col3, sheet2.getRow(1).getCell(3).getDateCellValue());
+        Assert.assertEquals("dd-mm-yyyy HH:mm:ss", sheet2.getRow(1).getCell(3).getCellStyle().getDataFormatString());
     }
 }
