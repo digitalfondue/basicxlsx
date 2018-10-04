@@ -22,7 +22,6 @@ write xslx files.
  - [ ] streaming mode
  - support some styling
     - [ ] alignment 
-    - [ ] cell background
     - [ ] cell border
     - see https://xlsxwriter.readthedocs.io/format.html
 

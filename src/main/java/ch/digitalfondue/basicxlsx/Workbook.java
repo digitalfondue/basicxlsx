@@ -93,16 +93,16 @@ public class Workbook {
     }
 
     private static Document buildStyles(List<Style> styles, Map<Style, Integer> styleToIdMapping) {
-        //FIXME implement
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
         Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
 
         Element fonts = getElement(doc, "fonts");
         Element cellXfs = getElement(doc, "cellXfs");
         Element numFmts = getElement(doc, "numFmts");
+        Element fills = getElement(doc, "fills");
 
         for (Style style : styles) {
-            int styleId = style.register(elementBuilder, fonts, cellXfs, numFmts);
+            int styleId = style.register(elementBuilder, fonts, cellXfs, numFmts, fills);
             styleToIdMapping.put(style, styleId);
         }
 
@@ -111,6 +111,7 @@ public class Workbook {
         adjustCount(fonts, "font");
         adjustCount(cellXfs, "xf");
         adjustCount(numFmts, "numFmt");
+        adjustCount(fills, "fill");
         //
         return doc;
     }

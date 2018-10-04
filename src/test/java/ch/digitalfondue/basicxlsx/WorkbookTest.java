@@ -20,6 +20,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,10 +43,10 @@ public class WorkbookTest {
         Workbook w = new Workbook();
 
         Style bold = w.defineStyle().font().color("#ffcc00").bold(true).build();
-        Style italic = w.defineStyle().font().color(Style.Color.GREEN).underline(Style.FontUnderlineStyle.DOUBLE_ACCOUNTING_UNDERLINE).italic(true).build();
+        Style italic = w.defineStyle().bgColor("#ffcc00").font().color(Style.Color.GREEN).underline(Style.FontUnderlineStyle.DOUBLE_ACCOUNTING_UNDERLINE).italic(true).build();
         Style timesNewRomanBoldAndItalic = w.defineStyle().font().name("Times New Roman").size(15).italic(true).bold(true).strikeOut(true).build();
 
-        Style twoDecimal = w.defineStyle().numericFormat("0.00").build();
+        Style twoDecimal = w.defineStyle().fgColor(Style.Color.RED).numericFormat("0.00").build();
         Style twoDecimalBuiltin = w.defineStyle().numericFormat(2).build();
 
         Sheet s = w.sheet("test");
@@ -101,6 +102,7 @@ public class WorkbookTest {
         org.apache.poi.ss.usermodel.Sheet sheet1 = workbook.getSheet("test");
         Assert.assertEquals("Hello éé èè Michał", sheet1.getRow(0).getCell(0).getStringCellValue());
         Assert.assertEquals(CellType.STRING, sheet1.getRow(0).getCell(0).getCellType());
+        Assert.assertEquals("FFFFCC00", ((XSSFColor) sheet1.getRow(0).getCell(0).getCellStyle().getFillBackgroundColorColor()).getARGBHex());
 
         //italic, size 10, Arial (size + name = default)
         XSSFFont italicFontPoi = (XSSFFont) workbook.getFontAt(sheet1.getRow(0).getCell(0).getCellStyle().getFontIndexAsInt());
@@ -128,6 +130,8 @@ public class WorkbookTest {
         //check data format
         Assert.assertEquals(165, sheet1.getRow(2).getCell(2).getCellStyle().getDataFormat());
         Assert.assertEquals("0.00", sheet1.getRow(2).getCell(2).getCellStyle().getDataFormatString());
+        Assert.assertEquals("FFFF0000", ((XSSFColor) (sheet1.getRow(2).getCell(2).getCellStyle().getFillForegroundColorColor())).getARGBHex());
+        //
         Assert.assertEquals(2, sheet1.getRow(4).getCell(2).getCellStyle().getDataFormat());
         Assert.assertEquals("0.00", sheet1.getRow(4).getCell(2).getCellStyle().getDataFormatString());
         //

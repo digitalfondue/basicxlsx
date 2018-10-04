@@ -28,10 +28,16 @@ public class Style {
     private final String numericFormat;
     private final Integer numericFormatIndex;
     private final FontDesc fontDesc;
+    private final String bgColor;
+    private final String fgColor;
+    private final Pattern pattern;
 
-    public Style(String numericFormat, Integer numericFormatIndex, FontDesc fontDesc) {
+    public Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, FontDesc fontDesc) {
         this.numericFormat = numericFormat;
         this.numericFormatIndex = numericFormatIndex;
+        this.bgColor = bgColor;
+        this.fgColor = fgColor;
+        this.pattern = pattern;
         this.fontDesc = fontDesc;
     }
 
@@ -46,10 +52,19 @@ public class Style {
         return elementWithAttr(elementBuilder, name, "val", value);
     }
 
-    int register(Function<String, Element> elementBuilder, Element fonts, Element cellXfs, Element numFmts) {
+    private static String formatColor(String color) {
+        if (color.startsWith("#")) {
+            color = color.substring(1);
+        }
+        return "FF" + color.toUpperCase(Locale.ENGLISH);
+    }
+
+    int register(Function<String, Element> elementBuilder, Element fonts, Element cellXfs, Element numFmts, Element fills) {
 
         int fontId = 0;
         int numFmtId = 164;//default value
+        int fillId = 0;
+
         if (numericFormatIndex != null) {
             numFmtId = numericFormatIndex; //builtin formatting
         } else if (numericFormat != null) {
@@ -58,6 +73,33 @@ public class Style {
             numFmtId = 164 + count; //custom formatting
             numFmt.setAttribute("numFmtId", Integer.toString(numFmtId));
             numFmts.appendChild(numFmt);
+        }
+
+        if (bgColor != null || fgColor != null || pattern != null) {
+
+            //<fill>
+            //  <patternFill patternType="solid">
+            //    <fgColor rgb="FFFFEB9C"/>
+            //    <bgColor rgb="FFFFEB9C"/>
+            //  </patternFill/>
+            //</fill>
+
+            Element fill = elementBuilder.apply("fill");
+            fillId = fills.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "fill").getLength();
+
+            Element patternFill = elementWithAttr(elementBuilder, "patternFill", "patternType", pattern == null ? "solid" : pattern.toXmlValue());
+            fill.appendChild(patternFill);
+
+            // if bgColor is defined but not fgColor, we must create fgColor too
+            if (fgColor != null || bgColor != null) {
+                patternFill.appendChild(elementWithAttr(elementBuilder, "fgColor", "rgb", formatColor(fgColor != null ? fgColor : bgColor)));
+                if (bgColor != null) {
+                    patternFill.appendChild(elementWithAttr(elementBuilder, "bgColor", "rgb", formatColor(bgColor)));
+                }
+
+            }
+
+            fills.appendChild(fill);
         }
 
         if (fontDesc != null) {
@@ -81,11 +123,7 @@ public class Style {
             }
 
             if (fontDesc.color != null) {
-                String color = fontDesc.color;
-                if (color.startsWith("#")) {
-                    color = color.substring(1);
-                }
-                font.appendChild(elementWithAttr(elementBuilder, "color", "rgb", "FF" + color.toUpperCase(Locale.ENGLISH)));
+                font.appendChild(elementWithAttr(elementBuilder, "color", "rgb", formatColor(fontDesc.color)));
             }
 
             if (fontDesc.strikeOut) {
@@ -119,7 +157,7 @@ public class Style {
         Element xf = elementBuilder.apply("xf");
         xf.setAttribute("numFmtId", Integer.toString(numFmtId));
         xf.setAttribute("fontId", Integer.toString(fontId));
-        xf.setAttribute("fillId", "0");
+        xf.setAttribute("fillId", Integer.toString(fillId));
         xf.setAttribute("borderId", "0");
         xf.setAttribute("xfId", "0");
         xf.setAttribute("applyFont", "true");
@@ -150,6 +188,10 @@ public class Style {
         private FontBuilder fontBuilder;
         private String numericFormat;
         private Integer numericFormatIndex;
+
+        private String bgColor;
+        private String fgColor;
+        private Pattern pattern;
 
         private StyleBuilder(Function<Style, Boolean> register) {
             this.register = register;
@@ -221,10 +263,35 @@ public class Style {
             return this;
         }
 
+        public StyleBuilder bgColor(String bgColor) {
+            this.bgColor = bgColor;
+            return this;
+        }
+
+        public StyleBuilder bgColor(Color bgColor) {
+            this.bgColor = bgColor.color;
+            return this;
+        }
+
+        public StyleBuilder fgColor(String fgColor) {
+            this.fgColor = fgColor;
+            return this;
+        }
+
+        public StyleBuilder fgColor(Color fgColor) {
+            this.fgColor = fgColor.color;
+            return this;
+        }
+
+        public StyleBuilder pattern(Pattern pattern) {
+            this.pattern = pattern;
+            return this;
+        }
+
         public Style build() {
             FontDesc fd = fontBuilder != null ? new FontDesc(fontBuilder.name, fontBuilder.size, fontBuilder.color, fontBuilder.bold,
                     fontBuilder.italic, fontBuilder.fontUnderlineStyle, fontBuilder.strikeOut) : null;
-            Style s = new Style(numericFormat, numericFormatIndex, fd);
+            Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, fd);
             register.apply(s);
             return s;
         }
@@ -373,6 +440,42 @@ public class Style {
 
         Color(String color) {
             this.color = color;
+        }
+    }
+
+
+    //Pattern https://docs.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.patternvalues?view=openxml-2.8.1
+    public enum Pattern {
+        DARK_DOWN,
+        DARK_GRAY,
+        DARK_GRID,
+        DARK_HORIZONTAL,
+        DARK_TRELLIS,
+        DARK_UP,
+        DARK_VERTICAL,
+        GRAY0625,
+        GRAY125,
+        LIGHT_DOWN,
+        LIGHT_GRAY,
+        LIGHT_GRID,
+        LIGHT_HORIZONTAL,
+        LIGHT_TRELLIS,
+        LIGHT_UP,
+        LIGHT_VERTICAL,
+        MEDIUM_GRAY,
+        NONE,
+        SOLID;
+
+        String toXmlValue() {
+            String s = name().toLowerCase(Locale.ROOT);
+            int idxSeparator = s.indexOf('_');
+            if (idxSeparator == -1) {
+                return s;
+            }
+            StringBuilder sb = new StringBuilder(s);
+            sb.replace(idxSeparator, idxSeparator + 2,
+                    String.valueOf(Character.toUpperCase(s.charAt(idxSeparator + 1))));
+            return sb.toString();
         }
     }
 
