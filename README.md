@@ -108,10 +108,11 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
  - add test (WIP)
  - [ ] streaming mode: user pass a Stream of row that contains Cell (with a style)
  - [ ] write javadoc
- - support some styling
+ - styling
     - [ ] alignment 
     - [ ] cell border
-    - see https://xlsxwriter.readthedocs.io/format.html
+    - [ ] rotation
+    - see for other missing https://xlsxwriter.readthedocs.io/format.html
 
 ## Resources/examples about xlsx
 

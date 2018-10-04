@@ -105,18 +105,18 @@ class Utils {
     private static final BigDecimal BAD_DATE = BigDecimal.valueOf(-1);   // used to specify that date is invalid
     private static final long DAY_MILLISECONDS = (24 * 60 * 60) * 1000L;
 
-    public static BigDecimal getExcelDate(Date date) {
+    static BigDecimal getExcelDate(Date date) {
         Calendar calStart = getLocaleCalendar();
         calStart.setTime(date);   // If date includes hours, minutes, and seconds, set them to 0
         return internalGetExcelDate(calStart);
     }
 
-    public static BigDecimal getExcelDate(LocalDateTime localDateTime) {
+    static BigDecimal getExcelDate(LocalDateTime localDateTime) {
         Date d = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
         return getExcelDate(d);
     }
 
-    public static BigDecimal getExcelDate(LocalDate localDate) {
+    static BigDecimal getExcelDate(LocalDate localDate) {
         Date d = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         return getExcelDate(d);
     }
