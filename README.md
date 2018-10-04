@@ -1,12 +1,51 @@
 # basicxlsx: when you only need to write simple xlsx
 
-[![Build Status](https://travis-ci.org/digitalfondue/basicxlsx.svg?branch=master)](https://travis-ci.org/digitalfondue/basicxlsx) [![Coverage Status](https://coveralls.io/repos/github/digitalfondue/basicxlsx/badge.svg?branch=master)](https://coveralls.io/github/digitalfondue/basicxlsx?branch=master)
+[![Maven Central](https://img.shields.io/maven-central/v/ch.digitalfondue.basicxlsx/basicxlsx.svg)](https://search.maven.org/search?q=g:ch.digitalfondue.basicxlsx)
+[![Build Status](https://travis-ci.org/digitalfondue/basicxlsx.svg?branch=master)](https://travis-ci.org/digitalfondue/basicxlsx) 
+[![Coverage Status](https://coveralls.io/repos/github/digitalfondue/basicxlsx/badge.svg?branch=master)](https://coveralls.io/github/digitalfondue/basicxlsx?branch=master)
 
 ## Why
 
 Apache POI, being a complete solution, is quite heavyweight.
 This library provide only the minimal amount of functionality to
 write xslx files.
+
+## License
+basicxlsx is licensed under the Apache License Version 2.0.
+
+## Download
+
+maven:
+
+```xml
+<dependency>
+    <groupId>ch.digitalfondue.basicxlsx</groupId>
+    <artifactId>basicxlsx</artifactId>
+    <version>0.1</version>
+</dependency>
+```
+
+gradle:
+
+```
+compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.1'
+```
+
+## Example
+
+```java
+Workbook w = new Workbook();
+Sheet s = w.sheet("test"); //create a new sheet named test
+s.setValueAt("Hello World", 0, 0); //put in "A1" the value "Hello World"
+
+try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
+    w.write(os);
+}
+```
+
+See https://github.com/digitalfondue/basicxlsx/blob/master/src/test/java/ch/digitalfondue/basicxlsx/WorkbookTest.java
+for a more complete example with style, formatting and other data types.
+
 
 ## TODO:
 
