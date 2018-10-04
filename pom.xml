@@ -11,7 +11,7 @@
 
     <groupId>ch.digitalfondue.basicxlsx</groupId>
     <artifactId>basicxlsx</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3-SNAPSHOT</version>
     <inceptionYear>2018</inceptionYear>
 
     <name>basicxslx</name>
