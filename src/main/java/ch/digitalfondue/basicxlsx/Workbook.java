@@ -26,6 +26,9 @@ import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * Represent a xlsx workbook. It's the main entry point for generating a xlsx file.
+ */
 public class Workbook {
 
     private final Map<String, Sheet> sheets = new HashMap<>();
@@ -34,6 +37,12 @@ public class Workbook {
     final Map<Cell, Style> styledCells = new IdentityHashMap<>();
     final Map<Style, Integer> styleToIdMapping = new IdentityHashMap();
 
+    /**
+     * Open or create a new sheet.
+     *
+     * @param name
+     * @return a sheet
+     */
     public Sheet sheet(String name) {
         return sheets.computeIfAbsent(name, sheetName -> {
             sheetNameOrder.add(sheetName);
@@ -51,10 +60,21 @@ public class Workbook {
     }
 
 
+    /**
+     * Define a new style.
+     *
+     * @return a style builder
+     */
     public Style.StyleBuilder defineStyle() {
         return Style.define(styles::add);
     }
 
+    /**
+     * Write the current worksheet to the output stream.
+     *
+     * @param os
+     * @throws IOException
+     */
     public void write(OutputStream os) throws IOException {
         try (ZipOutputStream zos = new ZipOutputStream(os, StandardCharsets.UTF_8)) {
 

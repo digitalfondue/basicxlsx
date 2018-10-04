@@ -23,6 +23,10 @@ import java.util.Objects;
 import java.util.function.Function;
 
 //based on https://xlsxwriter.readthedocs.io/format.html
+
+/**
+ * Represent a style that can be applied to cells.
+ */
 public class Style {
 
     private final String numericFormat;
@@ -32,7 +36,7 @@ public class Style {
     private final String fgColor;
     private final Pattern pattern;
 
-    public Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, FontDesc fontDesc) {
+    Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, FontDesc fontDesc) {
         this.numericFormat = numericFormat;
         this.numericFormatIndex = numericFormatIndex;
         this.bgColor = bgColor;
@@ -182,6 +186,9 @@ public class Style {
         return cellXfs.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "xf").getLength() - 1;
     }
 
+    /**
+     * Style builder. Use it to define a new Style.
+     */
     public static class StyleBuilder {
 
         private final Function<Style, Boolean> register;
@@ -197,6 +204,11 @@ public class Style {
             this.register = register;
         }
 
+        /**
+         * Font related options
+         *
+         * @return a FontBuilder
+         */
         public FontBuilder font() {
             if (fontBuilder == null) {
                 fontBuilder = new FontBuilder(this);
@@ -258,36 +270,77 @@ public class Style {
             return this;
         }
 
+        /**
+         * Set a numeric format.
+         *
+         * @param numericFormat
+         * @return
+         */
         public StyleBuilder numericFormat(String numericFormat) {
             this.numericFormat = numericFormat;
             return this;
         }
 
+        /**
+         * Set the background color.
+         *
+         * @param bgColor
+         * @return
+         */
         public StyleBuilder bgColor(String bgColor) {
             this.bgColor = bgColor;
             return this;
         }
 
+        /**
+         * Set the background color.
+         *
+         * @param bgColor
+         * @return
+         */
         public StyleBuilder bgColor(Color bgColor) {
             this.bgColor = bgColor.color;
             return this;
         }
 
+        /**
+         * Set the foreground color.
+         *
+         * @param fgColor
+         * @return
+         */
         public StyleBuilder fgColor(String fgColor) {
             this.fgColor = fgColor;
             return this;
         }
 
+        /**
+         * Set the foreground color.
+         *
+         * @param fgColor
+         * @return
+         */
         public StyleBuilder fgColor(Color fgColor) {
             this.fgColor = fgColor.color;
             return this;
         }
 
+        /**
+         * Define the Pattern of the cell.
+         *
+         * @param pattern
+         * @return
+         */
         public StyleBuilder pattern(Pattern pattern) {
             this.pattern = pattern;
             return this;
         }
 
+        /**
+         * Generate the style.
+         *
+         * @return
+         */
         public Style build() {
             FontDesc fd = fontBuilder != null ? new FontDesc(fontBuilder.name, fontBuilder.size, fontBuilder.color, fontBuilder.bold,
                     fontBuilder.italic, fontBuilder.fontUnderlineStyle, fontBuilder.strikeOut) : null;
@@ -306,7 +359,7 @@ public class Style {
         final FontUnderlineStyle fontUnderlineStyle;
         final boolean strikeOut;
 
-        public FontDesc(String name, BigDecimal size, String color, boolean bold, boolean italic, FontUnderlineStyle fontUnderlineStyle, boolean strikeOut) {
+        FontDesc(String name, BigDecimal size, String color, boolean bold, boolean italic, FontUnderlineStyle fontUnderlineStyle, boolean strikeOut) {
             this.name = name;
             this.size = size;
             this.color = color;
@@ -318,6 +371,9 @@ public class Style {
 
     }
 
+    /**
+     * Font specific options.
+     */
     public static class FontBuilder {
         String name = "Calibri";
         BigDecimal size = BigDecimal.valueOf(11);//default
@@ -400,7 +456,11 @@ public class Style {
     }
 
     public enum FontUnderlineStyle {
-        NONE(null, false, false), SINGLE(null, false, true), DOUBLE("double"), SINGLE_ACCOUNTING_UNDERLINE("singleAccounting"), DOUBLE_ACCOUNTING_UNDERLINE("doubleAccounting");
+        NONE(null, false, false),
+        SINGLE(null, false, true),
+        DOUBLE("double"),
+        SINGLE_ACCOUNTING_UNDERLINE("singleAccounting"),
+        DOUBLE_ACCOUNTING_UNDERLINE("doubleAccounting");
 
         final String val;
         final boolean hasValAttribute;

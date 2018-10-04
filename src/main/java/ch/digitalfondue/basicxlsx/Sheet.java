@@ -20,6 +20,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Represent an xlsx sheet.
+ */
 public class Sheet {
 
     final SortedMap<Integer, SortedMap<Integer, Cell>> cells = new TreeMap<>();
@@ -29,7 +32,7 @@ public class Sheet {
         this.styleRegistry = styleRegistry;
     }
 
-    public int getMaxCol() {
+    int getMaxCol() {
         int max = 0;
         for (SortedMap<Integer, Cell> e : cells.values()) {
             max = Math.max(max, e.lastKey());

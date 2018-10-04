@@ -24,6 +24,9 @@ import java.util.Date;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+/**
+ * Base class for the concrete implementations.
+ */
 public abstract class Cell {
 
     abstract Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId);
@@ -55,6 +58,9 @@ public abstract class Cell {
     }
 
     //inline string element
+    /**
+     * Cell that contains a string.
+     */
     public static class StringCell extends Cell {
 
         private final String value;
@@ -85,6 +91,10 @@ public abstract class Cell {
     }
 
     //number
+
+    /**
+     * Cell with a numeric value.
+     */
     public static class NumberCell extends Cell {
         private final BigDecimal number;
 
@@ -119,6 +129,10 @@ public abstract class Cell {
     }
 
     //boolean
+
+    /**
+     * Cell with a boolean value.
+     */
     public static class BooleanCell extends Cell {
         private final boolean value;
 
@@ -164,6 +178,10 @@ public abstract class Cell {
     }
 
     // date
+
+    /**
+     * Cell with a date. Please note that a formatting must be provided.
+     */
     public static class DateCell extends AbstractDateCell<Date> {
         public DateCell(Date value) {
             super(value, Utils::getExcelDate);
@@ -171,12 +189,18 @@ public abstract class Cell {
     }
 
     // date variant
+    /**
+     * Cell with a date. Please note that a formatting must be provided.
+     */
     public static class LocalDateTimeCell extends AbstractDateCell<LocalDateTime> {
         public LocalDateTimeCell(LocalDateTime value) {
             super(value, Utils::getExcelDate);
         }
     }
 
+    /**
+     * Cell with a date. Please note that a formatting must be provided.
+     */
     public static class LocalDateCell extends AbstractDateCell<LocalDate> {
         public LocalDateCell(LocalDate value) {
             super(value, Utils::getExcelDate);
