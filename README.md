@@ -19,7 +19,7 @@ write xslx files.
     - [ ] a specific subset of formula (sum, ?)
     - [ ] missing date type (Zoned* variant?)
  - add test (WIP)
- - [ ] streaming mode
+ - [ ] streaming mode: user pass a Stream of row that contains Cell (with a style)
  - support some styling
     - [ ] alignment 
     - [ ] cell border
