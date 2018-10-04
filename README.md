@@ -20,18 +20,11 @@ write xslx files.
     - [ ] date (wip, add LocalDate support, add Zoned* variant too?)
     - [ ] a specific subset of formula (sum, ?)
  - add test (WIP)
+ - [ ] streaming mode
  - support some styling
-    - [x] bold
-    - [x] italic
-    - [x] size
-    - [x] font name
-    - [x] font color (currently supporting RGB, but it seems that ARGB is possible)
-    - [x] font underline
-    - [x] font strikeout
     - [ ] alignment 
     - [ ] cell background
     - [ ] cell border
-    - [x] number and date formatting
     - see https://xlsxwriter.readthedocs.io/format.html
 
 ## Resources/examples about xlsx
