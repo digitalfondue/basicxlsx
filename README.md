@@ -33,18 +33,66 @@ compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.1'
 
 ## Example
 
-```java
-Workbook w = new Workbook();
-Sheet s = w.sheet("test"); //create a new sheet named test
-s.setValueAt("Hello World", 0, 0); //put in "A1" the value "Hello World"
+### Minimal example
 
-try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
-    w.write(os);
+```java
+import ch.digitalfondue.basicxlsx.*;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class Example {
+
+    public static void main(String args[]) throws IOException {
+        Workbook w = new Workbook();
+        Sheet s = w.sheet("test"); //create a new sheet named test
+        s.setValueAt("Hello World", 0, 0); //put in "A1" the value "Hello World"
+
+        //write the workbook to a file
+        try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
+            w.write(fos);
+        }
+    }
 }
+
+```
+
+### Style
+
+```java
+import ch.digitalfondue.basicxlsx.*;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class ExampleWithStyle {
+
+    public static void main(String args[]) throws IOException {
+        Workbook w = new Workbook();
+
+
+        // you must define the styles before using them
+        Style redBGBold = w.defineStyle().bgColor(Style.Color.RED).font().bold(true).build();
+        //
+
+        Sheet s = w.sheet("test"); //create a new sheet named test
+        s.setValueAt("Hello World", 0, 0).withStyle(redBGBold); //put in "A1" the value "Hello World", set the style to the cell
+
+        //write the workbook to a file
+        try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
+            w.write(fos);
+        }
+    }
+}
+
 ```
 
 See https://github.com/digitalfondue/basicxlsx/blob/master/src/test/java/ch/digitalfondue/basicxlsx/WorkbookTest.java
 for a more complete example with style, formatting and other data types.
+
+## Javadoc
+
+Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basicxlsx/)
 
 
 ## TODO:
@@ -59,6 +107,7 @@ for a more complete example with style, formatting and other data types.
     - [ ] missing date type (Zoned* variant?)
  - add test (WIP)
  - [ ] streaming mode: user pass a Stream of row that contains Cell (with a style)
+ - [ ] write javadoc
  - support some styling
     - [ ] alignment 
     - [ ] cell border
