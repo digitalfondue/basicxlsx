@@ -18,6 +18,7 @@ package ch.digitalfondue.basicxlsx;
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.function.BiFunction;
@@ -138,13 +139,15 @@ public abstract class Cell {
         }
     }
 
-    // date
-    public static class DateCell extends Cell {
 
-        public final Date value;
+    private static abstract class AbstractDateCell<T> extends Cell {
 
-        public DateCell(Date value) {
+        private final T value;
+        private final Function<T, BigDecimal> converter;
+
+        AbstractDateCell(T value, Function<T, BigDecimal> converter) {
             this.value = value;
+            this.converter = converter;
         }
 
         @Override
@@ -154,28 +157,30 @@ public abstract class Cell {
             // </c>
             Element cell = buildCell(elementBuilder, "n", row, column, styleId);
             Element v = elementBuilder.apply("v");
-            v.setTextContent(Utils.getExcelDate(value).toPlainString());
+            v.setTextContent(converter.apply(value).toPlainString());
             cell.appendChild(v);
             return cell;
+        }
+    }
+
+    // date
+    public static class DateCell extends AbstractDateCell<Date> {
+        public DateCell(Date value) {
+            super(value, Utils::getExcelDate);
         }
     }
 
     // date variant
-    public static class LocalDateTimeCell extends Cell {
-
-        public final LocalDateTime value;
-
+    public static class LocalDateTimeCell extends AbstractDateCell<LocalDateTime> {
         public LocalDateTimeCell(LocalDateTime value) {
-            this.value = value;
-        }
-
-        @Override
-        Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
-            Element cell = buildCell(elementBuilder, "n", row, column, styleId);
-            Element v = elementBuilder.apply("v");
-            v.setTextContent(Utils.getExcelDate(value).toPlainString());
-            cell.appendChild(v);
-            return cell;
+            super(value, Utils::getExcelDate);
         }
     }
+
+    public static class LocalDateCell extends AbstractDateCell<LocalDate> {
+        public LocalDateCell(LocalDate value) {
+            super(value, Utils::getExcelDate);
+        }
+    }
+    //
 }

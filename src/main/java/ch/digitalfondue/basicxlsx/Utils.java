@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
@@ -112,6 +113,11 @@ class Utils {
 
     public static BigDecimal getExcelDate(LocalDateTime localDateTime) {
         Date d = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        return getExcelDate(d);
+    }
+
+    public static BigDecimal getExcelDate(LocalDate localDate) {
+        Date d = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         return getExcelDate(d);
     }
 

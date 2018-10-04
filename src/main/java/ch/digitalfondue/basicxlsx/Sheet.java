@@ -16,6 +16,7 @@
 package ch.digitalfondue.basicxlsx;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -76,6 +77,10 @@ public class Sheet {
 
     public Cell setValueAt(LocalDateTime localDateTime, int row, int column) {
         return setCellAt(new Cell.LocalDateTimeCell(localDateTime), row, column);
+    }
+
+    public Cell setValueAt(LocalDate localDate, int row, int column) {
+        return setCellAt(new Cell.LocalDateCell(localDate), row, column);
     }
     //
 

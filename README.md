@@ -16,9 +16,8 @@ write xslx files.
     - https://github.com/dtjohnson/xlsx-populate/issues/26#issuecomment-288796920
     - https://metacpan.org/pod/Spreadsheet::WriteExcel::Examples#Example:-autofit.pl
  - support other column type
-    - [x] boolean
-    - [ ] date (wip, add LocalDate support, add Zoned* variant too?)
     - [ ] a specific subset of formula (sum, ?)
+    - [ ] missing date type (Zoned* variant?)
  - add test (WIP)
  - [ ] streaming mode
  - support some styling
