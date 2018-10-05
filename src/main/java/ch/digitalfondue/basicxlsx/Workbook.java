@@ -188,9 +188,11 @@ public class Workbook {
 
     private static Document buildSheet(Sheet sheet, Function<Cell, Integer> styleIdSupplier) {
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml");
-        Element cols = getElement(doc, "cols");
+
         Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
 
+        //TODO check this. It seems not mandatory, seems to be used for sizing the column?
+        Element cols = getElement(doc, "cols");
         final int colsCount = sheet.getMaxCol() + 1;
         for (int i = 0; i < colsCount; i++) {
             Element col = elementBuilder.apply("col");
@@ -198,6 +200,7 @@ public class Workbook {
             col.setAttribute("max", Integer.toString(i + 1));
             cols.appendChild(col);
         }
+        //
 
         Element sheetData = getElement(doc, "sheetData");
 
