@@ -53,11 +53,11 @@ public abstract class Cell {
     /**
      * Cell that contains a string.
      */
-    public static class StringCell extends Cell {
+    static class StringCell extends Cell {
 
         private final String value;
 
-        public StringCell(String value) {
+        StringCell(String value) {
             this.value = value;
         }
 
@@ -87,18 +87,18 @@ public abstract class Cell {
     /**
      * Cell with a numeric value.
      */
-    public static class NumberCell extends Cell {
+    static class NumberCell extends Cell {
         private final BigDecimal number;
 
-        public NumberCell(long number) {
+        NumberCell(long number) {
             this.number = BigDecimal.valueOf(number);
         }
 
-        public NumberCell(double number) {
+        NumberCell(double number) {
             this.number = BigDecimal.valueOf(number);
         }
 
-        public NumberCell(BigDecimal number) {
+        NumberCell(BigDecimal number) {
             this.number = number;
         }
 
@@ -125,10 +125,10 @@ public abstract class Cell {
     /**
      * Cell with a boolean value.
      */
-    public static class BooleanCell extends Cell {
+    static class BooleanCell extends Cell {
         private final boolean value;
 
-        public BooleanCell(boolean value) {
+        BooleanCell(boolean value) {
             this.value = value;
         }
 
@@ -174,8 +174,8 @@ public abstract class Cell {
     /**
      * Cell with a date. Please note that a formatting must be provided.
      */
-    public static class DateCell extends AbstractDateCell<Date> {
-        public DateCell(Date value) {
+    static class DateCell extends AbstractDateCell<Date> {
+        DateCell(Date value) {
             super(value, Utils::getExcelDate);
         }
     }
@@ -184,8 +184,8 @@ public abstract class Cell {
     /**
      * Cell with a date. Please note that a formatting must be provided.
      */
-    public static class LocalDateTimeCell extends AbstractDateCell<LocalDateTime> {
-        public LocalDateTimeCell(LocalDateTime value) {
+    static class LocalDateTimeCell extends AbstractDateCell<LocalDateTime> {
+        LocalDateTimeCell(LocalDateTime value) {
             super(value, Utils::getExcelDate);
         }
     }
@@ -193,8 +193,8 @@ public abstract class Cell {
     /**
      * Cell with a date. Please note that a formatting must be provided.
      */
-    public static class LocalDateCell extends AbstractDateCell<LocalDate> {
-        public LocalDateCell(LocalDate value) {
+    static class LocalDateCell extends AbstractDateCell<LocalDate> {
+        LocalDateCell(LocalDate value) {
             super(value, Utils::getExcelDate);
         }
     }

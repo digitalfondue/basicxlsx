@@ -40,7 +40,7 @@ public class Sheet {
         return max;
     }
 
-    public Cell setCellAt(Cell cell, int row, int column) {
+    private Cell setCellAt(Cell cell, int row, int column) {
         cells.computeIfAbsent(row, r -> new TreeMap<>()).put(column, cell);
         return cell;
     }
