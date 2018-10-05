@@ -15,5 +15,50 @@
  */
 package ch.digitalfondue.basicxlsx;
 
-public class StreamingWorkbook extends AbstractWorkbook {
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.stream.Stream;
+
+public class StreamingWorkbook extends AbstractWorkbook implements Closeable, AutoCloseable {
+
+    private final OutputStream os;
+    private boolean hasEnded;
+
+    public StreamingWorkbook(OutputStream os) {
+        this.os = os;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (!hasEnded) {
+            end();
+        }
+        os.close();
+    }
+
+    public void withSheet(String name, Stream<Cell[]> rows) {
+    }
+
+    public void end() {
+        //TODO: add here all the metadata files
+        if (hasEnded) {
+            throw new IllegalStateException("already ended");
+        } else {
+            hasEnded = true;
+        }
+    }
+
+
+/*
+    static void test() throws IOException {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             StreamingWorkbook workbook = new StreamingWorkbook(baos)) {
+
+            workbook.withSheet("test", Stream.empty());
+            workbook.withSheet("test2", Stream.empty());
+            workbook.end();//<- optional if close is called
+        }
+    }
+*/
 }
