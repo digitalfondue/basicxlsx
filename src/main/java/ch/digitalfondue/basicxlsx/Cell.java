@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -31,8 +30,7 @@ public abstract class Cell {
 
     abstract Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId);
 
-    BiFunction<Cell, Style, Style> styleRegistrator;
-    Function<Cell, Style> styleRegistry;
+    Style style;
 
     private static Element buildCell(Function<String, Element> elementBuilder, String type, int row, int column, int styleId) {
         Element cell = elementBuilder.apply("c");
@@ -43,18 +41,12 @@ public abstract class Cell {
     }
 
     public final Cell withStyle(Style style) {
-        if (styleRegistrator == null) {
-            throw new IllegalStateException("Cell cannot be styled if not registered in a sheet");
-        }
-        styleRegistrator.apply(this, style);
+        this.style = style;
         return this;
     }
 
     public final Style getStyle() {
-        if (styleRegistry == null) {
-            throw new IllegalStateException("Cell cannot be styled if not registered in a sheet");
-        }
-        return styleRegistry.apply(this);
+        return style;
     }
 
     //inline string element

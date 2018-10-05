@@ -34,7 +34,6 @@ public class Workbook {
     private final Map<String, Sheet> sheets = new HashMap<>();
     private final List<String> sheetNameOrder = new ArrayList<>();
     private final List<Style> styles = new ArrayList<>();
-    final Map<Cell, Style> styledCells = new IdentityHashMap<>();
     final Map<Style, Integer> styleToIdMapping = new IdentityHashMap();
 
     /**
@@ -46,13 +45,13 @@ public class Workbook {
     public Sheet sheet(String name) {
         return sheets.computeIfAbsent(name, sheetName -> {
             sheetNameOrder.add(sheetName);
-            return new Sheet(styledCells);
+            return new Sheet();
         });
     }
 
     private int styleIdSupplier(Cell cell) {
-        if (styledCells.containsKey(cell)) {
-            Integer r = styleToIdMapping.get(styledCells.get(cell));
+        if (cell.style != null) {
+            Integer r = styleToIdMapping.get(cell.style);
             return r != null ? r : 0;
         } else {
             return 0;//default id
