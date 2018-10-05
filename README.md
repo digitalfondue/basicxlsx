@@ -111,6 +111,7 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
  - [ ] write javadoc
  - [ ] merged cell
  - [ ] charts
+ - [ ] conditional formatting
  - [ ] ... ?
  - styling
     - [ ] alignment 
