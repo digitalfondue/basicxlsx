@@ -27,9 +27,7 @@ public class Sheet {
 
     final SortedMap<Integer, SortedMap<Integer, Cell>> cells = new TreeMap<>();
 
-
     Sheet() {
-
     }
 
     int getMaxCol() {

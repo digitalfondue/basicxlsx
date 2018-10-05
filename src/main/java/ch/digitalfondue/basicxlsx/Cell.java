@@ -24,7 +24,7 @@ import java.util.Date;
 import java.util.function.Function;
 
 /**
- * Base class for the concrete implementations.
+ * Represent a cell.
  */
 public abstract class Cell {
 
@@ -40,11 +40,22 @@ public abstract class Cell {
         return cell;
     }
 
+    /**
+     * Set the style to this cell. You can pass null to remove the style if necessary.
+     *
+     * @param style
+     * @return
+     */
     public final Cell withStyle(Style style) {
         this.style = style;
         return this;
     }
 
+    /**
+     * Get the style associated with the cell, may return null.
+     *
+     * @return
+     */
     public final Style getStyle() {
         return style;
     }

@@ -30,7 +30,7 @@ import java.util.zip.ZipOutputStream;
  */
 public class Workbook extends AbstractWorkbook {
 
-    private final Map<String, Sheet> sheets = new HashMap<>();
+    private final Map<String, Sheet> sheets = new LinkedHashMap<>();
 
     /**
      * Open or create a new sheet.
@@ -39,10 +39,7 @@ public class Workbook extends AbstractWorkbook {
      * @return a sheet
      */
     public Sheet sheet(String name) {
-        return sheets.computeIfAbsent(name, sheetName -> {
-            sheetNameOrder.add(sheetName);
-            return new Sheet();
-        });
+        return sheets.computeIfAbsent(name, sheetName -> new Sheet());
     }
 
     /**
@@ -53,6 +50,8 @@ public class Workbook extends AbstractWorkbook {
      */
     public void write(OutputStream os) throws IOException {
         try (ZipOutputStream zos = new ZipOutputStream(os, StandardCharsets.UTF_8)) {
+
+            List<String> sheetNameOrder = new ArrayList<>(sheets.keySet());
 
             writeMetadataDocuments(zos, sheetNameOrder, styles, styleToIdMapping);
 

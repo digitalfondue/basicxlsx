@@ -25,7 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 class AbstractWorkbook {
-    final List<String> sheetNameOrder = new ArrayList<>();
+
     final List<Style> styles = new ArrayList<>();
     final Map<Style, Integer> styleToIdMapping = new IdentityHashMap();
 
