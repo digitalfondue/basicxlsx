@@ -103,11 +103,15 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
     - https://github.com/dtjohnson/xlsx-populate/issues/26#issuecomment-288796920
     - https://metacpan.org/pod/Spreadsheet::WriteExcel::Examples#Example:-autofit.pl
  - support other column type
-    - [ ] a specific subset of formula (sum, ?)
+    - [ ] formula, note as described in https://xlsxwriter.readthedocs.io/working_with_formulas.html#formula-results ,
+          we can let excel recalculate all the formula result
     - [ ] missing date type (Zoned* variant?)
  - add test (WIP)
  - [ ] streaming mode: user pass a Stream of row that contains Cell (with a style)
  - [ ] write javadoc
+ - [ ] merged cell
+ - [ ] charts
+ - [ ] ... ?
  - styling
     - [ ] alignment 
     - [ ] cell border
