@@ -172,7 +172,6 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
           libreoffice will use it and ignore the recalculate parameter, need to test if leaving it blank work in excel&co?
     - [ ] missing date type (Zoned* variant?)
  - add test (WIP)
- - [x] streaming mode: user pass a Stream of row that contains Cell (with a style)
  - [ ] improve column sizing in streaming
  - [ ] write javadoc
  - [ ] merged cell
