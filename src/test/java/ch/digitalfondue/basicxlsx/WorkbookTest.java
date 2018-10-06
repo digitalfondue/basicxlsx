@@ -72,6 +72,12 @@ public class WorkbookTest {
         s2.setValueAt("Hello", 1, 0); //A2
         s2.setValueAt("World", 0, 1); //B1
 
+        s2.setValueAt("Sum", 0, 2); //C1
+        s2.setValueAt(1, 1, 2); //C2
+        s2.setValueAt(2, 2, 2); //C3
+        s2.setFormulaAt("SUM(C2:C3)", 3, 2);
+        s2.setFormulaAt("C2+C3+C4", 4, 2);
+
 
         Style dateFormat = w.defineStyle().numericFormat("dd-mm-yyyy HH:mm:ss").build();
 

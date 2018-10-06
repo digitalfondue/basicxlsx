@@ -104,7 +104,8 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
     - https://metacpan.org/pod/Spreadsheet::WriteExcel::Examples#Example:-autofit.pl
  - support other column type
     - [ ] formula, note as described in https://xlsxwriter.readthedocs.io/working_with_formulas.html#formula-results ,
-          we can let excel recalculate all the formula result
+          we can let excel recalculate all the formula result: WIP, if we write "0" as a placeholder value, 
+          libreoffice will use it and ignore the recalculate parameter, need to test if leaving it blank work in excel&co?
     - [ ] missing date type (Zoned* variant?)
  - add test (WIP)
  - [ ] streaming mode: user pass a Stream of row that contains Cell (with a style)

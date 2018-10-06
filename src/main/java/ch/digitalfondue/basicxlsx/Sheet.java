@@ -68,6 +68,16 @@ public class Sheet {
     }
     //
 
+    //formula
+    public Cell setFormulaAt(String formula, int row, int column) {
+        return setCellAt(new Cell.FormulaCell(formula), row, column);
+    }
+
+    public Cell setFormulaAt(String formula, String result, int row, int column) {
+        return setCellAt(new Cell.FormulaCell(formula, result), row, column);
+    }
+    //
+
 
     //date
     public Cell setValueAt(Date date, int row, int column) {

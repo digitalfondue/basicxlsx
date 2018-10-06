@@ -131,6 +131,41 @@ public abstract class Cell {
         }
     }
 
+    // formula
+    static class FormulaCell extends Cell {
+        private final String formula;
+        private final String result;
+
+        FormulaCell(String formula, String result) {
+            this.formula = formula;
+            this.result = result;
+        }
+
+        FormulaCell(String formula) {
+            this.formula = formula;
+            this.result = null;
+        }
+
+        @Override
+        Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId) {
+            //<c r="B9" t="str">
+            //<f>SUM(B2:B8)</f>
+            //<v>2105</v>
+            //</c>
+            Element cell = buildCell(elementBuilder, "n", row, column, styleId);
+            Element f = elementBuilder.apply("f");
+            f.setTextContent(this.formula);
+            cell.appendChild(f);
+
+            if (result != null) {
+                Element v = elementBuilder.apply("v");
+                v.setTextContent(result);
+                cell.appendChild(v);
+            }
+            return cell;
+        }
+    }
+
     //boolean
 
     /**
