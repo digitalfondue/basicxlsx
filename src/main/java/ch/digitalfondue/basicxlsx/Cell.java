@@ -77,11 +77,11 @@ public abstract class Cell {
     }
 
     public static Cell cell(long value) {
-        return new NumberCell(value);
+        return new NumberCell(BigDecimal.valueOf(value));
     }
 
     public static Cell cell(double value) {
-        return new NumberCell(value);
+        return new NumberCell(BigDecimal.valueOf(value));
     }
 
     public static Cell cell(BigDecimal value) {
@@ -105,7 +105,7 @@ public abstract class Cell {
     }
 
     public static Cell formula(String formula) {
-        return new FormulaCell(formula);
+        return new FormulaCell(formula, null);
     }
 
     public static Cell formula(String formula, String value) {
@@ -154,14 +154,6 @@ public abstract class Cell {
     private static class NumberCell extends Cell {
         private final BigDecimal number;
 
-        private NumberCell(long number) {
-            this.number = BigDecimal.valueOf(number);
-        }
-
-        private NumberCell(double number) {
-            this.number = BigDecimal.valueOf(number);
-        }
-
         private NumberCell(BigDecimal number) {
             this.number = number;
         }
@@ -192,11 +184,6 @@ public abstract class Cell {
         private FormulaCell(String formula, String result) {
             this.formula = formula;
             this.result = result;
-        }
-
-        private FormulaCell(String formula) {
-            this.formula = formula;
-            this.result = null;
         }
 
         @Override
