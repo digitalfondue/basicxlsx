@@ -22,9 +22,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
@@ -66,10 +64,23 @@ class Utils {
     static void outputDocument(Document doc, OutputStream os) {
         try {
             DOMSource domSource = new DOMSource(doc);
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            Transformer transformer = getTransformer(false);
             StreamResult sr = new StreamResult(new OutputStreamWriter(os, StandardCharsets.UTF_8));
             transformer.transform(domSource, sr);
         } catch (TransformerException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    static Transformer getTransformer(boolean omitXmlPrologue) {
+        try {
+
+            Transformer tf = TransformerFactory.newInstance().newTransformer();
+            if(omitXmlPrologue) {
+                tf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            }
+            return  tf;
+        } catch (TransformerConfigurationException e) {
             throw new IllegalStateException(e);
         }
     }

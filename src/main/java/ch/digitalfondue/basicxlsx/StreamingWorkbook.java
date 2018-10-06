@@ -15,13 +15,22 @@
  */
 package ch.digitalfondue.basicxlsx;
 
+import org.w3c.dom.Element;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -30,17 +39,23 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
 
     private final ZipOutputStream zos;
     private boolean hasEnded;
+    private boolean hasRegisteredStyles;
     private List<String> sheets = new ArrayList<>();
 
     private static final byte[] SHEET_START = ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n" +
-            "<cols></cols><sheetData>").getBytes(StandardCharsets.UTF_8);
+            "<cols><col max=\"1\" min=\"1\"/></cols><sheetData>").getBytes(StandardCharsets.UTF_8);
 
     private static final byte[] SHEET_END = "</sheetData></worksheet>".getBytes(StandardCharsets.UTF_8);
+
+    private static final byte[] ROW_START_1 = "<row r=\"".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] ROW_START_2 = "\">".getBytes(StandardCharsets.UTF_8);
     private static final byte[] ROW_END = "</row>".getBytes(StandardCharsets.UTF_8);
+    private final Function<String, Element> elementBuilder;
 
     public StreamingWorkbook(OutputStream os) {
         this.zos = new ZipOutputStream(os, StandardCharsets.UTF_8);
+        this.elementBuilder = Utils.toElementBuilder(Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml"));
     }
 
     @Override
@@ -51,59 +66,78 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         zos.close();
     }
 
+    @Override
+    public Style.StyleBuilder defineStyle() {
+        if (hasRegisteredStyles) {
+            throw new IllegalStateException("Cannot register new styles after writing a sheet");
+        }
+        return super.defineStyle();
+    }
+
     public void withSheet(String name, Stream<Cell[]> rows) throws IOException {
+        if (hasEnded) {
+            throw new IllegalStateException("Already ended");
+        }
+
+        if (!hasRegisteredStyles) {
+            commitAndWriteStyleMetadata(zos, styles, styleToIdMapping);
+            hasRegisteredStyles = true;
+        }
+
         sheets.add(name);
 
         zos.putNextEntry(new ZipEntry("xl/worksheets/sheet" + (sheets.size()) + ".xml"));
         zos.write(SHEET_START);
         AtomicInteger rowCounter = new AtomicInteger(0);
+
+        Transformer transformer = Utils.getTransformer(true);
+        StreamResult sr = new StreamResult(new OutputStreamWriter(zos, StandardCharsets.UTF_8));
+        Consumer<DOMSource> consumer = domSource -> {
+            try {
+                transformer.transform(domSource, sr);
+            } catch (TransformerException e) {
+                throw new IllegalStateException(e);
+            }
+        };
+
         rows.forEachOrdered(row -> {
-            processRow(rowCounter.get(), row);
+            processRow(rowCounter.get(), row, consumer);
             rowCounter.incrementAndGet(); //ugly, but it works
         });
         zos.write(SHEET_END);
         zos.closeEntry();
     }
 
-    private void processRow(int rowIdx, Cell[] row) {
+    private void processRow(int rowIdx, Cell[] row, Consumer<DOMSource> consumer) {
         try {
-            //zos.write("<row r="1">"); FIXME implement
-
             if (row != null) {
+                //"<row r="1">"
+                zos.write(ROW_START_1);
+                zos.write(Integer.toString(rowIdx + 1).getBytes(StandardCharsets.UTF_8));
+                zos.write(ROW_START_2);
+                //
                 for (int i = 0; i < row.length; i++) {
                     Cell cell = row[i];
                     if (cell != null) {
                         int styleId = styleIdSupplier(cell);
-                        //cell.toElement() FIXME implement
+                        Element e = cell.toElement(elementBuilder, rowIdx, i, styleId);
+                        //TODO: find a way to remove the xmlns attached to the cell...
+                        consumer.accept(new DOMSource(e));
                     }
                 }
+                zos.write(ROW_END);
             }
-            zos.write(ROW_END);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
 
     public void end() throws IOException {
-        //TODO: add here all the metadata files
         if (hasEnded) {
             throw new IllegalStateException("already ended");
         } else {
             hasEnded = true;
-            writeMetadataDocuments(zos, sheets, styles, styleToIdMapping);
+            writeMetadataDocuments(zos, sheets);
         }
     }
-
-
-/*
-    static void test() throws IOException {
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             StreamingWorkbook workbook = new StreamingWorkbook(baos)) {
-
-            workbook.withSheet("test", Stream.empty());
-            workbook.withSheet("test2", Stream.empty());
-            workbook.end();//<- optional if close is called
-        }
-    }
-*/
 }

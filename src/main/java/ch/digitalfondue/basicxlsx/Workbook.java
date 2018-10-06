@@ -53,7 +53,8 @@ public class Workbook extends AbstractWorkbook {
 
             List<String> sheetNameOrder = new ArrayList<>(sheets.keySet());
 
-            writeMetadataDocuments(zos, sheetNameOrder, styles, styleToIdMapping);
+            writeMetadataDocuments(zos, sheetNameOrder);
+            commitAndWriteStyleMetadata(zos, styles, styleToIdMapping);
 
             for (int i = 0; i < sheets.size(); i++) {
                 addFileWithDocument(zos, "xl/worksheets/sheet" + (i + 1) + ".xml", buildSheet(sheets.get(sheetNameOrder.get(i)), this::styleIdSupplier));

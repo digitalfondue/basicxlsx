@@ -68,14 +68,34 @@ class AbstractWorkbook {
         element.setAttribute("count", Integer.toString(element.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, childName).getLength()));
     }
 
+    protected void commitAndWriteStyleMetadata(ZipOutputStream zos, List<Style> styles, Map<Style, Integer> styleToIdMapping) throws IOException {
+        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
+        Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
+
+        Element fonts = getElement(doc, "fonts");
+        Element cellXfs = getElement(doc, "cellXfs");
+        Element numFmts = getElement(doc, "numFmts");
+        Element fills = getElement(doc, "fills");
+
+        for (Style style : styles) {
+            int styleId = style.register(elementBuilder, fonts, cellXfs, numFmts, fills);
+            styleToIdMapping.put(style, styleId);
+        }
+        //
+        adjustCount(fonts, "font");
+        adjustCount(cellXfs, "xf");
+        adjustCount(numFmts, "numFmt");
+        adjustCount(fills, "fill");
+
+        addFileWithDocument(zos, "xl/styles.xml", doc);
+    }
+
     static void writeMetadataDocuments(ZipOutputStream zos,
-                                       List<String> sheetNameOrder,
-                                       List<Style> styles, Map<Style, Integer> styleToIdMapping) throws IOException {
+                                       List<String> sheetNameOrder) throws IOException {
         int sheetCount = sheetNameOrder.size();
         addFileWithDocument(zos, "[Content_Types].xml", buildContentTypes(sheetCount));
         addFileWithDocument(zos, "_rels/.rels", buildRels());
         addFileWithDocument(zos, "xl/workbook.xml", buildWorkbook(sheetCount, sheetNameOrder));
-        addFileWithDocument(zos, "xl/styles.xml", buildStyles(styles, styleToIdMapping));
         addFileWithDocument(zos, "xl/_rels/workbook.xml.rels", buildWorkbookRels(sheetCount));
     }
 
@@ -109,28 +129,6 @@ class AbstractWorkbook {
             sheet.setAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", "rId" + (i + 2)); //rdId1 it's the style.xml file
             root.appendChild(sheet);
         }
-        return doc;
-    }
-
-    private static Document buildStyles(List<Style> styles, Map<Style, Integer> styleToIdMapping) {
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
-        Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
-
-        Element fonts = getElement(doc, "fonts");
-        Element cellXfs = getElement(doc, "cellXfs");
-        Element numFmts = getElement(doc, "numFmts");
-        Element fills = getElement(doc, "fills");
-
-        for (Style style : styles) {
-            int styleId = style.register(elementBuilder, fonts, cellXfs, numFmts, fills);
-            styleToIdMapping.put(style, styleId);
-        }
-        //
-        adjustCount(fonts, "font");
-        adjustCount(cellXfs, "xf");
-        adjustCount(numFmts, "numFmt");
-        adjustCount(fills, "fill");
-        //
         return doc;
     }
 
