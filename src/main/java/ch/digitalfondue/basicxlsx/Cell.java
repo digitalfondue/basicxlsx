@@ -32,7 +32,17 @@ public abstract class Cell {
 
     Style style;
 
-    private static Element buildCell(Function<String, Element> elementBuilder, String type, int row, int column, int styleId) {
+    /**
+     * Build a cell for xml serialization purpose.
+     *
+     * @param elementBuilder
+     * @param type
+     * @param row
+     * @param column
+     * @param styleId
+     * @return
+     */
+    public static Element buildCell(Function<String, Element> elementBuilder, String type, int row, int column, int styleId) {
         Element cell = elementBuilder.apply("c");
         cell.setAttribute("r", Utils.fromRowColumnToExcelCoordinates(row, column));
         cell.setAttribute("t", type);
@@ -60,15 +70,58 @@ public abstract class Cell {
         return style;
     }
 
+
+    //
+    public static Cell cell(String value) {
+        return new StringCell(value);
+    }
+
+    public static Cell cell(long value) {
+        return new NumberCell(value);
+    }
+
+    public static Cell cell(double value) {
+        return new NumberCell(value);
+    }
+
+    public static Cell cell(BigDecimal value) {
+        return new NumberCell(value);
+    }
+
+    public static Cell cell(boolean value) {
+        return new BooleanCell(value);
+    }
+
+    public static Cell cell(Date value) {
+        return new DateCell(Utils.getExcelDate(value));
+    }
+
+    public static Cell cell(LocalDateTime value) {
+        return new DateCell(Utils.getExcelDate(value));
+    }
+
+    public static Cell cell(LocalDate value) {
+        return new DateCell(Utils.getExcelDate(value));
+    }
+
+    public static Cell formula(String formula) {
+        return new FormulaCell(formula);
+    }
+
+    public static Cell formula(String formula, String value) {
+        return new FormulaCell(formula, value);
+    }
+    //
+
     //inline string element
     /**
      * Cell that contains a string.
      */
-    static class StringCell extends Cell {
+    private static class StringCell extends Cell {
 
         private final String value;
 
-        StringCell(String value) {
+        private StringCell(String value) {
             this.value = value;
         }
 
@@ -98,18 +151,18 @@ public abstract class Cell {
     /**
      * Cell with a numeric value.
      */
-    static class NumberCell extends Cell {
+    private static class NumberCell extends Cell {
         private final BigDecimal number;
 
-        NumberCell(long number) {
+        private NumberCell(long number) {
             this.number = BigDecimal.valueOf(number);
         }
 
-        NumberCell(double number) {
+        private NumberCell(double number) {
             this.number = BigDecimal.valueOf(number);
         }
 
-        NumberCell(BigDecimal number) {
+        private NumberCell(BigDecimal number) {
             this.number = number;
         }
 
@@ -132,16 +185,16 @@ public abstract class Cell {
     }
 
     // formula
-    static class FormulaCell extends Cell {
+    private static class FormulaCell extends Cell {
         private final String formula;
         private final String result;
 
-        FormulaCell(String formula, String result) {
+        private FormulaCell(String formula, String result) {
             this.formula = formula;
             this.result = result;
         }
 
-        FormulaCell(String formula) {
+        private FormulaCell(String formula) {
             this.formula = formula;
             this.result = null;
         }
@@ -171,10 +224,10 @@ public abstract class Cell {
     /**
      * Cell with a boolean value.
      */
-    static class BooleanCell extends Cell {
+    private static class BooleanCell extends Cell {
         private final boolean value;
 
-        BooleanCell(boolean value) {
+        private BooleanCell(boolean value) {
             this.value = value;
         }
 
@@ -192,14 +245,12 @@ public abstract class Cell {
     }
 
 
-    private static abstract class AbstractDateCell<T> extends Cell {
+    private static class DateCell extends Cell {
 
-        private final T value;
-        private final Function<T, BigDecimal> converter;
+        private final BigDecimal value;
 
-        AbstractDateCell(T value, Function<T, BigDecimal> converter) {
+        DateCell(BigDecimal value) {
             this.value = value;
-            this.converter = converter;
         }
 
         @Override
@@ -209,40 +260,9 @@ public abstract class Cell {
             // </c>
             Element cell = buildCell(elementBuilder, "n", row, column, styleId);
             Element v = elementBuilder.apply("v");
-            v.setTextContent(converter.apply(value).toPlainString());
+            v.setTextContent(value.toPlainString());
             cell.appendChild(v);
             return cell;
         }
     }
-
-    // date
-
-    /**
-     * Cell with a date. Please note that a formatting must be provided.
-     */
-    static class DateCell extends AbstractDateCell<Date> {
-        DateCell(Date value) {
-            super(value, Utils::getExcelDate);
-        }
-    }
-
-    // date variant
-    /**
-     * Cell with a date. Please note that a formatting must be provided.
-     */
-    static class LocalDateTimeCell extends AbstractDateCell<LocalDateTime> {
-        LocalDateTimeCell(LocalDateTime value) {
-            super(value, Utils::getExcelDate);
-        }
-    }
-
-    /**
-     * Cell with a date. Please note that a formatting must be provided.
-     */
-    static class LocalDateCell extends AbstractDateCell<LocalDate> {
-        LocalDateCell(LocalDate value) {
-            super(value, Utils::getExcelDate);
-        }
-    }
-    //
 }

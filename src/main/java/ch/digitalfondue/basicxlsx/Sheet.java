@@ -45,51 +45,51 @@ public class Sheet {
 
     //set string
     public Cell setValueAt(String value, int row, int column) {
-        return setCellAt(new Cell.StringCell(value), row, column);
+        return setCellAt(Cell.cell(value), row, column);
     }
 
     //numbers
     public Cell setValueAt(long value, int row, int column) {
-        return setCellAt(new Cell.NumberCell(value), row, column);
+        return setCellAt(Cell.cell(value), row, column);
     }
 
     public Cell setValueAt(double value, int row, int column) {
-        return setCellAt(new Cell.NumberCell(value), row, column);
+        return setCellAt(Cell.cell(value), row, column);
     }
 
     public Cell setValueAt(BigDecimal value, int row, int column) {
-        return setCellAt(new Cell.NumberCell(value), row, column);
+        return setCellAt(Cell.cell(value), row, column);
     }
     //
 
     //boolean
     public Cell setValueAt(boolean value, int row, int column) {
-        return setCellAt(new Cell.BooleanCell(value), row, column);
+        return setCellAt(Cell.cell(value), row, column);
     }
     //
 
     //formula
     public Cell setFormulaAt(String formula, int row, int column) {
-        return setCellAt(new Cell.FormulaCell(formula), row, column);
+        return setCellAt(Cell.formula(formula), row, column);
     }
 
     public Cell setFormulaAt(String formula, String result, int row, int column) {
-        return setCellAt(new Cell.FormulaCell(formula, result), row, column);
+        return setCellAt(Cell.formula(formula, result), row, column);
     }
     //
 
 
     //date
     public Cell setValueAt(Date date, int row, int column) {
-        return setCellAt(new Cell.DateCell(date), row, column);
+        return setCellAt(Cell.cell(date), row, column);
     }
 
     public Cell setValueAt(LocalDateTime localDateTime, int row, int column) {
-        return setCellAt(new Cell.LocalDateTimeCell(localDateTime), row, column);
+        return setCellAt(Cell.cell(localDateTime), row, column);
     }
 
     public Cell setValueAt(LocalDate localDate, int row, int column) {
-        return setCellAt(new Cell.LocalDateCell(localDate), row, column);
+        return setCellAt(Cell.cell(localDate), row, column);
     }
     //
 
