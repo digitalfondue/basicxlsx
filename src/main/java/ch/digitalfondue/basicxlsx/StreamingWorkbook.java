@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class StreamingWorkbook extends AbstractWorkbook implements Closeable, AutoCloseable {
@@ -29,6 +30,12 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
     private final ZipOutputStream zos;
     private boolean hasEnded;
     private List<String> sheets = new ArrayList<>();
+
+    private static final byte[] SHEET_START = ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
+            "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n" +
+            "<cols></cols><sheetData>").getBytes(StandardCharsets.UTF_8);
+
+    private static final byte[] SHEET_END = "</sheetData></worksheet>".getBytes(StandardCharsets.UTF_8);
 
     public StreamingWorkbook(OutputStream os) {
         this.zos = new ZipOutputStream(os, StandardCharsets.UTF_8);
@@ -42,8 +49,18 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         zos.close();
     }
 
-    public void withSheet(String name, Stream<Cell[]> rows) {
+    public void withSheet(String name, Stream<Cell[]> rows) throws IOException {
         sheets.add(name);
+
+        zos.putNextEntry(new ZipEntry("xl/worksheets/sheet" + (sheets.size()) + ".xml"));
+        zos.write(SHEET_START);
+        rows.forEachOrdered(this::processRow);
+        zos.write(SHEET_END);
+        zos.closeEntry();
+    }
+
+    private void processRow(Cell[] row) {
+
     }
 
     public void end() throws IOException {
