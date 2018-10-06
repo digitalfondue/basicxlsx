@@ -21,14 +21,14 @@ maven:
 <dependency>
     <groupId>ch.digitalfondue.basicxlsx</groupId>
     <artifactId>basicxlsx</artifactId>
-    <version>0.1.2</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
 gradle:
 
 ```
-compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.1.2'
+compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.2.0'
 ```
 
 ## Example
@@ -89,6 +89,70 @@ public class ExampleWithStyle {
 
 See https://github.com/digitalfondue/basicxlsx/blob/master/src/test/java/ch/digitalfondue/basicxlsx/WorkbookTest.java
 for a more complete example with style, formatting and other data types.
+
+### Minimal streaming example
+
+```java
+import ch.digitalfondue.basicxlsx.Cell;
+import ch.digitalfondue.basicxlsx.StreamingWorkbook;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.stream.Stream;
+
+public class ExampleStreaming {
+
+    public static void main(String args[]) throws IOException {
+
+        try (FileOutputStream fos = new FileOutputStream("test.xlsx");
+             StreamingWorkbook w = new StreamingWorkbook(fos)) { //<- create a StreamingWorkbook: it require the outputstream
+
+
+            Cell[] row1 = new Cell[] {Cell.cell("Hello World")};
+            Stream<Cell[]> rows = Stream.<Cell[]>of(row1);
+
+            w.withSheet("test", rows); //write a new sheet named "test" with the stream of rows
+        }
+    }
+}
+```
+
+
+### Streaming example with style
+
+```java
+import ch.digitalfondue.basicxlsx.Cell;
+import ch.digitalfondue.basicxlsx.StreamingWorkbook;
+import ch.digitalfondue.basicxlsx.Style;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.stream.Stream;
+
+public class ExampleStreamingWithStyle {
+
+    public static void main(String args[]) throws IOException {
+
+        try (FileOutputStream fos = new FileOutputStream("test.xlsx");
+             StreamingWorkbook w = new StreamingWorkbook(fos)) { //<- create a StreamingWorkbook: it require the outputstream
+
+            // you must define the styles before
+            Style redBGBold = w.defineStyle().bgColor(Style.Color.RED).font().bold(true).build();
+            //
+
+            Cell[] row1 = new Cell[] {Cell.cell("Hello World").withStyle(redBGBold)};
+            Stream<Cell[]> rows = Stream.<Cell[]>of(row1);
+
+
+            w.withSheet("test", rows); //write a new sheet named "test" with the stream of rows
+        }
+    }
+}
+```
+
+See https://github.com/digitalfondue/basicxlsx/blob/master/src/test/java/ch/digitalfondue/basicxlsx/StreamingWorkbootTest.java
+for a more complete example with style, formatting and other data types.
+
 
 ## Javadoc
 
