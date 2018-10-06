@@ -18,15 +18,20 @@ package ch.digitalfondue.basicxlsx;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
+import java.util.zip.ZipOutputStream;
 
 public class StreamingWorkbook extends AbstractWorkbook implements Closeable, AutoCloseable {
 
-    private final OutputStream os;
+    private final ZipOutputStream zos;
     private boolean hasEnded;
+    private List<String> sheets = new ArrayList<>();
 
     public StreamingWorkbook(OutputStream os) {
-        this.os = os;
+        this.zos = new ZipOutputStream(os, StandardCharsets.UTF_8);
     }
 
     @Override
@@ -34,18 +39,20 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         if (!hasEnded) {
             end();
         }
-        os.close();
+        zos.close();
     }
 
     public void withSheet(String name, Stream<Cell[]> rows) {
+        sheets.add(name);
     }
 
-    public void end() {
+    public void end() throws IOException {
         //TODO: add here all the metadata files
         if (hasEnded) {
             throw new IllegalStateException("already ended");
         } else {
             hasEnded = true;
+            writeMetadataDocuments(zos, sheets, styles, styleToIdMapping);
         }
     }
 
