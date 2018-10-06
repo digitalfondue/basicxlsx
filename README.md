@@ -150,7 +150,7 @@ public class ExampleStreamingWithStyle {
 }
 ```
 
-See https://github.com/digitalfondue/basicxlsx/blob/master/src/test/java/ch/digitalfondue/basicxlsx/StreamingWorkbootTest.java
+See https://github.com/digitalfondue/basicxlsx/blob/master/src/test/java/ch/digitalfondue/basicxlsx/StreamingWorkbookTest.java
 for a more complete example with style, formatting and other data types.
 
 

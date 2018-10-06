@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 import static ch.digitalfondue.basicxlsx.Cell.cell;
 import static ch.digitalfondue.basicxlsx.Cell.formula;
 
-public class StreamingWorkbootTest {
+public class StreamingWorkbookTest {
     private static boolean OUTPUT_FILE = false;
 
     @Test
