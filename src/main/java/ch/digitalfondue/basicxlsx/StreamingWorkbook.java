@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -36,6 +37,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
             "<cols></cols><sheetData>").getBytes(StandardCharsets.UTF_8);
 
     private static final byte[] SHEET_END = "</sheetData></worksheet>".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] ROW_END = "</row>".getBytes(StandardCharsets.UTF_8);
 
     public StreamingWorkbook(OutputStream os) {
         this.zos = new ZipOutputStream(os, StandardCharsets.UTF_8);
@@ -54,13 +56,32 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
 
         zos.putNextEntry(new ZipEntry("xl/worksheets/sheet" + (sheets.size()) + ".xml"));
         zos.write(SHEET_START);
-        rows.forEachOrdered(this::processRow);
+        AtomicInteger rowCounter = new AtomicInteger(0);
+        rows.forEachOrdered(row -> {
+            processRow(rowCounter.get(), row);
+            rowCounter.incrementAndGet(); //ugly, but it works
+        });
         zos.write(SHEET_END);
         zos.closeEntry();
     }
 
-    private void processRow(Cell[] row) {
+    private void processRow(int rowIdx, Cell[] row) {
+        try {
+            //zos.write("<row r="1">"); FIXME implement
 
+            if (row != null) {
+                for (int i = 0; i < row.length; i++) {
+                    Cell cell = row[i];
+                    if (cell != null) {
+                        int styleId = styleIdSupplier(cell);
+                        //cell.toElement() FIXME implement
+                    }
+                }
+            }
+            zos.write(ROW_END);
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public void end() throws IOException {
