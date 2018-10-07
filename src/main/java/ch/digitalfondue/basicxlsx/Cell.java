@@ -42,7 +42,7 @@ public abstract class Cell {
      * @param styleId
      * @return
      */
-    public static Element buildCell(Function<String, Element> elementBuilder, String type, int row, int column, int styleId) {
+    static Element buildCell(Function<String, Element> elementBuilder, String type, int row, int column, int styleId) {
         Element cell = elementBuilder.apply("c");
         cell.setAttribute("r", Utils.fromRowColumnToExcelCoordinates(row, column));
         cell.setAttribute("t", type);

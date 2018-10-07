@@ -478,6 +478,10 @@ public class Style {
     }
 
     //color list imported from https://github.com/jmcnamara/XlsxWriter/blob/master/xlsxwriter/format.py#L959
+
+    /**
+     * Some predefined colors
+     */
     public enum Color {
         BLACK("#000000"),
         BLUE("#0000FF"),

@@ -68,7 +68,7 @@ class AbstractWorkbook {
         element.setAttribute("count", Integer.toString(element.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, childName).getLength()));
     }
 
-    protected void commitAndWriteStyleMetadata(ZipOutputStream zos, List<Style> styles, Map<Style, Integer> styleToIdMapping) throws IOException {
+    void commitAndWriteStyleMetadata(ZipOutputStream zos, List<Style> styles, Map<Style, Integer> styleToIdMapping) throws IOException {
         Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
         Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
 

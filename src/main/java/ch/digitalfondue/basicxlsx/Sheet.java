@@ -93,13 +93,15 @@ public class Sheet {
     }
     //
 
-    public void removeCellAt(int row, int column) {
+    public Optional<Cell> removeCellAt(int row, int column) {
+        Cell cell = null;
         if (cells.containsKey(row)) {
-            Cell cell = cells.get(row).remove(column);
+            cell = cells.get(row).remove(column);
             if (cell != null) {
                 cell.style = null;
             }
         }
+        return Optional.ofNullable(cell);
     }
 
     public Optional<Cell> getCellAt(int row, int column) {
