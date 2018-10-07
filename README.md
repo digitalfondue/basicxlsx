@@ -46,7 +46,7 @@ public class Example {
     public static void main(String args[]) throws IOException {
         Workbook w = new Workbook();
         Sheet s = w.sheet("test"); //create a new sheet named test
-        s.setValueAt("Hello World", 0, 0); //put in "A1" the value "Hello World"
+        s.setValueAt("Hello World", /*row*/ 0, /*column*/ 0); //put in "A1" the value "Hello World"
 
         //write the workbook to a file
         try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
@@ -76,7 +76,7 @@ public class ExampleWithStyle {
         //
 
         Sheet s = w.sheet("test"); //create a new sheet named test
-        s.setValueAt("Hello World", 0, 0).withStyle(redBGBold); //put in "A1" the value "Hello World", set the style to the cell
+        s.setValueAt("Hello World", /*row*/ 0, /*column*/ 0).withStyle(redBGBold); //put in "A1" the value "Hello World", set the style to the cell
 
         //write the workbook to a file
         try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {

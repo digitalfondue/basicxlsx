@@ -55,35 +55,35 @@ public class StreamingWorkbookTest {
             //sheet 1
             Cell[] s1row1 = new Cell[] {
                     cell("Hello éé èè Michał").withStyle(italic), //A1
-                    cell("B1").withStyle(italic), //A2
-                    cell("Numeric values").withStyle(timesNewRomanBoldAndItalic), //A3
-                    cell("Boolean values")
+                    cell("B1").withStyle(italic), //B1
+                    cell("Numeric values").withStyle(timesNewRomanBoldAndItalic), //C1
+                    cell("Boolean values") //D1
             };
 
             Cell[] s1row2 = new Cell[]{
-                    cell("A2").withStyle(bold),
-                    cell("World!").withStyle(bold),
-                    cell(42),
-                    cell(true)
+                    cell("A2").withStyle(bold), //A2
+                    cell("World!").withStyle(bold), //B2
+                    cell(42), //C2
+                    cell(true) //D2
             };
 
             Cell[] s1row3 = new Cell[] {
                     null,
                     null,
-                    cell(new BigDecimal("2.512351234324832")).withStyle(twoDecimal),
-                    cell(false)
+                    cell(new BigDecimal("2.512351234324832")).withStyle(twoDecimal), //C3
+                    cell(false) //D3
             };
 
             Cell[] s1row4 = new Cell[] {
                     null,
                     null,
-                    cell(3.14),
+                    cell(3.14), //C4
             };
 
             Cell[] s1row5 = new Cell[] {
                     null,
                     null,
-                    cell(new BigDecimal("1.234567890")).withStyle(twoDecimalBuiltin)
+                    cell(new BigDecimal("1.234567890")).withStyle(twoDecimalBuiltin) //C5
             };
 
 
