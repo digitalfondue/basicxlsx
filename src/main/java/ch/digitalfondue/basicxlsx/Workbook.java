@@ -74,6 +74,12 @@ public class Workbook extends AbstractWorkbook {
             Element col = elementBuilder.apply("col");
             col.setAttribute("min", Integer.toString(i + 1));
             col.setAttribute("max", Integer.toString(i + 1));
+
+            if (sheet.columnWidth.containsKey(i)) {
+                col.setAttribute("customWidth", "true");
+                col.setAttribute("width", Double.toString(sheet.columnWidth.get(i)));
+            }
+
             cols.appendChild(col);
         }
         //
@@ -83,13 +89,21 @@ public class Workbook extends AbstractWorkbook {
         //row
         for (Map.Entry<Integer, SortedMap<Integer, Cell>> rowCells : sheet.cells.entrySet()) {
             Element row = elementBuilder.apply("row");
-            row.setAttribute("r", Integer.toString(rowCells.getKey() + 1));
+
+            int rowIndex = rowCells.getKey();
+
+            row.setAttribute("r", Integer.toString(rowIndex + 1));
+
+            if (sheet.rowHeight.containsKey(rowIndex)) {
+                row.setAttribute("customHeight", "true");
+                row.setAttribute("ht", Double.toString(sheet.rowHeight.get(rowIndex)));
+            }
 
             //column -> cell
             for (Map.Entry<Integer, Cell> colAndCell : rowCells.getValue().entrySet()) {
                 Cell cell = colAndCell.getValue();
                 int styleId = styleIdSupplier.apply(cell);
-                row.appendChild(cell.toElement(elementBuilder, rowCells.getKey(), colAndCell.getKey(), styleId));
+                row.appendChild(cell.toElement(elementBuilder, rowIndex, colAndCell.getKey(), styleId));
             }
             sheetData.appendChild(row);
         }

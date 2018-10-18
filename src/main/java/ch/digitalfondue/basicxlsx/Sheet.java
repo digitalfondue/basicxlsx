@@ -26,6 +26,8 @@ import java.util.*;
 public class Sheet {
 
     final SortedMap<Integer, SortedMap<Integer, Cell>> cells = new TreeMap<>();
+    final Map<Integer, Double> rowHeight = new HashMap<>();
+    final Map<Integer, Double> columnWidth = new HashMap<>();
 
     Sheet() {
     }
@@ -36,6 +38,14 @@ public class Sheet {
             max = Math.max(max, e.lastKey());
         }
         return max;
+    }
+
+    public void setRowHeight(int rowIndex, double height) {
+        this.rowHeight.put(rowIndex, height);
+    }
+
+    public void setColumnWidth(int columnIndex, double width) {
+        this.columnWidth.put(columnIndex, width);
     }
 
     private Cell setCellAt(Cell cell, int row, int column) {

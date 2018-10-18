@@ -161,7 +161,8 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
 
 ## TODO:
 
- - support autoSizeColumn https://poi.apache.org/apidocs/org/apache/poi/xssf/usermodel/XSSFSheet.html#autoSizeColumn-int-
+ - [ ] support column/row size in streaming mode: will need to modify the api
+ - [ ] support autoSizeColumn https://poi.apache.org/apidocs/org/apache/poi/xssf/usermodel/XSSFSheet.html#autoSizeColumn-int-
     - https://github.com/apache/poi/blob/trunk/src/ooxml/java/org/apache/poi/xssf/streaming/SXSSFSheet.java#L1571
     - https://github.com/apache/poi/blob/trunk/src/java/org/apache/poi/ss/util/SheetUtil.java#L120
     - https://github.com/dtjohnson/xlsx-populate/issues/26#issuecomment-288796920
@@ -172,7 +173,6 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
           libreoffice will use it and ignore the recalculate parameter, need to test if leaving it blank work in excel&co?
     - [ ] missing date type (Zoned* variant?)
  - add test (WIP)
- - [ ] improve column sizing in streaming
  - [ ] write javadoc
  - [ ] merged cell
  - [ ] charts
