@@ -37,6 +37,19 @@ import java.util.zip.ZipOutputStream;
 
 public class StreamingWorkbook extends AbstractWorkbook implements Closeable, AutoCloseable {
 
+    public static class Row {
+
+        private final Cell[] cells;
+
+        Row(Cell[] cells) {
+            this.cells = cells;
+        }
+    }
+
+    public static Row row(Cell[] cells) {
+        return new Row(cells);
+    }
+
     private final ZipOutputStream zos;
     private boolean hasEnded;
     private boolean hasRegisteredStyles;
@@ -77,11 +90,11 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         return super.defineStyle();
     }
 
-    public void withSheet(String name, Stream<Cell[]> rows) throws IOException {
+    public void withSheet(String name, Stream<Row> rows) throws IOException {
         withSheet(name, rows, null);
     }
 
-    public void withSheet(String name, Stream<Cell[]> rows, double[] columnWidth) throws IOException {
+    public void withSheet(String name, Stream<Row> rows, double[] columnWidth) throws IOException {
         if (hasEnded) {
             throw new IllegalStateException("Already ended");
         }
@@ -118,7 +131,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         };
 
         rows.forEachOrdered(row -> {
-            processRow(rowCounter.get(), row, consumer);
+            processRow(rowCounter.get(), row.cells, consumer);
             rowCounter.incrementAndGet(); //ugly, but it works
         });
         zos.write(SHEET_END);

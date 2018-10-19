@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import static ch.digitalfondue.basicxlsx.Cell.cell;
 import static ch.digitalfondue.basicxlsx.Cell.formula;
+import static ch.digitalfondue.basicxlsx.StreamingWorkbook.row;
 
 public class StreamingWorkbookTest {
     private static boolean OUTPUT_FILE = false;
@@ -87,7 +88,7 @@ public class StreamingWorkbookTest {
             };
 
 
-            w.withSheet("test", Stream.of(s1row1, s1row2, s1row3, s1row4, s1row5));
+            w.withSheet("test", Stream.of(row(s1row1), row(s1row2), row(s1row3), row(s1row4), row(s1row5)));
             //
 
             //sheet2
@@ -121,7 +122,7 @@ public class StreamingWorkbookTest {
                     formula("C2+C3+C4"),
             };
 
-            w.withSheet("test2", Stream.of(s2row1, s2row2, s2row3, s2row4, s2row5));
+            w.withSheet("test2", Stream.of(row(s2row1), row(s2row2), row(s2row3), row(s2row4), row(s2row5)));
 
         }
 

@@ -17,6 +17,7 @@ package ch.digitalfondue.example;
 
 import ch.digitalfondue.basicxlsx.Cell;
 import ch.digitalfondue.basicxlsx.StreamingWorkbook;
+import ch.digitalfondue.basicxlsx.StreamingWorkbook.Row;
 import ch.digitalfondue.basicxlsx.Style;
 
 import java.io.FileOutputStream;
@@ -35,7 +36,7 @@ public class ExampleStreamingWithStyle {
             //
 
             Cell[] row1 = new Cell[] {Cell.cell("Hello World").withStyle(redBGBold)};
-            Stream<Cell[]> rows = Stream.<Cell[]>of(row1);
+            Stream<Row> rows = Stream.of(StreamingWorkbook.row(row1));
 
 
             w.withSheet("test", rows); //write a new sheet named "test" with the stream of rows

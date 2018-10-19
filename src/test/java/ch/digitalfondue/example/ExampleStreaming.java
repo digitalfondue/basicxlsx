@@ -17,6 +17,7 @@ package ch.digitalfondue.example;
 
 import ch.digitalfondue.basicxlsx.Cell;
 import ch.digitalfondue.basicxlsx.StreamingWorkbook;
+import ch.digitalfondue.basicxlsx.StreamingWorkbook.Row;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class ExampleStreaming {
 
 
             Cell[] row1 = new Cell[] {Cell.cell("Hello World")};
-            Stream<Cell[]> rows = Stream.<Cell[]>of(row1);
+            Stream<Row> rows = Stream.of(StreamingWorkbook.row(row1));
 
             w.withSheet("test", rows); //write a new sheet named "test" with the stream of rows
         }
