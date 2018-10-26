@@ -95,6 +95,7 @@ for a more complete example with style, formatting and other data types.
 ```java
 import ch.digitalfondue.basicxlsx.Cell;
 import ch.digitalfondue.basicxlsx.StreamingWorkbook;
+import ch.digitalfondue.basicxlsx.StreamingWorkbook.Row;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -109,7 +110,7 @@ public class ExampleStreaming {
 
 
             Cell[] row1 = new Cell[] {Cell.cell("Hello World")};
-            Stream<Cell[]> rows = Stream.<Cell[]>of(row1);
+            Stream<Row> rows = Stream.of(StreamingWorkbook.row(row1));
 
             w.withSheet("test", rows); //write a new sheet named "test" with the stream of rows
         }
@@ -123,6 +124,7 @@ public class ExampleStreaming {
 ```java
 import ch.digitalfondue.basicxlsx.Cell;
 import ch.digitalfondue.basicxlsx.StreamingWorkbook;
+import ch.digitalfondue.basicxlsx.StreamingWorkbook.Row;
 import ch.digitalfondue.basicxlsx.Style;
 
 import java.io.FileOutputStream;
@@ -141,7 +143,7 @@ public class ExampleStreamingWithStyle {
             //
 
             Cell[] row1 = new Cell[] {Cell.cell("Hello World").withStyle(redBGBold)};
-            Stream<Cell[]> rows = Stream.<Cell[]>of(row1);
+            Stream<Row> rows = Stream.of(StreamingWorkbook.row(row1));
 
 
             w.withSheet("test", rows); //write a new sheet named "test" with the stream of rows
@@ -166,11 +168,6 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
     - https://github.com/apache/poi/blob/trunk/src/java/org/apache/poi/ss/util/SheetUtil.java#L120
     - https://github.com/dtjohnson/xlsx-populate/issues/26#issuecomment-288796920
     - https://metacpan.org/pod/Spreadsheet::WriteExcel::Examples#Example:-autofit.pl
- - support other column type
-    - [ ] formula, note as described in https://xlsxwriter.readthedocs.io/working_with_formulas.html#formula-results ,
-          we can let excel recalculate all the formula result: WIP, if we write "0" as a placeholder value, 
-          libreoffice will use it and ignore the recalculate parameter, need to test if leaving it blank work in excel&co?
-    - [ ] missing date type (Zoned* variant?)
  - add test (WIP)
  - [ ] write javadoc
  - [ ] merged cell
