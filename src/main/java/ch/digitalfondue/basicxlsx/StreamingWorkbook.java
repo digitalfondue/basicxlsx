@@ -40,14 +40,20 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
     public static class Row {
 
         private final Cell[] cells;
+        private final Double height;
 
-        Row(Cell[] cells) {
+        Row(Cell[] cells, Double height) {
             this.cells = cells;
+            this.height = height;
         }
     }
 
     public static Row row(Cell[] cells) {
-        return new Row(cells);
+        return new Row(cells, null);
+    }
+
+    public static Row row(Cell[] cells, double height) {
+        return new Row(cells, height);
     }
 
     private final ZipOutputStream zos;
@@ -131,7 +137,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         };
 
         rows.forEachOrdered(row -> {
-            processRow(rowCounter.get(), row.cells, consumer);
+            processRow(rowCounter.get(), row, consumer);
             rowCounter.incrementAndGet(); //ugly, but it works
         });
         zos.write(SHEET_END);
@@ -153,12 +159,18 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         zos.write("\"/>".getBytes(StandardCharsets.UTF_8));
     }
 
-    private void processRow(int rowIdx, Cell[] row, Consumer<DOMSource> consumer) {
+    private void processRow(int rowIdx, Row rowContainer, Consumer<DOMSource> consumer) {
         try {
-            if (row != null) {
+            if (rowContainer != null && rowContainer.cells != null) {
+                Cell[] row = rowContainer.cells;
                 //"<row r="1">"
                 zos.write(ROW_START_1);
                 zos.write(Integer.toString(rowIdx + 1).getBytes(StandardCharsets.UTF_8));
+
+                if (rowContainer.height != null) {
+                    zos.write("\" customHeight=\"true\" ht=\"".getBytes(StandardCharsets.UTF_8));
+                    zos.write(Double.toString(rowContainer.height).getBytes(StandardCharsets.UTF_8));
+                }
                 zos.write(ROW_START_2);
                 //
                 for (int i = 0; i < row.length; i++) {
