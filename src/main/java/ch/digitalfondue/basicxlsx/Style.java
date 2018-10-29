@@ -526,7 +526,7 @@ public class Style {
          */
         RTL(2);
 
-        private final int val;
+        final int val;
 
         ReadingOrder(int val) {
             this.val = val;

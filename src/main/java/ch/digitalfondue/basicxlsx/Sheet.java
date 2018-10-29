@@ -28,6 +28,7 @@ public class Sheet {
     final SortedMap<Integer, SortedMap<Integer, Cell>> cells = new TreeMap<>();
     final Map<Integer, Double> rowHeight = new HashMap<>();
     final Map<Integer, Double> columnWidth = new HashMap<>();
+    Style.ReadingOrder readingOrder;
 
     Sheet() {
     }
@@ -46,6 +47,10 @@ public class Sheet {
 
     public void setColumnWidth(int columnIndex, double width) {
         this.columnWidth.put(columnIndex, width);
+    }
+
+    public void setReadingOrder(Style.ReadingOrder readingOrder) {
+        this.readingOrder = readingOrder;
     }
 
     private Cell setCellAt(Cell cell, int row, int column) {

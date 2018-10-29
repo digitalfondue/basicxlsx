@@ -37,6 +37,9 @@ import java.util.zip.ZipOutputStream;
 
 public class StreamingWorkbook extends AbstractWorkbook implements Closeable, AutoCloseable {
 
+    /**
+     * Row wrapper.
+     * */
     public static class Row {
 
         private final Cell[] cells;
@@ -45,6 +48,27 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         Row(Cell[] cells, Double height) {
             this.cells = cells;
             this.height = height;
+        }
+    }
+
+    /**
+     * Configuration options for a given sheet.
+     */
+    public static class SheetOptions {
+        private double[] columnWidth;
+        private Style.ReadingOrder readingOrder;
+
+        public SheetOptions(double[] columnWidth) {
+            this(columnWidth, null);
+        }
+
+        public SheetOptions(Style.ReadingOrder readingOrder) {
+            this(null, readingOrder);
+        }
+
+        public SheetOptions(double[] columnWidth, Style.ReadingOrder readingOrder) {
+            this.columnWidth = columnWidth;
+            this.readingOrder = readingOrder;
         }
     }
 
@@ -62,8 +86,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
     private List<String> sheets = new ArrayList<>();
 
     private static final byte[] SHEET_START = ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-            "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n" +
-            "<cols>").getBytes(StandardCharsets.UTF_8);
+            "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n").getBytes(StandardCharsets.UTF_8);
 
     private static final byte[] DEFAULT_COL = "<col max=\"1\" min=\"1\"/>".getBytes(StandardCharsets.UTF_8);
     private static final byte[] SHEET_END_COLS = "</cols><sheetData>".getBytes(StandardCharsets.UTF_8);
@@ -100,7 +123,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         withSheet(name, rows, null);
     }
 
-    public void withSheet(String name, Stream<Row> rows, double[] columnWidth) throws IOException {
+    public void withSheet(String name, Stream<Row> rows, SheetOptions options) throws IOException {
         if (hasEnded) {
             throw new IllegalStateException("Already ended");
         }
@@ -114,11 +137,19 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
 
         zos.putNextEntry(new ZipEntry("xl/worksheets/sheet" + (sheets.size()) + ".xml"));
         zos.write(SHEET_START);
-        if (columnWidth == null || columnWidth.length == 0) {
+
+        if (options != null && options.readingOrder != null) {
+            zos.write("<sheetViews><sheetView rightToLeft=\"".getBytes(StandardCharsets.UTF_8));
+            zos.write(Boolean.toString(options.readingOrder == Style.ReadingOrder.RTL).getBytes(StandardCharsets.UTF_8));
+            zos.write("\"></sheetView></sheetViews>".getBytes(StandardCharsets.UTF_8));
+        }
+
+        zos.write("<cols>".getBytes(StandardCharsets.UTF_8));
+        if (options == null || options.columnWidth == null || options.columnWidth.length == 0) {
             zos.write(DEFAULT_COL);
         } else {
-            for (int i = 0; i < columnWidth.length; i++) {
-                double colWidth = columnWidth[i];
+            for (int i = 0; i < options.columnWidth.length; i++) {
+                double colWidth = options.columnWidth[i];
                 writeCol(i, colWidth, zos);
             }
         }

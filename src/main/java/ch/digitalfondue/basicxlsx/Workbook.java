@@ -67,6 +67,13 @@ public class Workbook extends AbstractWorkbook {
 
         Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
 
+        //
+        if (sheet.readingOrder != null) {
+          Element sheetView = getElement(doc, "sheetView");
+          sheetView.setAttribute("rightToLeft", Boolean.toString(sheet.readingOrder == Style.ReadingOrder.RTL));
+        }
+        //
+
         //TODO check this. It seems not mandatory, seems to be used for sizing the column?
         Element cols = getElement(doc, "cols");
         final int colsCount = sheet.getMaxCol() + 1;
