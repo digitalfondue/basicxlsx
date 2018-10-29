@@ -179,7 +179,7 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
     - [ ] cell border
     - [ ] diagonal border
     - [ ] reading order (RTL/LTR) *easy to implement* https://xlsxwriter.readthedocs.io/format.html#format-set-reading-order
-    - [ ] indent *easy to implement* https://xlsxwriter.readthedocs.io/format.html#format-set-indent
+    - [ ] indent https://xlsxwriter.readthedocs.io/format.html#format-set-indent (some gotcha are present it seems...)
     - see for other missing https://xlsxwriter.readthedocs.io/format.html
 
 ## Resources/examples about xlsx
