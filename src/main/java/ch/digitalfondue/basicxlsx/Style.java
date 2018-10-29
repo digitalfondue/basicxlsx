@@ -36,14 +36,16 @@ public class Style {
     private final String fgColor;
     private final Integer rotation;
     private final Pattern pattern;
+    private final ReadingOrder readingOrder;
 
-    Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, Integer rotation, FontDesc fontDesc) {
+    Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, Integer rotation, ReadingOrder readingOrder, FontDesc fontDesc) {
         this.numericFormat = numericFormat;
         this.numericFormatIndex = numericFormatIndex;
         this.bgColor = bgColor;
         this.fgColor = fgColor;
         this.pattern = pattern;
         this.rotation = rotation;
+        this.readingOrder = readingOrder;
         this.fontDesc = fontDesc;
     }
 
@@ -168,7 +170,7 @@ public class Style {
         xf.setAttribute("xfId", "0");
         xf.setAttribute("applyFont", "true");
         xf.setAttribute("applyBorder", "false");
-        xf.setAttribute("applyAlignment", "false");
+        xf.setAttribute("applyAlignment", readingOrder != null ? "true" : "false");
         xf.setAttribute("applyProtection", "false");
         Element alignment = elementBuilder.apply("alignment");
         alignment.setAttribute("horizontal", "general");
@@ -177,6 +179,9 @@ public class Style {
         alignment.setAttribute("wrapText", "false");
         alignment.setAttribute("indent", "0");
         alignment.setAttribute("shrinkToFit", "false");
+        if (readingOrder != null) {
+            alignment.setAttribute("readingOrder", Integer.toString(readingOrder.val));
+        }
         xf.appendChild(alignment);
         Element protection = elementBuilder.apply("protection");
         protection.setAttribute("locked", "true");
@@ -203,6 +208,7 @@ public class Style {
         private Pattern pattern;
 
         private Integer rotation;
+        private ReadingOrder readingOrder;
 
         private StyleBuilder(Function<Style, Boolean> register) {
             this.register = register;
@@ -355,6 +361,17 @@ public class Style {
         }
 
         /**
+         * Define the reading order: it may be left to right (LTR) or right to left (RTL).
+         *
+         * @param readingOrder
+         * @return
+         */
+        public StyleBuilder readingOrder(ReadingOrder readingOrder) {
+            this.readingOrder = readingOrder;
+            return this;
+        }
+
+        /**
          * Generate the style.
          *
          * @return
@@ -362,7 +379,7 @@ public class Style {
         public Style build() {
             FontDesc fd = fontBuilder != null ? new FontDesc(fontBuilder.name, fontBuilder.size, fontBuilder.color, fontBuilder.bold,
                     fontBuilder.italic, fontBuilder.fontUnderlineStyle, fontBuilder.strikeOut) : null;
-            Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, rotation, fd);
+            Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, rotation, readingOrder, fd);
             register.apply(s);
             return s;
         }
@@ -492,6 +509,27 @@ public class Style {
             this.val = val;
             this.hasValAttribute = hasValAttribute;
             this.hasUElement = hasUElement;
+        }
+    }
+
+    /**
+     * Reading order.
+     */
+    public enum ReadingOrder {
+        /**
+         * Left to right.
+         */
+        LTR(1),
+
+        /**
+         * Right to left.
+         */
+        RTL(2);
+
+        private final int val;
+
+        ReadingOrder(int val) {
+            this.val = val;
         }
     }
 
