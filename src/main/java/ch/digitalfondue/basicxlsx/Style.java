@@ -34,14 +34,16 @@ public class Style {
     private final FontDesc fontDesc;
     private final String bgColor;
     private final String fgColor;
+    private final Integer rotation;
     private final Pattern pattern;
 
-    Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, FontDesc fontDesc) {
+    Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, Integer rotation, FontDesc fontDesc) {
         this.numericFormat = numericFormat;
         this.numericFormatIndex = numericFormatIndex;
         this.bgColor = bgColor;
         this.fgColor = fgColor;
         this.pattern = pattern;
+        this.rotation = rotation;
         this.fontDesc = fontDesc;
     }
 
@@ -171,7 +173,7 @@ public class Style {
         Element alignment = elementBuilder.apply("alignment");
         alignment.setAttribute("horizontal", "general");
         alignment.setAttribute("vertical", "bottom");
-        alignment.setAttribute("textRotation", "0");
+        alignment.setAttribute("textRotation", rotation == null ? "0" : Integer.toString(rotation));
         alignment.setAttribute("wrapText", "false");
         alignment.setAttribute("indent", "0");
         alignment.setAttribute("shrinkToFit", "false");
@@ -199,6 +201,8 @@ public class Style {
         private String bgColor;
         private String fgColor;
         private Pattern pattern;
+
+        private Integer rotation;
 
         private StyleBuilder(Function<Style, Boolean> register) {
             this.register = register;
@@ -337,6 +341,20 @@ public class Style {
         }
 
         /**
+         * Rotation, valid values: from -90 to 90 and 270
+         *
+         * @param rotation
+         * @return
+         */
+        public StyleBuilder rotation(int rotation) {
+            if (rotation < -90 || (rotation > 90 && rotation != 270)) {
+                throw new IllegalArgumentException("accepted value for rotation: from -90 to 90 and 270, passed value: " + rotation);
+            }
+            this.rotation = rotation;
+            return this;
+        }
+
+        /**
          * Generate the style.
          *
          * @return
@@ -344,7 +362,7 @@ public class Style {
         public Style build() {
             FontDesc fd = fontBuilder != null ? new FontDesc(fontBuilder.name, fontBuilder.size, fontBuilder.color, fontBuilder.bold,
                     fontBuilder.italic, fontBuilder.fontUnderlineStyle, fontBuilder.strikeOut) : null;
-            Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, fd);
+            Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, rotation, fd);
             register.apply(s);
             return s;
         }

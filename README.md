@@ -178,7 +178,6 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
     - [ ] alignment 
     - [ ] cell border
     - [ ] diagonal border
-    - [ ] rotation *easy to implement* https://xlsxwriter.readthedocs.io/format.html#format-set-rotation
     - [ ] reading order (RTL/LTR) *easy to implement* https://xlsxwriter.readthedocs.io/format.html#format-set-reading-order
     - [ ] indent *easy to implement* https://xlsxwriter.readthedocs.io/format.html#format-set-indent
     - see for other missing https://xlsxwriter.readthedocs.io/format.html
