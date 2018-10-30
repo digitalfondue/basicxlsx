@@ -71,43 +71,109 @@ public abstract class Cell {
     }
 
 
-    //
+    /**
+     * Create a cell with a String based value.
+     *
+     * @param value
+     * @return
+     */
     public static Cell cell(String value) {
         return new StringCell(value);
     }
 
+    /**
+     * Create a cell containing a number.
+     *
+     * @param value
+     * @return
+     */
     public static Cell cell(long value) {
         return new NumberCell(BigDecimal.valueOf(value));
     }
 
+    /**
+     * Create a cell containing a number.
+     *
+     * @param value
+     * @return
+     */
     public static Cell cell(double value) {
         return new NumberCell(BigDecimal.valueOf(value));
     }
 
+    /**
+     * Creat a cell containing a number.
+     *
+     * @param value
+     * @return
+     */
     public static Cell cell(BigDecimal value) {
         return new NumberCell(value);
     }
 
+    /**
+     * Create a cell containing a boolean value.
+     *
+     * @param value
+     * @return
+     */
     public static Cell cell(boolean value) {
         return new BooleanCell(value);
     }
 
+    /**
+     * Create a cell containing a date. Please note that you will need to supply a style for formatting the date.
+     *
+     * @param value
+     * @return
+     */
     public static Cell cell(Date value) {
         return new DateCell(Utils.getExcelDate(value));
     }
 
+
+    /**
+     * Create a cell containing a date. Please note that you will need to supply a style for formatting the date.
+     *
+     * @param value
+     * @return
+     */
     public static Cell cell(LocalDateTime value) {
         return new DateCell(Utils.getExcelDate(value));
     }
 
+    /**
+     * Create a cell containing a date. Please note that you will need to supply a style for formatting the date.
+     *
+     * @param value
+     * @return
+     */
     public static Cell cell(LocalDate value) {
         return new DateCell(Utils.getExcelDate(value));
     }
 
+    /**
+     * Create a cell containing a formula. Note: some viewer are not able to run the formula so the resulting cell will
+     * be empty. If you think that your users are using such viewers, use {@link #formula(String, String)}.
+     *
+     * Note: the functions in the formula must use their english name.
+     *
+     * @param formula
+     * @return
+     */
     public static Cell formula(String formula) {
         return new FormulaCell(formula, null);
     }
 
+    /**
+     * Create a cell containing a formula.
+     *
+     * Note: the functions in the formula must use their english name.
+     *
+     * @param formula
+     * @param value resulting value of the formula, used by viewers that are not able to run the formula.
+     * @return
+     */
     public static Cell formula(String formula, String value) {
         return new FormulaCell(formula, value);
     }
