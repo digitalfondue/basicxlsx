@@ -176,8 +176,7 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
  - [ ] ... ?
  - styling
     - [ ] alignment 
-    - [ ] cell border
-    - [ ] diagonal border
+    - [ ] cell border <- WIP
     - [ ] indent https://xlsxwriter.readthedocs.io/format.html#format-set-indent (some gotcha are present it seems...)
     - see for other missing https://xlsxwriter.readthedocs.io/format.html
 

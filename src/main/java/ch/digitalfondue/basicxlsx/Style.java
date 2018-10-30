@@ -85,6 +85,7 @@ public class Style {
         int fontId = 0;
         int numFmtId = 164;//default value
         int fillId = 0;
+        int borderId = 0;
 
         if (numericFormatIndex != null) {
             numFmtId = numericFormatIndex; //builtin formatting
@@ -170,6 +171,48 @@ public class Style {
             fontId = fonts.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "font").getLength() - 1;
         }
 
+
+        // TODO continue to implement border handling
+        // border handling <border diagonalDown="false" diagonalUp="false"><left/><right/><top/><bottom/><diagonal/></border>
+        if (diagonalStyle != null) {
+            Element border = elementBuilder.apply("border");
+
+            border.setAttribute("diagonalUp", "false");
+            border.setAttribute("diagonalDown", "false");
+
+            if (diagonalStyle == DiagonalStyle.BOTTOM_LEFT_TO_TOP_RIGHT) {
+                border.setAttribute("diagonalUp", "true");
+            } else if (diagonalStyle == DiagonalStyle.TOP_LEFT_TO_BOTTOM_RIGHT) {
+                border.setAttribute("diagonalDown", "true");
+            } else {
+                border.setAttribute("diagonalUp", "true");
+                border.setAttribute("diagonalDown", "true");
+            }
+
+            Element left = elementBuilder.apply("left");
+            Element right = elementBuilder.apply("right");
+            Element top = elementBuilder.apply("top");
+            Element bottom = elementBuilder.apply("bottom");
+            Element diagonal = elementBuilder.apply("diagonal");
+
+            diagonal.setAttribute("style", diagonalLineStyle == null ? LineStyle.THIN.toXmlValue() : diagonalLineStyle.toXmlValue());
+            if (diagonalColor != null) {
+                diagonal.appendChild(elementWithAttr(elementBuilder, "color", "rgb", formatColor(diagonalColor)));
+            }
+
+            border.appendChild(left);
+            border.appendChild(right);
+            border.appendChild(top);
+            border.appendChild(bottom);
+            border.appendChild(diagonal);
+
+            borders.appendChild(border);
+
+            borderId = borders.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "border").getLength() - 1;
+        }
+
+        //
+
         // add the "xf" element
         // <xf numFmtId="164" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="true" applyBorder="false" applyAlignment="false" applyProtection="false">
         //  <alignment horizontal="general" vertical="bottom" textRotation="0" wrapText="false" indent="0" shrinkToFit="false"/>
@@ -179,7 +222,7 @@ public class Style {
         xf.setAttribute("numFmtId", Integer.toString(numFmtId));
         xf.setAttribute("fontId", Integer.toString(fontId));
         xf.setAttribute("fillId", Integer.toString(fillId));
-        xf.setAttribute("borderId", "0");
+        xf.setAttribute("borderId", Integer.toString(borderId));
         xf.setAttribute("xfId", "0");
         xf.setAttribute("applyFont", "true");
         xf.setAttribute("applyBorder", "false");
@@ -681,15 +724,9 @@ public class Style {
     }
 
     public enum DiagonalStyle {
-        BOTTOM_LEFT_TO_TOP_RIGHT(1),
-        TOP_LEFT_TO_BOTTOM_RIGHT(2),
-        BOTH(3);
-
-        private final int idx;
-
-        DiagonalStyle(int idx) {
-            this.idx = idx;
-        }
+        BOTTOM_LEFT_TO_TOP_RIGHT,
+        TOP_LEFT_TO_BOTTOM_RIGHT,
+        BOTH;
     }
 
 
