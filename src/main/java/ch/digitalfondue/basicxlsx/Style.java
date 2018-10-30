@@ -18,7 +18,9 @@ package ch.digitalfondue.basicxlsx;
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
+import java.util.EnumMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -42,11 +44,14 @@ public class Style {
     private final String diagonalColor;
     private final DiagonalStyle diagonalStyle;
     //
+    private final BorderDesc borderDesc;
+    //
 
     Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, Integer rotation,
           LineStyle diagonalLineStyle, String diagonalColor, DiagonalStyle diagonalStyle,
           ReadingOrder readingOrder,
-          FontDesc fontDesc) {
+          FontDesc fontDesc,
+          BorderDesc borderDesc) {
         this.numericFormat = numericFormat;
         this.numericFormatIndex = numericFormatIndex;
         this.bgColor = bgColor;
@@ -60,6 +65,8 @@ public class Style {
         //
         this.readingOrder = readingOrder;
         this.fontDesc = fontDesc;
+        //
+        this.borderDesc = borderDesc;
     }
 
 
@@ -172,9 +179,9 @@ public class Style {
         }
 
 
-        // TODO continue to implement border handling
+        // TODO implement here border handling
         // border handling <border diagonalDown="false" diagonalUp="false"><left/><right/><top/><bottom/><diagonal/></border>
-        if (diagonalStyle != null) {
+        if (diagonalStyle != null || borderDesc != null) {
             Element border = elementBuilder.apply("border");
 
             border.setAttribute("diagonalUp", "false");
@@ -184,7 +191,7 @@ public class Style {
                 border.setAttribute("diagonalUp", "true");
             } else if (diagonalStyle == DiagonalStyle.TOP_LEFT_TO_BOTTOM_RIGHT) {
                 border.setAttribute("diagonalDown", "true");
-            } else {
+            } else if (diagonalStyle == DiagonalStyle.BOTH) {
                 border.setAttribute("diagonalUp", "true");
                 border.setAttribute("diagonalDown", "true");
             }
@@ -195,9 +202,11 @@ public class Style {
             Element bottom = elementBuilder.apply("bottom");
             Element diagonal = elementBuilder.apply("diagonal");
 
-            diagonal.setAttribute("style", diagonalLineStyle == null ? LineStyle.THIN.toXmlValue() : diagonalLineStyle.toXmlValue());
-            if (diagonalColor != null) {
-                diagonal.appendChild(elementWithAttr(elementBuilder, "color", "rgb", formatColor(diagonalColor)));
+            if (diagonalStyle != null) {
+                diagonal.setAttribute("style", diagonalLineStyle == null ? LineStyle.THIN.toXmlValue() : diagonalLineStyle.toXmlValue());
+                if (diagonalColor != null) {
+                    diagonal.appendChild(elementWithAttr(elementBuilder, "color", "rgb", formatColor(diagonalColor)));
+                }
             }
 
             border.appendChild(left);
@@ -270,6 +279,8 @@ public class Style {
         private LineStyle diagonalLineStyle;
         private String diagonalColor;
         private DiagonalStyle diagonalStyle;
+
+        private BorderBuilder borderBuilder;
         //
 
 
@@ -287,6 +298,13 @@ public class Style {
                 fontBuilder = new FontBuilder(this);
             }
             return fontBuilder;
+        }
+
+        public BorderBuilder border() {
+            if (borderBuilder == null) {
+                borderBuilder = new BorderBuilder(this);
+            }
+            return borderBuilder;
         }
 
         /**
@@ -465,9 +483,12 @@ public class Style {
         public Style build() {
             FontDesc fd = fontBuilder != null ? new FontDesc(fontBuilder.name, fontBuilder.size, fontBuilder.color, fontBuilder.bold,
                     fontBuilder.italic, fontBuilder.fontUnderlineStyle, fontBuilder.strikeOut) : null;
+
+            BorderDesc bd = borderBuilder != null ? new BorderDesc(borderBuilder.color, borderBuilder.style, borderBuilder.borderColor, borderBuilder.borderStyle) : null;
+
             Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, rotation,
                     diagonalLineStyle, diagonalColor, diagonalStyle,
-                    readingOrder, fd);
+                    readingOrder, fd, bd);
             register.apply(s);
             return s;
         }
@@ -491,8 +512,79 @@ public class Style {
             this.fontUnderlineStyle = fontUnderlineStyle;
             this.strikeOut = strikeOut;
         }
-
     }
+
+    private static class BorderDesc {
+        final String color;
+        final LineStyle style;
+        final Map<BorderBuilder.Border, String> borderColor;
+        final Map<BorderBuilder.Border, LineStyle> borderStyle;
+
+        private BorderDesc(String color, LineStyle style, Map<BorderBuilder.Border, String> borderColor, Map<BorderBuilder.Border, LineStyle> borderStyle) {
+            this.color = color;
+            this.style = style;
+            this.borderColor = borderColor;
+            this.borderStyle = borderStyle;
+        }
+    }
+
+    public static class BorderBuilder {
+
+        private String color;
+        private LineStyle style;
+        private Map<Border, String> borderColor = new EnumMap<>(Border.class);
+        private Map<Border, LineStyle> borderStyle = new EnumMap<>(Border.class);
+
+        private final StyleBuilder styleBuilder;
+
+        private BorderBuilder(StyleBuilder styleBuilder) {
+            this.styleBuilder = styleBuilder;
+        }
+
+        public StyleBuilder and() {
+            return styleBuilder;
+        }
+
+        public Style build() {
+            return styleBuilder.build();
+        }
+
+        public BorderBuilder color(String color) {
+            this.color = color;
+            return this;
+        }
+
+        public BorderBuilder color(Color color) {
+            return color(color.color);
+        }
+
+        public BorderBuilder style(LineStyle style) {
+            this.style = style;
+            return this;
+        }
+
+        public BorderBuilder borderColor(Border border, String color) {
+            borderColor.put(border, color);
+            return this;
+        }
+
+        public BorderBuilder borderColor(Border border, Color color) {
+            return borderColor(border, color.color);
+        }
+
+        public BorderBuilder borderStyle(Border border, LineStyle style) {
+            borderStyle.put(border, style);
+            return this;
+        }
+
+        public enum Border {
+            TOP,
+            RIGHT,
+            BOTTOM,
+            LEFT
+        }
+    }
+
 
     /**
      * Font specific options.
