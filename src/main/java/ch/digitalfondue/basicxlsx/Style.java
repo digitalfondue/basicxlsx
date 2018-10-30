@@ -179,7 +179,6 @@ public class Style {
         }
 
 
-        // TODO implement here border handling
         // border handling <border diagonalDown="false" diagonalUp="false"><left/><right/><top/><bottom/><diagonal/></border>
         if (diagonalStyle != null || borderDesc != null) {
             Element border = elementBuilder.apply("border");
@@ -196,10 +195,11 @@ public class Style {
                 border.setAttribute("diagonalDown", "true");
             }
 
-            Element left = elementBuilder.apply("left");
-            Element right = elementBuilder.apply("right");
             Element top = elementBuilder.apply("top");
+            Element left = elementBuilder.apply("left");
             Element bottom = elementBuilder.apply("bottom");
+            Element right = elementBuilder.apply("right");
+
             Element diagonal = elementBuilder.apply("diagonal");
 
             if (diagonalStyle != null) {
@@ -209,10 +209,18 @@ public class Style {
                 }
             }
 
-            border.appendChild(left);
-            border.appendChild(right);
+            if (borderDesc != null) {
+                applyBorder(elementBuilder, top, BorderBuilder.Border.TOP);
+                applyBorder(elementBuilder, left, BorderBuilder.Border.LEFT);
+                applyBorder(elementBuilder, bottom, BorderBuilder.Border.BOTTOM);
+                applyBorder(elementBuilder, right, BorderBuilder.Border.RIGHT);
+            }
+
             border.appendChild(top);
+            border.appendChild(left);
             border.appendChild(bottom);
+            border.appendChild(right);
+
             border.appendChild(diagonal);
 
             borders.appendChild(border);
@@ -256,6 +264,17 @@ public class Style {
         cellXfs.appendChild(xf);
 
         return cellXfs.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "xf").getLength() - 1;
+    }
+
+    private void applyBorder(Function<String, Element> elementBuilder, Element element, BorderBuilder.Border border) {
+        LineStyle lineStyle = borderDesc.style(border);
+        String color = borderDesc.color(border);
+        if (lineStyle != null || color != null) {
+            element.setAttribute("style", lineStyle == null ? LineStyle.THIN.toXmlValue() : lineStyle.toXmlValue());
+        }
+        if (color != null) {
+            element.appendChild(elementWithAttr(elementBuilder, "color", "rgb", formatColor(color)));
+        }
     }
 
     /**
@@ -525,6 +544,14 @@ public class Style {
             this.style = style;
             this.borderColor = borderColor;
             this.borderStyle = borderStyle;
+        }
+
+        String color(BorderBuilder.Border border) {
+            return borderColor.getOrDefault(border, color);
+        }
+
+        LineStyle style(BorderBuilder.Border border) {
+            return borderStyle.getOrDefault(border, style);
         }
     }
 
