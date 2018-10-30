@@ -123,6 +123,10 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         withSheet(name, rows, null);
     }
 
+    private void write(String s) throws IOException {
+        zos.write(s.getBytes(StandardCharsets.UTF_8));
+    }
+
     public void withSheet(String name, Stream<Row> rows, SheetOptions options) throws IOException {
         if (hasEnded) {
             throw new IllegalStateException("Already ended");
@@ -139,18 +143,18 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         zos.write(SHEET_START);
 
         if (options != null && options.readingOrder != null) {
-            zos.write("<sheetViews><sheetView rightToLeft=\"".getBytes(StandardCharsets.UTF_8));
-            zos.write(Boolean.toString(options.readingOrder == Style.ReadingOrder.RTL).getBytes(StandardCharsets.UTF_8));
-            zos.write("\"></sheetView></sheetViews>".getBytes(StandardCharsets.UTF_8));
+            write("<sheetViews><sheetView rightToLeft=\"");
+            write(Boolean.toString(options.readingOrder == Style.ReadingOrder.RTL));
+            write("\"></sheetView></sheetViews>");
         }
 
-        zos.write("<cols>".getBytes(StandardCharsets.UTF_8));
+        write("<cols>");
         if (options == null || options.columnWidth == null || options.columnWidth.length == 0) {
             zos.write(DEFAULT_COL);
         } else {
             for (int i = 0; i < options.columnWidth.length; i++) {
                 double colWidth = options.columnWidth[i];
-                writeCol(i, colWidth, zos);
+                writeCol(i, colWidth);
             }
         }
 
@@ -175,19 +179,19 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         zos.closeEntry();
     }
 
-    private static void writeCol(int idx, double colWidth, ZipOutputStream zos) throws IOException {
+    private void writeCol(int idx, double colWidth) throws IOException {
         byte[] minMax = Integer.toString(idx + 1).getBytes(StandardCharsets.UTF_8);
-        zos.write("<col max=\"".getBytes(StandardCharsets.UTF_8));
+        write("<col max=\"");
         zos.write(minMax);
-        zos.write("\" min=\"".getBytes(StandardCharsets.UTF_8));
+        write("\" min=\"");
         zos.write(minMax);
 
         if (colWidth > 0) {
-            zos.write("\" customWidth=\"true\" width=\"".getBytes(StandardCharsets.UTF_8));
-            zos.write(Double.toString(colWidth).getBytes(StandardCharsets.UTF_8));
+            write("\" customWidth=\"true\" width=\"");
+            write(Double.toString(colWidth));
         }
 
-        zos.write("\"/>".getBytes(StandardCharsets.UTF_8));
+        write("\"/>");
     }
 
     private void processRow(int rowIdx, Row rowContainer, Consumer<DOMSource> consumer) {
@@ -196,11 +200,11 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
                 Cell[] row = rowContainer.cells;
                 //"<row r="1">"
                 zos.write(ROW_START_1);
-                zos.write(Integer.toString(rowIdx + 1).getBytes(StandardCharsets.UTF_8));
+                write(Integer.toString(rowIdx + 1));
 
                 if (rowContainer.height != null) {
-                    zos.write("\" customHeight=\"true\" ht=\"".getBytes(StandardCharsets.UTF_8));
-                    zos.write(Double.toString(rowContainer.height).getBytes(StandardCharsets.UTF_8));
+                    write("\" customHeight=\"true\" ht=\"");
+                    write(Double.toString(rowContainer.height));
                 }
                 zos.write(ROW_START_2);
                 //
