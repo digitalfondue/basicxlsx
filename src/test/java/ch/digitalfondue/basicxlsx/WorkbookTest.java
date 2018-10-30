@@ -44,6 +44,12 @@ public class WorkbookTest {
 
         Style dateFormat = w.defineStyle().numericFormat("dd-mm-yyyy HH:mm:ss").build();
 
+        Style borderDiagonal = w.defineStyle().diagonalColor(Style.Color.RED).diagonalStyle(Style.DiagonalStyle.BOTH)
+                .border().color(Style.Color.LIME).style(Style.LineStyle.MEDIUM)
+                .borderColor(Style.BorderBuilder.Border.BOTTOM, Style.Color.BLUE)
+                .borderStyle(Style.BorderBuilder.Border.BOTTOM, Style.LineStyle.DASH_DOT_DOT)
+                .build();
+
         Sheet s = w.sheet("test");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1
         s.setValueAt("B1", 0, 1).withStyle(italic); //B1
@@ -64,7 +70,7 @@ public class WorkbookTest {
         s.setValueAt(false, 2, 3); //D3
 
         Sheet s2 = w.sheet("test2");
-        s2.setValueAt("Hello", 1, 0); //A2
+        s2.setValueAt("Hello", 1, 0).withStyle(borderDiagonal); //A2
         s2.setValueAt("World", 0, 1); //B1
 
         s2.setValueAt("Sum", 0, 2); //C1

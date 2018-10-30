@@ -19,13 +19,20 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FontUnderline;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.model.StylesTable;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import org.junit.Assert;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.STBorderStyle;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
+
+import static org.openxmlformats.schemas.spreadsheetml.x2006.main.STBorderStyle.INT_THIN;
 
 public class PoiCrossCheck {
 
@@ -77,6 +84,31 @@ public class PoiCrossCheck {
         //check sheet 2 content
         org.apache.poi.ss.usermodel.Sheet sheet2 = workbook.getSheet("test2");
         Assert.assertEquals("Hello", sheet2.getRow(1).getCell(0).getStringCellValue());
+
+        //http://apache-poi.1045710.n5.nabble.com/Diagonal-border-td5720338.html
+        XSSFCellStyle style = (XSSFCellStyle) workbook.getCellStyleAt(sheet2.getRow(1).getCell(0).getCellStyle().getIndex());
+        StylesTable stylesTable = ((XSSFWorkbook) workbook).getStylesSource();
+        XSSFCellBorder border = stylesTable.getBorderAt((int) style.getCoreXf().getBorderId());
+        Assert.assertEquals(true, border.getCTBorder().getDiagonalDown());
+        Assert.assertEquals(true, border.getCTBorder().getDiagonalUp());
+        Assert.assertEquals(STBorderStyle.Enum.forString("thin"), border.getCTBorder().getDiagonal().getStyle());
+        Assert.assertEquals("<xml-fragment rgb=\"FFFF0000\"/>", border.getCTBorder().getDiagonal().getColor().toString());
+
+        //should be for all the borders
+
+        Assert.assertEquals(STBorderStyle.Enum.forString("medium"), border.getCTBorder().getTop().getStyle());
+        Assert.assertEquals("<xml-fragment rgb=\"FF00FF00\"/>", border.getCTBorder().getTop().getColor().toString());
+
+        Assert.assertEquals(STBorderStyle.Enum.forString("medium"), border.getCTBorder().getRight().getStyle());
+        Assert.assertEquals("<xml-fragment rgb=\"FF00FF00\"/>", border.getCTBorder().getRight().getColor().toString());
+
+        Assert.assertEquals(STBorderStyle.Enum.forString("dashDotDot"), border.getCTBorder().getBottom().getStyle());
+        Assert.assertEquals("<xml-fragment rgb=\"FF0000FF\"/>", border.getCTBorder().getBottom().getColor().toString()); //blue
+
+        Assert.assertEquals(STBorderStyle.Enum.forString("medium"), border.getCTBorder().getLeft().getStyle());
+        Assert.assertEquals("<xml-fragment rgb=\"FF00FF00\"/>", border.getCTBorder().getLeft().getColor().toString());
+
+        //
         Assert.assertEquals("World", sheet2.getRow(0).getCell(1).getStringCellValue());
 
         //check date

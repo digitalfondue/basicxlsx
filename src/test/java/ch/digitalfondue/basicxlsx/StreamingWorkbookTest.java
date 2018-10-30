@@ -51,6 +51,12 @@ public class StreamingWorkbookTest {
             Style twoDecimalBuiltin = w.defineStyle().numericFormat(2).build();
 
             Style dateFormat = w.defineStyle().numericFormat("dd-mm-yyyy HH:mm:ss").build();
+
+            Style borderDiagonal = w.defineStyle().diagonalColor(Style.Color.RED).diagonalStyle(Style.DiagonalStyle.BOTH)
+                    .border().color(Style.Color.LIME).style(Style.LineStyle.MEDIUM)
+                    .borderColor(Style.BorderBuilder.Border.BOTTOM, Style.Color.BLUE)
+                    .borderStyle(Style.BorderBuilder.Border.BOTTOM, Style.LineStyle.DASH_DOT_DOT)
+                    .build();
             //
 
             //sheet 1
@@ -101,7 +107,7 @@ public class StreamingWorkbookTest {
                     cell("Sum")
             };
             Cell[] s2row2 = new Cell[] {
-                    cell("Hello"),
+                    cell("Hello").withStyle(borderDiagonal),
                     null,
                     cell(1),
                     cell(dateForSheet2Row1Col3).withStyle(dateFormat)
