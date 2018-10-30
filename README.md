@@ -168,7 +168,10 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
     - https://github.com/apache/poi/blob/trunk/src/java/org/apache/poi/ss/util/SheetUtil.java#L120
     - https://github.com/dtjohnson/xlsx-populate/issues/26#issuecomment-288796920
     - https://metacpan.org/pod/Spreadsheet::WriteExcel::Examples#Example:-autofit.pl
- - add test (WIP)
+ - add test
+   - [ ] border 
+   - [ ] diagonal
+   - [ ] ltr/rtl
  - [ ] write javadoc
  - [ ] merged cell
  - [ ] charts
