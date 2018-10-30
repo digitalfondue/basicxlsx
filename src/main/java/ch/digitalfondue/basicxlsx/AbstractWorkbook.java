@@ -19,7 +19,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -76,9 +79,10 @@ class AbstractWorkbook {
         Element cellXfs = getElement(doc, "cellXfs");
         Element numFmts = getElement(doc, "numFmts");
         Element fills = getElement(doc, "fills");
+        Element borders = getElement(doc, "borders");
 
         for (Style style : styles) {
-            int styleId = style.register(elementBuilder, fonts, cellXfs, numFmts, fills);
+            int styleId = style.register(elementBuilder, fonts, cellXfs, numFmts, fills, borders);
             styleToIdMapping.put(style, styleId);
         }
         //
@@ -86,6 +90,7 @@ class AbstractWorkbook {
         adjustCount(cellXfs, "xf");
         adjustCount(numFmts, "numFmt");
         adjustCount(fills, "fill");
+        adjustCount(borders, "border");
 
         addFileWithDocument(zos, "xl/styles.xml", doc);
     }

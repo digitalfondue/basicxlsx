@@ -37,14 +37,27 @@ public class Style {
     private final Integer rotation;
     private final Pattern pattern;
     private final ReadingOrder readingOrder;
+    //
+    private final LineStyle diagonalLineStyle;
+    private final String diagonalColor;
+    private final DiagonalStyle diagonalStyle;
+    //
 
-    Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, Integer rotation, ReadingOrder readingOrder, FontDesc fontDesc) {
+    Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, Integer rotation,
+          LineStyle diagonalLineStyle, String diagonalColor, DiagonalStyle diagonalStyle,
+          ReadingOrder readingOrder,
+          FontDesc fontDesc) {
         this.numericFormat = numericFormat;
         this.numericFormatIndex = numericFormatIndex;
         this.bgColor = bgColor;
         this.fgColor = fgColor;
         this.pattern = pattern;
         this.rotation = rotation;
+        //
+        this.diagonalLineStyle = diagonalLineStyle;
+        this.diagonalColor = diagonalColor;
+        this.diagonalStyle = diagonalStyle;
+        //
         this.readingOrder = readingOrder;
         this.fontDesc = fontDesc;
     }
@@ -67,7 +80,7 @@ public class Style {
         return "FF" + color.toUpperCase(Locale.ENGLISH);
     }
 
-    int register(Function<String, Element> elementBuilder, Element fonts, Element cellXfs, Element numFmts, Element fills) {
+    int register(Function<String, Element> elementBuilder, Element fonts, Element cellXfs, Element numFmts, Element fills, Element borders) {
 
         int fontId = 0;
         int numFmtId = 164;//default value
@@ -209,6 +222,13 @@ public class Style {
 
         private Integer rotation;
         private ReadingOrder readingOrder;
+
+        //
+        private LineStyle diagonalLineStyle;
+        private String diagonalColor;
+        private DiagonalStyle diagonalStyle;
+        //
+
 
         private StyleBuilder(Function<Style, Boolean> register) {
             this.register = register;
@@ -371,6 +391,29 @@ public class Style {
             return this;
         }
 
+
+        //
+        public StyleBuilder diagonalStyle(DiagonalStyle diagonalStyle) {
+            this.diagonalStyle = diagonalStyle;
+            return this;
+        }
+
+        public StyleBuilder diagonalLineStyle(LineStyle lineStyle) {
+            this.diagonalLineStyle = lineStyle;
+            return this;
+        }
+
+        public StyleBuilder diagonalColor(String color) {
+            this.diagonalColor = color;
+            return this;
+        }
+
+        public StyleBuilder diagonalColor(Color color) {
+            return diagonalColor(color.color);
+        }
+        //
+
+
         /**
          * Generate the style.
          *
@@ -379,7 +422,9 @@ public class Style {
         public Style build() {
             FontDesc fd = fontBuilder != null ? new FontDesc(fontBuilder.name, fontBuilder.size, fontBuilder.color, fontBuilder.bold,
                     fontBuilder.italic, fontBuilder.fontUnderlineStyle, fontBuilder.strikeOut) : null;
-            Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, rotation, readingOrder, fd);
+            Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, rotation,
+                    diagonalLineStyle, diagonalColor, diagonalStyle,
+                    readingOrder, fd);
             register.apply(s);
             return s;
         }
@@ -564,7 +609,9 @@ public class Style {
     }
 
 
-    //Pattern https://docs.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.patternvalues?view=openxml-2.8.1
+    /**
+     * Pattern as defined in https://docs.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.patternvalues?view=openxml-2.8.1
+     */
     public enum Pattern {
         DARK_DOWN,
         DARK_GRAY,
@@ -596,6 +643,52 @@ public class Style {
             sb.replace(idxSeparator, idxSeparator + 2,
                     String.valueOf(Character.toUpperCase(s.charAt(idxSeparator + 1))));
             return sb.toString();
+        }
+    }
+
+    /**
+     * Line/Border style as defined in https://docs.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.borderstylevalues?view=openxml-2.8.1
+     */
+    public enum LineStyle {
+        DASH_DOT("dashDot"),
+        DASH_DOT_DOT("dashDotDot"),
+        DASHED,
+        DOTTED,
+        DOUBLE,
+        HAIR,
+        MEDIUM,
+        MEDIUM_DASH_DOT("mediumDashDot"),
+        MEDIUM_DASH_DOT_DOT("mediumDashDotDot"),
+        MEDIUM_DASHED("mediumDashed"),
+        NONE,
+        SLANT_DASH_DOT("slantDashDot"),
+        THICK,
+        THIN;
+
+        private final String xmlName;
+
+        LineStyle(String xmlName) {
+            this.xmlName = xmlName;
+        }
+
+        LineStyle() {
+            this(null);
+        }
+
+        String toXmlValue() {
+            return xmlName == null ? name().toLowerCase(Locale.ROOT) : xmlName;
+        }
+    }
+
+    public enum DiagonalStyle {
+        BOTTOM_LEFT_TO_TOP_RIGHT(1),
+        TOP_LEFT_TO_BOTTOM_RIGHT(2),
+        BOTH(3);
+
+        private final int idx;
+
+        DiagonalStyle(int idx) {
+            this.idx = idx;
         }
     }
 
