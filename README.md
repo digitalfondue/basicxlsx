@@ -8,7 +8,7 @@
 
 Apache POI, being a complete solution, is quite heavyweight.
 This library provide only the minimal amount of functionality to
-write xslx files.
+write xlsx files.
 
 ## License
 basicxlsx is licensed under the Apache License Version 2.0.
