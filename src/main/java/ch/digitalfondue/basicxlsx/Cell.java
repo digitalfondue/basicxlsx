@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Locale;
 import java.util.function.Function;
 
 /**
@@ -29,6 +30,9 @@ import java.util.function.Function;
 public abstract class Cell {
 
     abstract Element toElement(Function<String, Element> elementBuilder, int row, int column, int styleId);
+    String formattedValue() {
+        return null;
+    }
 
     Style style;
 
@@ -210,6 +214,11 @@ public abstract class Cell {
 
             return cell;
         }
+
+        @Override
+        String formattedValue() {
+            return value;
+        }
     }
 
     //number
@@ -294,6 +303,11 @@ public abstract class Cell {
             v.setTextContent(value ? "1" : "0");
             cell.appendChild(v);
             return cell;
+        }
+
+        @Override
+        String formattedValue() {
+            return Boolean.toString(value).toUpperCase(Locale.ROOT);
         }
     }
 

@@ -69,6 +69,13 @@ public class Style {
         this.borderDesc = borderDesc;
     }
 
+    FontDesc getFontDesc() {
+        return fontDesc;
+    }
+
+    Integer getRotation() {
+        return rotation;
+    }
 
     private static Element elementWithAttr(Function<String, Element> elementBuilder, String name, String attr, String value) {
         Element element = elementBuilder.apply(name);
@@ -513,7 +520,7 @@ public class Style {
         }
     }
 
-    private static class FontDesc {
+    static class FontDesc {
         final String name;
         final BigDecimal size;
         final String color;
