@@ -16,6 +16,7 @@
 package ch.digitalfondue.basicxlsx;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Optional;
 
 public class WorkbookTest {
 
@@ -68,6 +70,21 @@ public class WorkbookTest {
         s.setValueAt("Boolean values", 0, 3); //D1
         s.setValueAt(true, 1, 3); //D2
         s.setValueAt(false, 2, 3); //D3
+
+
+        //
+        Assert.assertTrue(s.getCellAt(0, 0).isPresent());
+        Assert.assertFalse(s.getCellAt(10, 10).isPresent());
+
+        Optional<Cell> removedCell = s.removeCellAt(0, 0);
+        Assert.assertTrue(removedCell.isPresent());
+        Assert.assertFalse(s.removeCellAt(0, 0).isPresent());
+        s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1
+        //
+
+        // trigger autoresize
+        s.autoResizeAllColumns();
+        //
 
         Sheet s2 = w.sheet("test2");
         s2.setValueAt("Hello", 1, 0).withStyle(borderDiagonal); //A2
