@@ -20,8 +20,10 @@ import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.math.BigDecimal;
 import java.text.AttributedString;
+
+import static ch.digitalfondue.basicxlsx.Style.DEFAULT_FONT_NAME;
+import static ch.digitalfondue.basicxlsx.Style.DEFAULT_FONT_SIZE;
 
 class CellWidthCalculator {
 
@@ -61,20 +63,22 @@ class CellWidthCalculator {
     //
 
     private static final FontRenderContext FONT_RENDER_CONTEXT = new FontRenderContext(null, true, true);
+    private static final Style.FontDesc DEFAULT_FONT_DESC = new Style.FontDesc(DEFAULT_FONT_NAME, DEFAULT_FONT_SIZE, null, false, false, null, false);
 
     private static float getDefaultCharWidth() {
         AttributedString str = new AttributedString(String.valueOf('0'));
-        copyAttributes(new Style.FontDesc("Arial", BigDecimal.TEN, null, false, false, null, false), str, 0, 1);
+        copyAttributes(DEFAULT_FONT_DESC, str, 0, 1);
         TextLayout layout = new TextLayout(str.getIterator(), FONT_RENDER_CONTEXT);
         return layout.getAdvance();
     }
 
     private static double getWidth(String value, Style style) {
         AttributedString str = new AttributedString(value);
-        copyAttributes(style.getFontDesc(), str, 0, value.length());
+        Style.FontDesc fontDesc = style.getFontDesc();
+        copyAttributes(fontDesc == null ? DEFAULT_FONT_DESC : fontDesc, str, 0, value.length());
         TextLayout layout = new TextLayout(str.getIterator(), FONT_RENDER_CONTEXT);
         Rectangle2D bounds;
-        if(style.getRotation() != null && style.getRotation() != 0){
+        if (style.getRotation() != null && style.getRotation() != 0) {
             /*
              * Transform the text using a scale so that it's height is increased by a multiple of the leading,
              * and then rotate the text before computing the bounds. The scale results in some whitespace around
@@ -94,8 +98,8 @@ class CellWidthCalculator {
     }
 
     private static void copyAttributes(Style.FontDesc font, AttributedString str, int startIdx, int endIdx) {
-        str.addAttribute(TextAttribute.FAMILY, font.name, startIdx, endIdx);
-        str.addAttribute(TextAttribute.SIZE, font.size.floatValue());
+        str.addAttribute(TextAttribute.FAMILY, font.name == null ? DEFAULT_FONT_NAME : font.name, startIdx, endIdx);
+        str.addAttribute(TextAttribute.SIZE, font.size == null ? DEFAULT_FONT_SIZE : font.size.floatValue());
         if (font.bold) {
             str.addAttribute(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD, startIdx, endIdx);
         }

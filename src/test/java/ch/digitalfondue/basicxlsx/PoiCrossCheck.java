@@ -55,8 +55,8 @@ public class PoiCrossCheck {
         //0x008000 -> green, quite surprisingly, using getColor() return 0, but going through the XSSFColor we have the correct value, why?
         Assert.assertEquals("FF008000", italicFontPoi.getXSSFColor().getARGBHex());
         //
-        Assert.assertEquals(11, italicFontPoi.getFontHeightInPoints());
-        Assert.assertEquals("Calibri", italicFontPoi.getFontName());
+        Assert.assertEquals(Style.DEFAULT_FONT_SIZE.shortValue(), italicFontPoi.getFontHeightInPoints());
+        Assert.assertEquals(Style.DEFAULT_FONT_NAME, italicFontPoi.getFontName());
         Assert.assertEquals(FontUnderline.DOUBLE_ACCOUNTING.getByteValue(), italicFontPoi.getUnderline());
 
 

@@ -619,13 +619,15 @@ public class Style {
         }
     }
 
+    static final String DEFAULT_FONT_NAME = "Arial";
+    static final BigDecimal DEFAULT_FONT_SIZE = BigDecimal.TEN;
 
     /**
      * Font specific options.
      */
     public static class FontBuilder {
-        String name = "Calibri";
-        BigDecimal size = BigDecimal.valueOf(11);//default
+        String name = DEFAULT_FONT_NAME;
+        BigDecimal size = DEFAULT_FONT_SIZE;
         String color;
         boolean bold;
         boolean italic;
