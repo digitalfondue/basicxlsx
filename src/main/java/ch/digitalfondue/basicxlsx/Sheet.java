@@ -41,16 +41,77 @@ public class Sheet {
         return max;
     }
 
+    /**
+     * Define an height for a given row
+     *
+     * @param rowIndex
+     * @param height
+     */
     public void setRowHeight(int rowIndex, double height) {
         this.rowHeight.put(rowIndex, height);
     }
 
+    /**
+     * Define a width for a given column
+     *
+     * @param columnIndex
+     * @param width
+     */
     public void setColumnWidth(int columnIndex, double width) {
         this.columnWidth.put(columnIndex, width);
     }
 
+    /**
+     * Define the default reading order (left to right or right to left)
+     *
+     * @param readingOrder
+     */
     public void setReadingOrder(Style.ReadingOrder readingOrder) {
         this.readingOrder = readingOrder;
+    }
+
+    List<Cell> getColumnCells(int column) {
+        List<Cell> res = new ArrayList<>();
+        for (Map.Entry<Integer, SortedMap<Integer, Cell>> e : cells.entrySet()) {
+            if (e.getValue() != null && e.getValue().containsKey(column) && e.getValue().get(column) != null) {
+                res.add(e.getValue().get(column));
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Auto resize a given colum in function of the content.
+     * Note/Limitations:
+     *  <ul>
+     *      <li>the column will have a default minimum of 8.43 width</li>
+     *      <li>at the moment, only the string type column will be considered</li>
+     *      <li>the operation can consume some time, so only call it just before writing the workbook.</li>
+     *  </ul>
+     *
+     * @param column
+     */
+    public void autoResizeColumn(int column) {
+        Optional<Double> maxValue = getColumnCells(column)
+                .stream()
+                .map(CellWidthCalculator::cellWidth)
+                .reduce(Math::max)
+                .filter(value -> value > 8.43); //8.43 is the default length
+
+        maxValue.ifPresent(width -> {
+            setColumnWidth(column, width);
+        });
+    }
+
+    /**
+     * Auto resize all the column. See {@link #autoResizeColumn(int)} about the limitations.
+     *
+     */
+    public void autoResizeAllColumns() {
+        int maxColIdx = getMaxCol();
+        for (int i = 0; i <= maxColIdx; i++) {
+            autoResizeColumn(i);
+        }
     }
 
     private Cell setCellAt(Cell cell, int row, int column) {
@@ -58,56 +119,145 @@ public class Sheet {
         return cell;
     }
 
-    //set string
+    /**
+     * Set a string cell at a given row/column.
+     *
+     * @param value
+     * @param row
+     * @param column
+     * @return
+     */
     public Cell setValueAt(String value, int row, int column) {
         return setCellAt(Cell.cell(value), row, column);
     }
 
-    //numbers
+
+    /**
+     * Set a number at a given row/column
+     *
+     * @param value
+     * @param row
+     * @param column
+     * @return
+     */
     public Cell setValueAt(long value, int row, int column) {
         return setCellAt(Cell.cell(value), row, column);
     }
 
+    /**
+     * Set a number at a given row/column
+     *
+     * @param value
+     * @param row
+     * @param column
+     * @return
+     */
     public Cell setValueAt(double value, int row, int column) {
         return setCellAt(Cell.cell(value), row, column);
     }
 
+    /**
+     * Set a number at a given row/column
+     *
+     * @param value
+     * @param row
+     * @param column
+     * @return
+     */
     public Cell setValueAt(BigDecimal value, int row, int column) {
         return setCellAt(Cell.cell(value), row, column);
     }
     //
 
-    //boolean
+
+    /**
+     * Set a boolean at a given row/column
+     *
+     * @param value
+     * @param row
+     * @param column
+     * @return
+     */
     public Cell setValueAt(boolean value, int row, int column) {
         return setCellAt(Cell.cell(value), row, column);
     }
-    //
 
-    //formula
+
+    /**
+     * Set a formula at a given row/column.
+     *
+     * Note: the formula name must be in english. If you target a xlsx viewer, you may need to use
+     * {@link #setFormulaAt(String, String, int, int)} where you can specify the result of the formula.
+     *
+     * @param formula
+     * @param row
+     * @param column
+     * @return
+     */
     public Cell setFormulaAt(String formula, int row, int column) {
         return setCellAt(Cell.formula(formula), row, column);
     }
 
+
+    /**
+     * Set a formula at a given row/column. You can specify the result if you target a xslx viewer.
+     *
+     * @param formula
+     * @param result
+     * @param row
+     * @param column
+     * @return
+     */
     public Cell setFormulaAt(String formula, String result, int row, int column) {
         return setCellAt(Cell.formula(formula, result), row, column);
     }
     //
 
 
-    //date
+    /**
+     * Set a date at a given row/column. Note: you will need to specify a formatting for the date.
+     *
+     * @param date
+     * @param row
+     * @param column
+     * @return
+     */
     public Cell setValueAt(Date date, int row, int column) {
         return setCellAt(Cell.cell(date), row, column);
     }
 
-    public Cell setValueAt(LocalDateTime localDateTime, int row, int column) {
-        return setCellAt(Cell.cell(localDateTime), row, column);
+    /**
+     * Set a date at a given row/column. Note: you will need to specify a formatting for the date.
+     *
+     * @param date
+     * @param row
+     * @param column
+     * @return
+     */
+    public Cell setValueAt(LocalDateTime date, int row, int column) {
+        return setCellAt(Cell.cell(date), row, column);
     }
 
-    public Cell setValueAt(LocalDate localDate, int row, int column) {
-        return setCellAt(Cell.cell(localDate), row, column);
+    /**
+     * Set a date at a given row/column. Note: you will need to specify a formatting for the date.
+     *
+     * @param date
+     * @param row
+     * @param column
+     * @return
+     */
+    public Cell setValueAt(LocalDate date, int row, int column) {
+        return setCellAt(Cell.cell(date), row, column);
     }
     //
 
+    /**
+     * Remove a cell at a given row/column.
+     *
+     * @param row
+     * @param column
+     * @return
+     */
     public Optional<Cell> removeCellAt(int row, int column) {
         Cell cell = null;
         if (cells.containsKey(row)) {
@@ -119,6 +269,13 @@ public class Sheet {
         return Optional.ofNullable(cell);
     }
 
+    /**
+     * Get a cell at a given row/column.
+     *
+     * @param row
+     * @param column
+     * @return
+     */
     public Optional<Cell> getCellAt(int row, int column) {
         if (cells.containsKey(row)) {
             return Optional.ofNullable(cells.get(row).get(column));

@@ -73,7 +73,7 @@ class CellWidthCalculator {
         AttributedString str = new AttributedString(value);
         copyAttributes(style.getFontDesc(), str, 0, value.length());
         TextLayout layout = new TextLayout(str.getIterator(), FONT_RENDER_CONTEXT);
-        final Rectangle2D bounds;
+        Rectangle2D bounds;
         if(style.getRotation() != null && style.getRotation() != 0){
             /*
              * Transform the text using a scale so that it's height is increased by a multiple of the leading,
@@ -89,7 +89,7 @@ class CellWidthCalculator {
             bounds = layout.getBounds();
         }
         // frameWidth accounts for leading spaces which is excluded from bounds.getWidth()
-        final double frameWidth = bounds.getX() + bounds.getWidth();
+        double frameWidth = bounds.getX() + bounds.getWidth();
         return ((frameWidth) / getDefaultCharWidth());
     }
 
