@@ -52,7 +52,7 @@ public class WorkbookTest {
                 .borderStyle(Style.BorderBuilder.Border.BOTTOM, Style.LineStyle.DASH_DOT_DOT)
                 .build();
 
-        Style rotation = w.defineStyle().rotation(90).build();
+        Style rotation = w.defineStyle().rotation(85).build();
 
         Sheet s = w.sheet("test");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1

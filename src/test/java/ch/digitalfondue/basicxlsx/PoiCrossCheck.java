@@ -80,6 +80,10 @@ public class PoiCrossCheck {
         Assert.assertEquals("0.00", sheet1.getRow(4).getCell(2).getCellStyle().getDataFormatString());
         //
 
+        // check rotation
+        Assert.assertEquals(85, sheet1.getRow(1).getCell(2).getCellStyle().getRotation());
+        //
+
 
         //check sheet 2 content
         org.apache.poi.ss.usermodel.Sheet sheet2 = workbook.getSheet("test2");

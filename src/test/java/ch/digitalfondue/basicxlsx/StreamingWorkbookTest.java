@@ -58,7 +58,7 @@ public class StreamingWorkbookTest {
                     .borderStyle(Style.BorderBuilder.Border.BOTTOM, Style.LineStyle.DASH_DOT_DOT)
                     .build();
 
-            Style rotation = w.defineStyle().rotation(90).build();
+            Style rotation = w.defineStyle().rotation(85).build();
             //
 
             //sheet 1
