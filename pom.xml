@@ -152,5 +152,26 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <!-- copy xml template files -->
+            <resource>
+                <filtering>false</filtering>
+                <directory>${project.basedir}/src/main/resources</directory><!-- from -->
+                <targetPath>${project.build.directory}/classes</targetPath><!-- to -->
+                <includes><!-- what -->
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <!-- copy license/notice file inside jar -->
+            <resource>
+                <filtering>false</filtering>
+                <directory>${project.basedir}</directory><!-- from -->
+                <targetPath>${project.build.directory}/classes</targetPath><!-- to -->
+                <includes><!-- what -->
+                    <include>LICENSE.txt</include>
+                    <include>NOTICE.txt</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 </project>

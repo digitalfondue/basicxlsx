@@ -1,0 +1,5 @@
+basicxlsx
+Copyright 2018 digitalfondue (info@digitalfondue.ch)
+
+This product includes code developed at The Apache Software Foundation (https://www.apache.org/):
+ - Apache POI (https://poi.apache.org/)
