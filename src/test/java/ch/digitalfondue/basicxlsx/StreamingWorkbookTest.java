@@ -66,7 +66,7 @@ public class StreamingWorkbookTest {
                     cell("Hello éé èè Michał").withStyle(italic), //A1
                     cell("B1").withStyle(italic), //B1
                     cell("Numeric values").withStyle(timesNewRomanBoldAndItalic), //C1
-                    cell("Boolean values") //D1
+                    cell("Boolean values").withStyle(rotation) //D1
             };
 
             Cell[] s1row2 = new Cell[]{

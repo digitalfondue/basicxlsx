@@ -69,7 +69,7 @@ public class WorkbookTest {
         s.setValueAt(new BigDecimal("1.234567890"), 4, 2).withStyle(twoDecimalBuiltin); //C5
 
         //boolean
-        s.setValueAt("Boolean values", 0, 3); //D1
+        s.setValueAt("Boolean values", 0, 3).withStyle(rotation); //D1
         s.setValueAt(true, 1, 3); //D2
         s.setValueAt(false, 2, 3); //D3
 
