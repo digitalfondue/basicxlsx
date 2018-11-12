@@ -52,6 +52,8 @@ public class WorkbookTest {
                 .borderStyle(Style.BorderBuilder.Border.BOTTOM, Style.LineStyle.DASH_DOT_DOT)
                 .build();
 
+        Style rotation = w.defineStyle().rotation(90).build();
+
         Sheet s = w.sheet("test");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1
         s.setValueAt("B1", 0, 1).withStyle(italic); //B1
@@ -61,7 +63,7 @@ public class WorkbookTest {
 
         //numbers
         s.setValueAt("Numeric values", 0, 2).withStyle(timesNewRomanBoldAndItalic); //C1
-        s.setValueAt(42, 1, 2); //C2
+        s.setValueAt(42, 1, 2).withStyle(rotation); //C2
         s.setValueAt(new BigDecimal("2.512351234324832"), 2, 2).withStyle(twoDecimal); //C3
         s.setValueAt(3.14, 3, 2); //C4
         s.setValueAt(new BigDecimal("1.234567890"), 4, 2).withStyle(twoDecimalBuiltin); //C5

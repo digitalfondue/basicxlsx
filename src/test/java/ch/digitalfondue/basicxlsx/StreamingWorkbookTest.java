@@ -57,6 +57,8 @@ public class StreamingWorkbookTest {
                     .borderColor(Style.BorderBuilder.Border.BOTTOM, Style.Color.BLUE)
                     .borderStyle(Style.BorderBuilder.Border.BOTTOM, Style.LineStyle.DASH_DOT_DOT)
                     .build();
+
+            Style rotation = w.defineStyle().rotation(90).build();
             //
 
             //sheet 1
@@ -70,7 +72,7 @@ public class StreamingWorkbookTest {
             Cell[] s1row2 = new Cell[]{
                     cell("A2").withStyle(bold), //A2
                     cell("World!").withStyle(bold), //B2
-                    cell(42), //C2
+                    cell(42).withStyle(rotation), //C2
                     cell(true) //D2
             };
 
