@@ -31,6 +31,13 @@ gradle:
 compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.4.0'
 ```
 
+## Javadoc
+
+Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basicxlsx/).
+ 
+The api is minimalistic, basically you only need to choose Workbook type (streaming or not),
+ define your styles, define the data and write the workbook to an OutputStream. 
+
 ## Example
 
 ### Minimal example
@@ -154,11 +161,6 @@ public class ExampleStreamingWithStyle {
 
 See https://github.com/digitalfondue/basicxlsx/blob/master/src/test/java/ch/digitalfondue/basicxlsx/StreamingWorkbookTest.java
 for a more complete example with style, formatting and other data types.
-
-
-## Javadoc
-
-Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basicxlsx/)
 
 
 ## TODO:

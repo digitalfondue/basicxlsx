@@ -26,7 +26,8 @@ import java.util.function.Function;
 import java.util.zip.ZipOutputStream;
 
 /**
- * Represent a xlsx workbook. It's the main entry point for generating a xlsx file.
+ * <p>Represent a xlsx workbook. It's the main entry point for generating a xlsx file.</p>
+ * <p>This workbook keep all the cells data in memory. See {@link StreamingWorkbook} as an alternative.</p>
  */
 public class Workbook extends AbstractWorkbook {
 

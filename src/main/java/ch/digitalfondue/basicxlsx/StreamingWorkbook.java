@@ -35,6 +35,12 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * <p>Represent a xlsx workbook. It's the main entry point for generating a xlsx file.</p>
+ * <p>This workbook, as his name implies, allow to stream the rows one by one, thus avoiding to keep all
+ * the cells data in memory. This mode has some downsides (no auto sizing for column), but it's useful if
+ * you are memory constrained and/or you don't need all the features of the more complete {@link Workbook}.</p>
+ */
 public class StreamingWorkbook extends AbstractWorkbook implements Closeable, AutoCloseable {
 
     /**
