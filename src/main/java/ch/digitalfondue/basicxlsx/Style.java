@@ -326,6 +326,11 @@ public class Style {
             return fontBuilder;
         }
 
+        /**
+         * Border related options..
+         *
+         * @return a BorderBuilder
+         */
         public BorderBuilder border() {
             if (borderBuilder == null) {
                 borderBuilder = new BorderBuilder(this);
@@ -562,6 +567,9 @@ public class Style {
         }
     }
 
+    /**
+     * Border specific options builder.
+     */
     public static class BorderBuilder {
 
         private String color;
@@ -583,34 +591,76 @@ public class Style {
             return styleBuilder.build();
         }
 
+        /**
+         * Color for all the 4 borders.
+         *
+         * @param color
+         * @return
+         */
         public BorderBuilder color(String color) {
             this.color = color;
             return this;
         }
 
+        /**
+         * Color for all the 4 borders.
+         *
+         * @param color
+         * @return
+         */
         public BorderBuilder color(Color color) {
             return color(color.color);
         }
 
+        /**
+         * Line style for all the 4 borders.
+         *
+         * @param style
+         * @return
+         */
         public BorderBuilder style(LineStyle style) {
             this.style = style;
             return this;
         }
 
+        /**
+         * Define the border color for a specific border.
+         *
+         * @param border
+         * @param color
+         * @return
+         */
         public BorderBuilder borderColor(Border border, String color) {
             borderColor.put(border, color);
             return this;
         }
 
+        /**
+         * Define the border color for a specific border.
+         *
+         * @param border
+         * @param color
+         * @return
+         */
         public BorderBuilder borderColor(Border border, Color color) {
             return borderColor(border, color.color);
         }
 
+        /**
+         * Define the border style for a specific border.
+         *
+         * @param border
+         * @param style
+         * @return
+         */
         public BorderBuilder borderStyle(Border border, LineStyle style) {
             borderStyle.put(border, style);
             return this;
         }
 
+        /**
+         * Which border.
+         */
         public enum Border {
             TOP,
             RIGHT,
@@ -648,28 +698,58 @@ public class Style {
             return styleBuilder.build();
         }
 
+        /**
+         * Bold variant.
+         *
+         * @param bold
+         * @return
+         */
         public FontBuilder bold(boolean bold) {
             this.bold = bold;
             return this;
         }
 
+        /**
+         * Italic variant.
+         *
+         * @param italic
+         * @return
+         */
         public FontBuilder italic(boolean italic) {
             this.italic = italic;
             return this;
         }
 
+        /**
+         * Name of the font (e.g.: Arial, Verdana, ...)
+         *
+         * @param name
+         * @return
+         */
         public FontBuilder name(String name) {
             Objects.requireNonNull(name);
             this.name = name;
             return this;
         }
 
+        /**
+         * Define the underline style.
+         *
+         * @param fontUnderlineStyle
+         * @return
+         */
         public FontBuilder underline(FontUnderlineStyle fontUnderlineStyle) {
             Objects.requireNonNull(fontUnderlineStyle);
             this.fontUnderlineStyle = fontUnderlineStyle;
             return this;
         }
 
+        /**
+         * Strike the text.
+         *
+         * @param strikeOut
+         * @return
+         */
         public FontBuilder strikeOut(boolean strikeOut) {
             this.strikeOut = strikeOut;
             return this;
@@ -686,20 +766,44 @@ public class Style {
             return this;
         }
 
+        /**
+         * Set the font with a given color.
+         *
+         * @param color
+         * @return
+         */
         public FontBuilder color(Color color) {
             return color(color.color);
         }
 
+        /**
+         * Font size.
+         *
+         * @param size
+         * @return
+         */
         public FontBuilder size(int size) {
             this.size = BigDecimal.valueOf(size);
             return this;
         }
 
+        /**
+         * Font size.
+         *
+         * @param size
+         * @return
+         */
         public FontBuilder size(double size) {
             this.size = BigDecimal.valueOf(size);
             return this;
         }
 
+        /**
+         * Font size.
+         *
+         * @param size
+         * @return
+         */
         public FontBuilder size(BigDecimal size) {
             this.size = size;
             return this;
