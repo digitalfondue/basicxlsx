@@ -24,7 +24,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static ch.digitalfondue.basicxlsx.Cell.cell;
@@ -69,12 +71,12 @@ public class StreamingWorkbookTest {
                     cell("Boolean values").withStyle(rotation) //D1
             };
 
-            Cell[] s1row2 = new Cell[]{
+            List<Cell> s1row2 = Arrays.asList(
                     cell("A2").withStyle(bold), //A2
                     cell("World!").withStyle(bold), //B2
                     cell(42).withStyle(rotation), //C2
                     cell(true) //D2
-            };
+            );
 
             Cell[] s1row3 = new Cell[] {
                     null,

@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -40,6 +41,10 @@ import java.util.zip.ZipOutputStream;
  * <p>This workbook, as his name implies, allow to stream the rows one by one, thus avoiding to keep all
  * the cells data in memory. This mode has some downsides (no auto sizing for column), but it's useful if
  * you are memory constrained and/or you don't need all the features of the more complete {@link Workbook}.</p>
+ *
+ * <p>Note: this class implements {@link AutoCloseable} and it's best used within a try-with-resources statement.
+ * If it's not in a try-with-resources statement, then you _must_ call {@link #close()} or else the
+ * xlsx file will be incomplete.</p>
  */
 public class StreamingWorkbook extends AbstractWorkbook implements Closeable, AutoCloseable {
 
@@ -78,12 +83,45 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         }
     }
 
+    /**
+     * Wrap an array of cells in a {@link Row}
+     *
+     * @param cells
+     * @return
+     */
     public static Row row(Cell[] cells) {
         return new Row(cells, null);
     }
 
+    /**
+     * Wrap a collection of cells in a {@link Row}
+     *
+     * @param cells
+     * @return
+     */
+    public static Row row(Collection<Cell> cells) {
+        return row(cells.toArray(new Cell[cells.size()]));
+    }
+
+    /**
+     * Wrap an array of cells in a {@link Row}, with a specific height.
+     *
+     * @param cells
+     * @return
+     */
     public static Row row(Cell[] cells, double height) {
         return new Row(cells, height);
+    }
+
+    /**
+     * Wrap a collection of cells in a {@link Row}, with a specific height.
+     *
+     * @param cells
+     * @param height
+     * @return
+     */
+    public static Row row(Collection<Cell> cells, double height) {
+        return row(cells.toArray(new Cell[cells.size()]), height);
     }
 
     private final ZipOutputStream zos;
@@ -109,6 +147,11 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         this.elementBuilder = Utils.toElementBuilder(Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml"));
     }
 
+    /**
+     * Close the workbook.
+     *
+     * @throws IOException
+     */
     @Override
     public void close() throws IOException {
         if (!hasEnded) {
@@ -117,6 +160,11 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         zos.close();
     }
 
+    /**
+     * Define a new style.
+     *
+     * @return a style builder
+     */
     @Override
     public Style.StyleBuilder defineStyle() {
         if (hasRegisteredStyles) {
@@ -125,14 +173,30 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         return super.defineStyle();
     }
 
+    /**
+     * Write a sheet.
+     *
+     * @param name: the name of the sheet
+     * @param rows: the rows
+     * @throws IOException
+     */
     public void withSheet(String name, Stream<Row> rows) throws IOException {
         withSheet(name, rows, null);
     }
+
 
     private void write(String s) throws IOException {
         zos.write(s.getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * Write a sheet (with some options).
+     *
+     * @param name
+     * @param rows
+     * @param options
+     * @throws IOException
+     */
     public void withSheet(String name, Stream<Row> rows, SheetOptions options) throws IOException {
         if (hasEnded) {
             throw new IllegalStateException("Already ended");
@@ -230,7 +294,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
         }
     }
 
-    public void end() throws IOException {
+    private void end() throws IOException {
         if (hasEnded) {
             throw new IllegalStateException("already ended");
         } else {
