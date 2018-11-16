@@ -44,6 +44,24 @@ class Utils {
 
     static final String NS_SPREADSHEETML_2006_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
+
+    static Element elementWithAttr(Function<String, Element> elementBuilder, String name, String attr, String value) {
+        Element element = elementBuilder.apply(name);
+        element.setAttribute(attr, value);
+        return element;
+    }
+
+    static Element elementWithVal(Function<String, Element> elementBuilder, String name, String value) {
+        return elementWithAttr(elementBuilder, name, "val", value);
+    }
+
+    static String formatColor(String color) {
+        if (color.startsWith("#")) {
+            color = color.substring(1);
+        }
+        return "FF" + color.toUpperCase(Locale.ENGLISH);
+    }
+
     static Function<String, Element> toElementBuilder(Document doc) {
         return (elemName) -> doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, elemName);
     }

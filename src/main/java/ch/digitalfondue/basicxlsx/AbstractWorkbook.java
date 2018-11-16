@@ -48,7 +48,7 @@ class AbstractWorkbook {
      * @return a style builder
      */
     public Style.StyleBuilder defineStyle() {
-        return Style.define(styles::add);
+        return new Style.StyleBuilder(styles::add);
     }
 
     static void addFileWithDocument(ZipOutputStream zos, String fileName, Document doc) throws IOException {

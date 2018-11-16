@@ -15,6 +15,8 @@
  */
 package ch.digitalfondue.basicxlsx;
 
+import static ch.digitalfondue.basicxlsx.Utils.*;
+
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
@@ -77,23 +79,6 @@ public class Style {
         return rotation;
     }
 
-    private static Element elementWithAttr(Function<String, Element> elementBuilder, String name, String attr, String value) {
-        Element element = elementBuilder.apply(name);
-        element.setAttribute(attr, value);
-        return element;
-    }
-
-    private static Element elementWithVal(Function<String, Element> elementBuilder, String name, String value) {
-        return elementWithAttr(elementBuilder, name, "val", value);
-    }
-
-    private static String formatColor(String color) {
-        if (color.startsWith("#")) {
-            color = color.substring(1);
-        }
-        return "FF" + color.toUpperCase(Locale.ENGLISH);
-    }
-
     int register(Function<String, Element> elementBuilder, Element fonts, Element cellXfs, Element numFmts, Element fills, Element borders) {
 
         int fontId = 0;
@@ -105,7 +90,7 @@ public class Style {
             numFmtId = numericFormatIndex; //builtin formatting
         } else if (numericFormat != null) {
             Element numFmt = elementWithAttr(elementBuilder, "numFmt", "formatCode", numericFormat);
-            int count = numFmts.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "numFmt").getLength();
+            int count = numFmts.getElementsByTagNameNS(NS_SPREADSHEETML_2006_MAIN, "numFmt").getLength();
             numFmtId = 164 + count; //custom formatting
             numFmt.setAttribute("numFmtId", Integer.toString(numFmtId));
             numFmts.appendChild(numFmt);
@@ -121,7 +106,7 @@ public class Style {
             //</fill>
 
             Element fill = elementBuilder.apply("fill");
-            fillId = fills.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "fill").getLength();
+            fillId = fills.getElementsByTagNameNS(NS_SPREADSHEETML_2006_MAIN, "fill").getLength();
 
             Element patternFill = elementWithAttr(elementBuilder, "patternFill", "patternType", pattern == null ? "solid" : pattern.toXmlValue());
             fill.appendChild(patternFill);
@@ -182,7 +167,7 @@ public class Style {
 
             fonts.appendChild(font);
 
-            fontId = fonts.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "font").getLength() - 1;
+            fontId = fonts.getElementsByTagNameNS(NS_SPREADSHEETML_2006_MAIN, "font").getLength() - 1;
         }
 
 
@@ -232,7 +217,7 @@ public class Style {
 
             borders.appendChild(border);
 
-            borderId = borders.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "border").getLength() - 1;
+            borderId = borders.getElementsByTagNameNS(NS_SPREADSHEETML_2006_MAIN, "border").getLength() - 1;
         }
 
         //
@@ -270,7 +255,7 @@ public class Style {
         //
         cellXfs.appendChild(xf);
 
-        return cellXfs.getElementsByTagNameNS(Utils.NS_SPREADSHEETML_2006_MAIN, "xf").getLength() - 1;
+        return cellXfs.getElementsByTagNameNS(NS_SPREADSHEETML_2006_MAIN, "xf").getLength() - 1;
     }
 
     private void applyBorder(Function<String, Element> elementBuilder, Element element, BorderBuilder.Border border) {
@@ -310,7 +295,7 @@ public class Style {
         //
 
 
-        private StyleBuilder(Function<Style, Boolean> register) {
+        StyleBuilder(Function<Style, Boolean> register) {
             this.register = register;
         }
 
@@ -959,10 +944,5 @@ public class Style {
         BOTTOM_LEFT_TO_TOP_RIGHT,
         TOP_LEFT_TO_BOTTOM_RIGHT,
         BOTH;
-    }
-
-
-    static StyleBuilder define(Function<Style, Boolean> register) {
-        return new StyleBuilder(register);
     }
 }
