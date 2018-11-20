@@ -46,7 +46,7 @@ public class StreamingWorkbookTest {
         try (StreamingWorkbook w = new StreamingWorkbook(baos)) {
             // you must define the styles before
             Style bold = w.defineStyle().font().color("#ffcc00").bold(true).build();
-            Style italic = w.defineStyle().bgColor("#ffcc00").font().color(Style.Color.GREEN).underline(Style.FontUnderlineStyle.DOUBLE_ACCOUNTING_UNDERLINE).italic(true).build();
+            Style italic = w.defineStyle().verticalAlignment(Style.VerticalAlignment.CENTER).horizontalAlignment(Style.HorizontalAlignment.CENTER).bgColor("#ffcc00").font().color(Style.Color.GREEN).underline(Style.FontUnderlineStyle.DOUBLE_ACCOUNTING_UNDERLINE).italic(true).build();
             Style timesNewRomanBoldAndItalic = w.defineStyle().font().name("Times New Roman").size(15).italic(true).bold(true).strikeOut(true).build();
 
             Style twoDecimal = w.defineStyle().fgColor(Style.Color.RED).numericFormat("0.00").build();

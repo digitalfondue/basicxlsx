@@ -41,6 +41,8 @@ public class Style {
     private final Integer rotation;
     private final Pattern pattern;
     private final ReadingOrder readingOrder;
+    private final VerticalAlignment verticalAlignment;
+    private final HorizontalAlignment horizontalAlignment;
     //
     private final LineStyle diagonalLineStyle;
     private final String diagonalColor;
@@ -52,6 +54,8 @@ public class Style {
     Style(String numericFormat, Integer numericFormatIndex, String bgColor, String fgColor, Pattern pattern, Integer rotation,
           LineStyle diagonalLineStyle, String diagonalColor, DiagonalStyle diagonalStyle,
           ReadingOrder readingOrder,
+          VerticalAlignment verticalAlignment,
+          HorizontalAlignment horizontalAlignment,
           FontDesc fontDesc,
           BorderDesc borderDesc) {
         this.numericFormat = numericFormat;
@@ -66,6 +70,8 @@ public class Style {
         this.diagonalStyle = diagonalStyle;
         //
         this.readingOrder = readingOrder;
+        this.verticalAlignment = verticalAlignment;
+        this.horizontalAlignment = horizontalAlignment;
         this.fontDesc = fontDesc;
         //
         this.borderDesc = borderDesc;
@@ -222,6 +228,8 @@ public class Style {
 
         //
 
+        boolean applyAlignment = readingOrder != null || verticalAlignment != null || horizontalAlignment != null;
+
         // add the "xf" element
         // <xf numFmtId="164" fontId="4" fillId="0" borderId="0" xfId="0" applyFont="true" applyBorder="false" applyAlignment="false" applyProtection="false">
         //  <alignment horizontal="general" vertical="bottom" textRotation="0" wrapText="false" indent="0" shrinkToFit="false"/>
@@ -235,11 +243,11 @@ public class Style {
         xf.setAttribute("xfId", "0");
         xf.setAttribute("applyFont", "true");
         xf.setAttribute("applyBorder", "false");
-        xf.setAttribute("applyAlignment", readingOrder != null ? "true" : "false");
+        xf.setAttribute("applyAlignment", applyAlignment ? "true" : "false");
         xf.setAttribute("applyProtection", "false");
         Element alignment = elementBuilder.apply("alignment");
-        alignment.setAttribute("horizontal", "general");
-        alignment.setAttribute("vertical", "bottom");
+        alignment.setAttribute("horizontal", horizontalAlignment == null ? "general" : horizontalAlignment.name().toLowerCase(Locale.ROOT));
+        alignment.setAttribute("vertical", verticalAlignment == null ? "bottom" : verticalAlignment.name().toLowerCase(Locale.ROOT));
         alignment.setAttribute("textRotation", rotation == null ? "0" : Integer.toString(rotation));
         alignment.setAttribute("wrapText", "false");
         alignment.setAttribute("indent", "0");
@@ -292,6 +300,9 @@ public class Style {
         private DiagonalStyle diagonalStyle;
 
         private BorderBuilder borderBuilder;
+        //
+        private VerticalAlignment verticalAlignment;
+        private HorizontalAlignment horizontalAlignment;
         //
 
 
@@ -468,6 +479,16 @@ public class Style {
             return this;
         }
 
+        public StyleBuilder verticalAlignment(VerticalAlignment verticalAlignment) {
+            this.verticalAlignment = verticalAlignment;
+            return this;
+        }
+
+        public StyleBuilder horizontalAlignment(HorizontalAlignment horizontalAlignment) {
+            this.horizontalAlignment = horizontalAlignment;
+            return this;
+        }
+
 
         //
         public StyleBuilder diagonalStyle(DiagonalStyle diagonalStyle) {
@@ -504,7 +525,7 @@ public class Style {
 
             Style s = new Style(numericFormat, numericFormatIndex, bgColor, fgColor, pattern, rotation,
                     diagonalLineStyle, diagonalColor, diagonalStyle,
-                    readingOrder, fd, bd);
+                    readingOrder, verticalAlignment, horizontalAlignment, fd, bd);
             register.apply(s);
             return s;
         }
@@ -944,5 +965,23 @@ public class Style {
         BOTTOM_LEFT_TO_TOP_RIGHT,
         TOP_LEFT_TO_BOTTOM_RIGHT,
         BOTH;
+    }
+
+    public enum HorizontalAlignment {
+        LEFT,
+        CENTER,
+        RIGHT,
+        DISTRIBUTED,
+        FILL,
+        GENERAL,
+        JUSTIFY
+    }
+
+    public enum VerticalAlignment {
+        TOP,
+        CENTER,
+        BOTTOM,
+        DISTRIBUTED,
+        JUSTIFY
     }
 }

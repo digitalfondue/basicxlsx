@@ -172,7 +172,7 @@ for a more complete example with style, formatting and other data types.
  - [ ] conditional formatting
  - [ ] ... ?
  - styling
-    - [ ] alignment 
+    - [ ] complete missing alignment
     - [ ] indent https://xlsxwriter.readthedocs.io/format.html#format-set-indent (some gotcha are present it seems...)
     - see for other missing https://xlsxwriter.readthedocs.io/format.html
 

@@ -15,10 +15,8 @@
  */
 package ch.digitalfondue.basicxlsx;
 
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.FontUnderline;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.model.StylesTable;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
@@ -44,12 +42,15 @@ public class PoiCrossCheck {
 
         //check sheet 1 content
         org.apache.poi.ss.usermodel.Sheet sheet1 = workbook.getSheet("test");
-        Assert.assertEquals("Hello éé èè Michał", sheet1.getRow(0).getCell(0).getStringCellValue());
-        Assert.assertEquals(CellType.STRING, sheet1.getRow(0).getCell(0).getCellType());
-        Assert.assertEquals("FFFFCC00", ((XSSFColor) sheet1.getRow(0).getCell(0).getCellStyle().getFillBackgroundColorColor()).getARGBHex());
+        Cell cell00 = sheet1.getRow(0).getCell(0);
+        Assert.assertEquals("Hello éé èè Michał", cell00.getStringCellValue());
+        Assert.assertEquals(CellType.STRING, cell00.getCellType());
+        Assert.assertEquals("FFFFCC00", ((XSSFColor) cell00.getCellStyle().getFillBackgroundColorColor()).getARGBHex());
+        Assert.assertEquals(VerticalAlignment.CENTER, cell00.getCellStyle().getVerticalAlignment());
+        Assert.assertEquals(HorizontalAlignment.CENTER, cell00.getCellStyle().getAlignment());
 
         //italic, size 10, Arial (size + name = default)
-        XSSFFont italicFontPoi = (XSSFFont) workbook.getFontAt(sheet1.getRow(0).getCell(0).getCellStyle().getFontIndexAsInt());
+        XSSFFont italicFontPoi = (XSSFFont) workbook.getFontAt(cell00.getCellStyle().getFontIndexAsInt());
         Assert.assertTrue(italicFontPoi.getItalic());
         Assert.assertFalse(italicFontPoi.getBold());
         //0x008000 -> green, quite surprisingly, using getColor() return 0, but going through the XSSFColor we have the correct value, why?
