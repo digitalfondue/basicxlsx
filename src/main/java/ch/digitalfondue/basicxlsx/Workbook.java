@@ -75,13 +75,17 @@ public class Workbook extends AbstractWorkbook {
         }
         //
 
-        //TODO check this. It seems not mandatory, seems to be used for sizing the column?
+        // TODO check this. It seems not mandatory, seems to be used for sizing the column.
+        // Look like that excel, if col is present, is quite hard to please -> we must define a width if col is present!
         Element cols = getElement(doc, "cols");
         final int colsCount = sheet.getMaxCol() + 1;
         for (int i = 0; i < colsCount; i++) {
             Element col = elementBuilder.apply("col");
             col.setAttribute("min", Integer.toString(i + 1));
             col.setAttribute("max", Integer.toString(i + 1));
+            col.setAttribute("customWidth", "true");
+            col.setAttribute("width", "8.43"); //<- default value...
+            col.setAttribute("bestFit", "true");
 
             if (sheet.columnWidth.containsKey(i)) {
                 col.setAttribute("customWidth", "true");

@@ -132,7 +132,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
     private static final byte[] SHEET_START = ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n").getBytes(StandardCharsets.UTF_8);
 
-    private static final byte[] DEFAULT_COL = "<col max=\"1\" min=\"1\"/>".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] DEFAULT_COL = "<col max=\"1\" min=\"1\" customWidth=\"true\" bestFit=\"true\" width=\"8.43\"/>".getBytes(StandardCharsets.UTF_8);
     private static final byte[] SHEET_END_COLS = "</cols><sheetData>".getBytes(StandardCharsets.UTF_8);
 
     private static final byte[] SHEET_END = "</sheetData></worksheet>".getBytes(StandardCharsets.UTF_8);
