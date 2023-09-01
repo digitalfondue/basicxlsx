@@ -66,8 +66,8 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
      * Configuration options for a given sheet.
      */
     public static class SheetOptions {
-        private double[] columnWidth;
-        private Style.ReadingOrder readingOrder;
+        private final double[] columnWidth;
+        private final Style.ReadingOrder readingOrder;
 
         public SheetOptions(double[] columnWidth) {
             this(columnWidth, null);
@@ -100,7 +100,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
      * @return
      */
     public static Row row(Collection<Cell> cells) {
-        return row(cells.toArray(new Cell[cells.size()]));
+        return row(cells.toArray(new Cell[0]));
     }
 
     /**
@@ -121,13 +121,13 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
      * @return
      */
     public static Row row(Collection<Cell> cells, double height) {
-        return row(cells.toArray(new Cell[cells.size()]), height);
+        return row(cells.toArray(new Cell[0]), height);
     }
 
     private final ZipOutputStream zos;
     private boolean hasEnded;
     private boolean hasRegisteredStyles;
-    private List<String> sheets = new ArrayList<>();
+    private final List<String> sheets = new ArrayList<>();
 
     private static final byte[] SHEET_START = ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
             "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">\n").getBytes(StandardCharsets.UTF_8);

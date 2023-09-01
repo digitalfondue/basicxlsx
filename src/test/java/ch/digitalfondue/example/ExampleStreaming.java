@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 public class ExampleStreaming {
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
 
         try (FileOutputStream fos = new FileOutputStream("test.xlsx");
              StreamingWorkbook w = new StreamingWorkbook(fos)) { //<- create a StreamingWorkbook: it require the outputstream

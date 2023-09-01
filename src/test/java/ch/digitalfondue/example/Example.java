@@ -22,7 +22,7 @@ import java.io.IOException;
 
 public class Example {
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         Workbook w = new Workbook();
         Sheet s = w.sheet("test"); //create a new sheet named test
         s.setValueAt("Hello World", /*row*/0, /*column*/0); //put in "A1" the value "Hello World"

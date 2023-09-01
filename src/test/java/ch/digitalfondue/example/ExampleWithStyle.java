@@ -22,7 +22,7 @@ import java.io.IOException;
 
 public class ExampleWithStyle {
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         Workbook w = new Workbook();
 
 

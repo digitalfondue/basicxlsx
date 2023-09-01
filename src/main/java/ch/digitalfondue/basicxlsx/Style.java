@@ -15,8 +15,6 @@
  */
 package ch.digitalfondue.basicxlsx;
 
-import static ch.digitalfondue.basicxlsx.Utils.*;
-
 import org.w3c.dom.Element;
 
 import java.math.BigDecimal;
@@ -25,6 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+
+import static ch.digitalfondue.basicxlsx.Utils.*;
 
 //based on https://xlsxwriter.readthedocs.io/format.html
 
@@ -580,8 +580,8 @@ public class Style {
 
         private String color;
         private LineStyle style;
-        private Map<Border, String> borderColor = new EnumMap<>(Border.class);
-        private Map<Border, LineStyle> borderStyle = new EnumMap<>(Border.class);
+        private final Map<Border, String> borderColor = new EnumMap<>(Border.class);
+        private final Map<Border, LineStyle> borderStyle = new EnumMap<>(Border.class);
 
         private final StyleBuilder styleBuilder;
 
@@ -964,7 +964,7 @@ public class Style {
     public enum DiagonalStyle {
         BOTTOM_LEFT_TO_TOP_RIGHT,
         TOP_LEFT_TO_BOTTOM_RIGHT,
-        BOTH;
+        BOTH
     }
 
     public enum HorizontalAlignment {

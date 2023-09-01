@@ -30,18 +30,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
 
-import static org.openxmlformats.schemas.spreadsheetml.x2006.main.STBorderStyle.INT_THIN;
-
 public class PoiCrossCheck {
 
     public static void checkResult(Date dateForSheet2Row1Col3, ByteArrayInputStream bis) throws IOException {
         //check content
         org.apache.poi.ss.usermodel.Workbook workbook = WorkbookFactory.create(bis);
-        Assert.assertEquals("test", workbook.getSheetName(0));
+        Assert.assertEquals("iiiii_fffff_2222_vvvvvvvvv eeee", workbook.getSheetName(0));
         Assert.assertEquals("test2", workbook.getSheetName(1));
 
         //check sheet 1 content
-        org.apache.poi.ss.usermodel.Sheet sheet1 = workbook.getSheet("test");
+        org.apache.poi.ss.usermodel.Sheet sheet1 = workbook.getSheet("iiiii_fffff_2222_vvvvvvvvv eeee");
         Cell cell00 = sheet1.getRow(0).getCell(0);
         Assert.assertEquals("Hello éé èè Michał", cell00.getStringCellValue());
         Assert.assertEquals(CellType.STRING, cell00.getCellType());
@@ -94,8 +92,8 @@ public class PoiCrossCheck {
         XSSFCellStyle style = (XSSFCellStyle) workbook.getCellStyleAt(sheet2.getRow(1).getCell(0).getCellStyle().getIndex());
         StylesTable stylesTable = ((XSSFWorkbook) workbook).getStylesSource();
         XSSFCellBorder border = stylesTable.getBorderAt((int) style.getCoreXf().getBorderId());
-        Assert.assertEquals(true, border.getCTBorder().getDiagonalDown());
-        Assert.assertEquals(true, border.getCTBorder().getDiagonalUp());
+        Assert.assertTrue(border.getCTBorder().getDiagonalDown());
+        Assert.assertTrue(border.getCTBorder().getDiagonalUp());
         Assert.assertEquals(STBorderStyle.Enum.forString("thin"), border.getCTBorder().getDiagonal().getStyle());
         Assert.assertEquals("<xml-fragment rgb=\"FFFF0000\"/>", border.getCTBorder().getDiagonal().getColor().toString());
 

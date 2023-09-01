@@ -98,9 +98,7 @@ public class Sheet {
                 .reduce(Math::max)
                 .filter(value -> value > 8.43); //8.43 is the default length
 
-        maxValue.ifPresent(width -> {
-            setColumnWidth(column, width);
-        });
+        maxValue.ifPresent(width -> setColumnWidth(column, width));
     }
 
     /**

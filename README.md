@@ -49,7 +49,7 @@ import java.io.IOException;
 
 public class Example {
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         Workbook w = new Workbook();
         Sheet s = w.sheet("test"); //create a new sheet named test
         s.setValueAt("Hello World", /*row*/ 0, /*column*/ 0); //put in "A1" the value "Hello World"
@@ -73,7 +73,7 @@ import java.io.IOException;
 
 public class ExampleWithStyle {
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         Workbook w = new Workbook();
 
 
@@ -109,7 +109,7 @@ import java.util.stream.Stream;
 
 public class ExampleStreaming {
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
 
         try (FileOutputStream fos = new FileOutputStream("test.xlsx");
              StreamingWorkbook w = new StreamingWorkbook(fos)) { //<- create a StreamingWorkbook: it require the outputstream
@@ -139,7 +139,7 @@ import java.util.stream.Stream;
 
 public class ExampleStreamingWithStyle {
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
 
         try (FileOutputStream fos = new FileOutputStream("test.xlsx");
              StreamingWorkbook w = new StreamingWorkbook(fos)) { //<- create a StreamingWorkbook: it require the outputstream

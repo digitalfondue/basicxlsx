@@ -110,7 +110,7 @@ class Utils {
         for (int i = column; i >= 0; i = (i / 26) - 1) {
             sb.insert(0, (char) (i % 26 + 'A'));
         }
-        return sb.append(Integer.toString(row + 1)).toString();
+        return sb.append(row + 1).toString();
     }
 
 
@@ -207,5 +207,36 @@ class Utils {
                 - 460;      // leap days in previous 1900 years
 
         return 365 * (yr - 1900) + leapDays;
+    }
+
+    // see https://support.microsoft.com/en-us/office/rename-a-worksheet-3f1f7148-ee83-404d-8ef0-9ff99fbad1f9
+    // rules are:
+    // no: - / \ ? * : [ ]
+    // can't begin or end with '
+    // can't be named "History"
+    // can't contain more than 31 characters.
+    static String convertToExcelCompatibleWorksheetName(String name) {
+        var res = name.trim();
+        if ("history".equalsIgnoreCase(res)) {
+            res = res + "1";
+        }
+
+        for (var c : new char[]{'-', '/', '\\', '?', '*', ':', '[', ']'}) {
+            res = res.replace(c, '_');
+        }
+        if (res.startsWith("'")) {
+            res = res.substring(1);
+        }
+        if (res.endsWith("'")) {
+            res = res.substring(0, res.length() - 1);
+        }
+
+        if (res.isEmpty()) {
+            res = "1";
+        }
+        if (res.length() > 31) {
+            res = res.substring(0, 31);
+        }
+        return res;
     }
 }

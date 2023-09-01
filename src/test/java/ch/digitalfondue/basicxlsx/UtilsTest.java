@@ -59,4 +59,17 @@ public class UtilsTest {
         Assert.assertEquals(new BigDecimal("42070.5599999999976716935634613037109375"), Utils.getExcelDate(LocalDateTime.parse("2015-03-07 13:26:24", formatter)));
         Assert.assertEquals(new BigDecimal("42829.8333333333357586525380611419677734375"), Utils.getExcelDate(LocalDateTime.parse("2017-04-04 20:00:00", formatter)));
     }
+
+    @Test
+    public void testWorksheetName() {
+        Assert.assertEquals("1", Utils.convertToExcelCompatibleWorksheetName(""));
+        Assert.assertEquals("History1", Utils.convertToExcelCompatibleWorksheetName("History"));
+        Assert.assertEquals("iiiii_fffff_2222_vvvvvvvvv eeee", Utils.convertToExcelCompatibleWorksheetName("iiiii_fffff_2222_vvvvvvvvv eeeeee"));
+        Assert.assertEquals("1", Utils.convertToExcelCompatibleWorksheetName("''"));
+        Assert.assertEquals("a", Utils.convertToExcelCompatibleWorksheetName("'a"));
+        Assert.assertEquals("a", Utils.convertToExcelCompatibleWorksheetName("a'"));
+        Assert.assertEquals("a", Utils.convertToExcelCompatibleWorksheetName("'a'"));
+        Assert.assertEquals("_', '_', '_', '_', '_', '_', '_", Utils.convertToExcelCompatibleWorksheetName("'-', '/', '\\', '?', '*', ':', '[', ']'"));
+
+    }
 }

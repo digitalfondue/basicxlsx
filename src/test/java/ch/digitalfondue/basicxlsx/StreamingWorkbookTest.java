@@ -34,7 +34,7 @@ import static ch.digitalfondue.basicxlsx.Cell.formula;
 import static ch.digitalfondue.basicxlsx.StreamingWorkbook.row;
 
 public class StreamingWorkbookTest {
-    private static boolean OUTPUT_FILE = false;
+    private static final boolean OUTPUT_FILE = false;
 
     @Test
     public void testWorkbookCreation() throws IOException, ParseException {
@@ -98,7 +98,7 @@ public class StreamingWorkbookTest {
             };
 
 
-            w.withSheet("test", Stream.of(row(s1row1), row(s1row2), row(s1row3), row(s1row4), row(s1row5)));
+            w.withSheet("iiiii_fffff_2222_vvvvvvvvv eeeeee", Stream.of(row(s1row1), row(s1row2), row(s1row3), row(s1row4), row(s1row5)));
             //
 
             //sheet2

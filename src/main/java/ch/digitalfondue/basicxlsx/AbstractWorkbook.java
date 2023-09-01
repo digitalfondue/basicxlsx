@@ -30,7 +30,7 @@ import java.util.zip.ZipOutputStream;
 class AbstractWorkbook {
 
     final List<Style> styles = new ArrayList<>();
-    final Map<Style, Integer> styleToIdMapping = new IdentityHashMap();
+    final Map<Style, Integer> styleToIdMapping = new IdentityHashMap<>();
 
     int styleIdSupplier(Cell cell) {
         if (cell.style != null) {
@@ -129,7 +129,7 @@ class AbstractWorkbook {
         // <sheet name="Table0" sheetId="1" r:id="rId1"/>
         for (int i = 0; i < sheetCount; i++) {
             Element sheet = doc.createElementNS(Utils.NS_SPREADSHEETML_2006_MAIN, "sheet");
-            sheet.setAttribute("name", sheetNameOrder.get(i));
+            sheet.setAttribute("name", Utils.convertToExcelCompatibleWorksheetName(sheetNameOrder.get(i)));
             sheet.setAttribute("sheetId", Integer.toString(i + 1));
             sheet.setAttributeNS("http://schemas.openxmlformats.org/officeDocument/2006/relationships", "id", "rId" + (i + 2)); //rdId1 it's the style.xml file
             root.appendChild(sheet);

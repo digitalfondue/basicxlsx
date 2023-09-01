@@ -30,7 +30,7 @@ import java.util.Optional;
 
 public class WorkbookTest {
 
-    private static boolean OUTPUT_FILE = false;
+    private static final boolean OUTPUT_FILE = false;
 
     @Test
     public void testWorkbookCreation() throws IOException, ParseException {
@@ -54,7 +54,7 @@ public class WorkbookTest {
 
         Style rotation = w.defineStyle().rotation(85).build();
 
-        Sheet s = w.sheet("test");
+        Sheet s = w.sheet("iiiii_fffff_2222_vvvvvvvvv eeeeee");
         s.setValueAt("Hello éé èè Michał", 0, 0).withStyle(italic); //A1
         s.setValueAt("B1", 0, 1).withStyle(italic); //B1
 
@@ -106,7 +106,7 @@ public class WorkbookTest {
 
 
         ByteArrayInputStream bis;
-        try (ByteArrayOutputStream os = new ByteArrayOutputStream();) {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             w.write(os);
             bis = new ByteArrayInputStream(os.toByteArray());
 
