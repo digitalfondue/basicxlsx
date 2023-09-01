@@ -42,7 +42,7 @@ public class Sheet {
     }
 
     /**
-     * Define an height for a given row
+     * Define a height for a given row
      *
      * @param rowIndex
      * @param height

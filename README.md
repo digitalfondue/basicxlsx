@@ -1,7 +1,7 @@
 # basicxlsx: when you only need to write simple xlsx
 
 [![Maven Central](https://img.shields.io/maven-central/v/ch.digitalfondue.basicxlsx/basicxlsx.svg)](https://search.maven.org/search?q=g:ch.digitalfondue.basicxlsx)
-[![Build Status](https://img.shields.io/github/workflow/status/digitalfondue/basicxslx/Java%20CI%20with%20Maven)](https://github.com/digitalfondue/basicxlsx/actions?query=workflow%3A%22Java+CI+with+Maven%22)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/digitalfondue/basicxslx/.github/workflows/maven.yml)](https://github.com/digitalfondue/basicxlsx/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 
 ## Why
 
