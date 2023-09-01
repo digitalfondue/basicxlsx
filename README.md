@@ -20,14 +20,14 @@ maven:
 <dependency>
     <groupId>ch.digitalfondue.basicxlsx</groupId>
     <artifactId>basicxlsx</artifactId>
-    <version>0.5.1</version>
+    <version>0.6.0</version>
 </dependency>
 ```
 
 gradle:
 
 ```
-compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.5.1'
+compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.6.0'
 ```
 
 ## Javadoc
