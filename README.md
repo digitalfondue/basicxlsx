@@ -20,14 +20,14 @@ maven:
 <dependency>
     <groupId>ch.digitalfondue.basicxlsx</groupId>
     <artifactId>basicxlsx</artifactId>
-    <version>0.6.0</version>
+    <version>0.7.1</version>
 </dependency>
 ```
 
 gradle:
 
 ```
-compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.6.0'
+compile 'ch.digitalfondue.basicxlsx:basicxlsx:0.7.1'
 ```
 
 ## Javadoc
@@ -36,6 +36,8 @@ Available at [javadoc.io](http://javadoc.io/doc/ch.digitalfondue.basicxlsx/basic
  
 The api is minimalistic, basically you only need to choose Workbook type (streaming or not),
  define your styles, define the data and write the workbook to an OutputStream. 
+
+If you use it as a module, remember to add requires `ch.digitalfondue.basicxlsx;` in your module-info.
 
 ## Example
 
