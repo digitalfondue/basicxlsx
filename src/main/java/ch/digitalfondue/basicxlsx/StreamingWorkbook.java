@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018 digitalfondue (info@digitalfondue.ch)
+/*
+ * Copyright © 2018-2024 digitalfondue (info@digitalfondue.ch)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ public class StreamingWorkbook extends AbstractWorkbook implements Closeable, Au
 
     public StreamingWorkbook(OutputStream os) {
         this.zos = new ZipOutputStream(os, StandardCharsets.UTF_8);
-        this.elementBuilder = Utils.toElementBuilder(Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml"));
+        this.elementBuilder = Utils.toElementBuilder(Utils.toDocument("sheet_template.xml"));
     }
 
     /**

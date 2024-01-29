@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018 digitalfondue (info@digitalfondue.ch)
+/*
+ * Copyright © 2018-2024 digitalfondue (info@digitalfondue.ch)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class AbstractWorkbook {
     }
 
     void commitAndWriteStyleMetadata(ZipOutputStream zos, List<Style> styles, Map<Style, Integer> styleToIdMapping) throws IOException {
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/styles_template.xml");
+        Document doc = Utils.toDocument("styles_template.xml");
         Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
 
         Element fonts = getElement(doc, "fonts");
@@ -105,7 +105,7 @@ class AbstractWorkbook {
     }
 
     private static Document buildContentTypes(int sheetCount) {
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/content_types_template.xml");
+        Document doc = Utils.toDocument("content_types_template.xml");
         Element root = doc.getDocumentElement();
 
         // Override elements for the sheets
@@ -120,11 +120,11 @@ class AbstractWorkbook {
     }
 
     private static Document buildRels() {
-        return Utils.toDocument("ch/digitalfondue/basicxlsx/rels_template.xml");
+        return Utils.toDocument("rels_template.xml");
     }
 
     private static Document buildWorkbook(int sheetCount, List<String> sheetNameOrder) {
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/workbook_template.xml");
+        Document doc = Utils.toDocument("workbook_template.xml");
         Element root = getElement(doc, "sheets");
         // <sheet name="Table0" sheetId="1" r:id="rId1"/>
         for (int i = 0; i < sheetCount; i++) {
@@ -138,7 +138,7 @@ class AbstractWorkbook {
     }
 
     private static Document buildWorkbookRels(int sheetCount) {
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/workbook_rels_template.xml");
+        Document doc = Utils.toDocument("workbook_rels_template.xml");
         Element root = doc.getDocumentElement();
         // add for each sheet
         // <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="xl/worksheets/sheet1.xml"/>

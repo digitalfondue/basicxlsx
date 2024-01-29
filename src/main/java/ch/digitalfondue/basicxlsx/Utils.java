@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018 digitalfondue (info@digitalfondue.ch)
+/*
+ * Copyright © 2018-2024 digitalfondue (info@digitalfondue.ch)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ class Utils {
     }
 
     static Document toDocument(String resource) {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource)) {
+        try (InputStream is = Utils.class.getResourceAsStream("/ch/digitalfondue/basicxlsx/"+resource)) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setNamespaceAware(true);
             dbFactory.setIgnoringComments(true);

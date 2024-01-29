@@ -1,5 +1,5 @@
-/**
- * Copyright © 2018 digitalfondue (info@digitalfondue.ch)
+/*
+ * Copyright © 2018-2024 digitalfondue (info@digitalfondue.ch)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class Workbook extends AbstractWorkbook {
     }
 
     private static Document buildSheet(Sheet sheet, Function<Cell, Integer> styleIdSupplier) {
-        Document doc = Utils.toDocument("ch/digitalfondue/basicxlsx/sheet_template.xml");
+        Document doc = Utils.toDocument("sheet_template.xml");
 
         Function<String, Element> elementBuilder = Utils.toElementBuilder(doc);
 

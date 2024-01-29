@@ -13,22 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ch.digitalfondue.example;
-
-import ch.digitalfondue.basicxlsx.*;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-public class Example {
-
-    public static void main(String[] args) throws IOException {
-        Workbook w = new Workbook();
-        Sheet s = w.sheet("test"); //create a new sheet named test
-        s.setValueAt("Hello World", /*row*/0, /*column*/0); //put in "A1" the value "Hello World"
-
-        try (FileOutputStream fos = new FileOutputStream("test.xlsx")) {
-            w.write(fos);
-        }
-    }
+module ch.digitalfondue.basicxlsx {
+    exports ch.digitalfondue.basicxlsx;
+    requires java.desktop; //java.awt.* for font measuring ;(
+    requires java.xml;
 }
