@@ -17,6 +17,7 @@ package ch.digitalfondue.basicxlsx;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -25,25 +26,193 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Function;
 
 class Utils {
 
     static final String NS_SPREADSHEETML_2006_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
+    private static final Map<String, String> xmlTemplates = Map.of(
+            "content_types_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">" +
+                    "    <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.printerSettings\"/>" +
+                    "    <Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>" +
+                    "    <Default Extension=\"xml\" ContentType=\"application/xml\"/>" +
+                    "    <Override PartName=\"/xl/workbook.xml\"" +
+                    "              ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml\"/>" +
+                    "    <Override PartName=\"/xl/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml\"/>" +
+                    "    <!--" +
+                    "    <Override PartName=\"/xl/worksheets/sheet1.xml\"" +
+                    "              ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>" +
+                    "    <Override PartName=\"/xl/worksheets/sheet2.xml\"" +
+                    "              ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>" +
+                    "              -->" +
+                    "</Types>"),
+            "rels_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+                    "    <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\"" +
+                    "                  Target=\"xl/workbook.xml\"/>" +
+                    "</Relationships>"),
+            "sheet_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
+                    "    <sheetViews>" +
+                    "        <sheetView workbookViewId=\"0\" tabSelected=\"true\"/>" +
+                    "    </sheetViews>" +
+                    "    <cols>" +
+                    "        <!--<col min=\"1\" max=\"1\"/>-->" +
+                    "    </cols>" +
+                    "    <sheetData>" +
+                    "        <!--<row r=\"1\">" +
+                    "            <c r=\"B1\" t=\"inlineStr\">" +
+                    "                <is>" +
+                    "                    <t>Name1</t>" +
+                    "                </is>" +
+                    "            </c>" +
+                    "        </row>" +
+                    "        -->" +
+                    "    </sheetData>" +
+                    "</worksheet>"),
+            "styles_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
+                    "    <!-- http://officeopenxml.com/SSstyles.php -->" +
+                    "    <numFmts count=\"1\">" +
+                    "        <!-- based from openoffice output -->" +
+                    "        <numFmt numFmtId=\"164\" formatCode=\"General\"/>" +
+                    "    </numFmts>" +
+                    "    <fonts count=\"4\">" +
+                    "        <!-- based from https://github.com/mk-j/PHP_XLSXWriter/blob/master/xlsxwriter.class.php#L472 and openoffice output -->" +
+                    "        <font>" +
+                    "            <sz val=\"10\"/>" +
+                    "            <name val=\"Arial\"/>" +
+                    "            <family val=\"2\"/>" +
+                    "        </font>" +
+                    "        <font>" +
+                    "            <sz val=\"10\"/>" +
+                    "            <name val=\"Arial\"/>" +
+                    "            <family val=\"0\"/>" +
+                    "        </font>" +
+                    "        <font>" +
+                    "            <sz val=\"10\"/>" +
+                    "            <name val=\"Arial\"/>" +
+                    "            <family val=\"0\"/>" +
+                    "        </font>" +
+                    "        <font>" +
+                    "            <sz val=\"10\"/>" +
+                    "            <name val=\"Arial\"/>" +
+                    "            <family val=\"0\"/>" +
+                    "        </font>" +
+                    "        <!-- hardcoded test -->" +
+                    "        <!-- bold --><!--<font>" +
+                    "            <b val=\"true\"/>" +
+                    "            <sz val=\"10\"/>" +
+                    "            <name val=\"Arial\"/>" +
+                    "            <family val=\"2\"/>" +
+                    "        </font>-->" +
+                    "        <!-- italic --><!--<font>" +
+                    "            <i val=\"true\"/>" +
+                    "            <sz val=\"10\"/>" +
+                    "            <name val=\"Arial\"/>" +
+                    "            <family val=\"2\"/>" +
+                    "        </font>-->" +
+                    "        <!-- -->" +
+                    "    </fonts>" +
+                    "    <fills count=\"2\">" +
+                    "        <!-- based from openoffice output -->" +
+                    "        <fill><patternFill patternType=\"none\"/></fill>" +
+                    "        <fill><patternFill patternType=\"gray125\"/></fill>" +
+                    "    </fills>" +
+                    "    <borders count=\"1\">" +
+                    "        <!-- based from openoffice output -->" +
+                    "        <border diagonalDown=\"false\" diagonalUp=\"false\"><left/><right/><top/><bottom/><diagonal/></border>" +
+                    "    </borders>" +
+                    "    <!-- -->" +
+                    "    <cellStyleXfs count=\"20\"> <!-- based from openoffice output -->" +
+                    "        <xf numFmtId=\"164\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"true\" applyAlignment=\"true\" applyProtection=\"true\">" +
+                    "            <alignment horizontal=\"general\" vertical=\"bottom\" textRotation=\"0\" wrapText=\"false\" indent=\"0\" shrinkToFit=\"false\"/>" +
+                    "            <protection locked=\"true\" hidden=\"false\"/>" +
+                    "        </xf>" +
+                    "        <xf numFmtId=\"0\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"2\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"2\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"43\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"41\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"44\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"42\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "        <xf numFmtId=\"9\" fontId=\"1\" fillId=\"0\" borderId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\"/>" +
+                    "    </cellStyleXfs>" +
+                    "    <cellXfs count=\"1\">" +
+                    "        <!-- based from openoffice output -->" +
+                    "        <!-- default -->" +
+                    "        <xf numFmtId=\"164\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyFont=\"false\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\">" +
+                    "            <alignment horizontal=\"general\" vertical=\"bottom\" textRotation=\"0\" wrapText=\"false\" indent=\"0\" shrinkToFit=\"false\"/>" +
+                    "            <protection locked=\"true\" hidden=\"false\"/>" +
+                    "        </xf>" +
+                    "        <!-- hardcoded test -->" +
+                    "        <!-- bold --><!--" +
+                    "        <xf numFmtId=\"164\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\">" +
+                    "            <alignment horizontal=\"general\" vertical=\"bottom\" textRotation=\"0\" wrapText=\"false\" indent=\"0\" shrinkToFit=\"false\"/>" +
+                    "            <protection locked=\"true\" hidden=\"false\"/>" +
+                    "        </xf>-->" +
+                    "        <!-- italic --><!--" +
+                    "        <xf numFmtId=\"164\" fontId=\"5\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyFont=\"true\" applyBorder=\"false\" applyAlignment=\"false\" applyProtection=\"false\">" +
+                    "            <alignment horizontal=\"general\" vertical=\"bottom\" textRotation=\"0\" wrapText=\"false\" indent=\"0\" shrinkToFit=\"false\"/>" +
+                    "            <protection locked=\"true\" hidden=\"false\"/>" +
+                    "        </xf>-->" +
+                    "        <!-- -->" +
+                    "    </cellXfs>" +
+                    "    <cellStyles>" +
+                    "        <cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\" customBuiltin=\"false\"/>" +
+                    "        <cellStyle name=\"Comma\" xfId=\"15\" builtinId=\"3\" customBuiltin=\"false\"/>" +
+                    "        <cellStyle name=\"Comma [0]\" xfId=\"16\" builtinId=\"6\" customBuiltin=\"false\"/>" +
+                    "        <cellStyle name=\"Currency\" xfId=\"17\" builtinId=\"4\" customBuiltin=\"false\"/>" +
+                    "        <cellStyle name=\"Currency [0]\" xfId=\"18\" builtinId=\"7\" customBuiltin=\"false\"/>" +
+                    "        <cellStyle name=\"Percent\" xfId=\"19\" builtinId=\"5\" customBuiltin=\"false\"/>" +
+                    "    </cellStyles>" +
+                    "</styleSheet>"),
+            "workbook_rels_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
+                    "    <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>" +
+                    "    <!--" +
+                    "    <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\"" +
+                    "                  Target=\"worksheets/sheet1.xml\"/>" +
+                    "    <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\"" +
+                    "                  Target=\"worksheets/sheet2.xml\"/>" +
+                    "    -->" +
+                    "</Relationships>"),
+            "workbook_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
+                    "    <!-- https://github.com/jmcnamara/XlsxWriter/blob/b79f2b9ec2027bd1750c15c4612210dd3cff5be2/xlsxwriter/test/workbook/test_workbook03.py -->" +
+                    "    <workbookPr defaultThemeVersion=\"124226\"/>" +
+                    "    <bookViews>" +
+                    "        <workbookView activeTab=\"0\"/>" +
+                    "    </bookViews>" +
+                    "    <sheets>" +
+                    "        <!--" +
+                    "        <sheet name=\"Table0\" sheetId=\"1\" r:id=\"rId2\"/>" +
+                    "        <sheet name=\"Table1\" sheetId=\"2\" r:id=\"rId3\"/>" +
+                    "         -->" +
+                    "    </sheets>" +
+                    "    <calcPr calcId=\"124519\" fullCalcOnLoad=\"1\"/>" +
+                    "</workbook>")
+    );
 
     static Element elementWithAttr(Function<String, Element> elementBuilder, String name, String attr, String value) {
         Element element = elementBuilder.apply(name);
@@ -67,7 +236,8 @@ class Utils {
     }
 
     static Document toDocument(String resource) {
-        try (InputStream is = Utils.class.getResourceAsStream("/ch/digitalfondue/basicxlsx/"+resource)) {
+        try {
+            InputSource is = new InputSource(new StringReader(xmlTemplates.get(resource)));
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setNamespaceAware(true);
             dbFactory.setIgnoringComments(true);
@@ -94,10 +264,10 @@ class Utils {
         try {
 
             Transformer tf = TransformerFactory.newInstance().newTransformer();
-            if(omitXmlPrologue) {
+            if (omitXmlPrologue) {
                 tf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             }
-            return  tf;
+            return tf;
         } catch (TransformerConfigurationException e) {
             throw new IllegalStateException(e);
         }
