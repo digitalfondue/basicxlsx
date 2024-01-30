@@ -17,6 +17,7 @@ package ch.digitalfondue.basicxlsx;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -38,7 +39,7 @@ class Utils {
 
     static final String NS_SPREADSHEETML_2006_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
-    static final Map<String, byte[]> xmlTemplates = Map.of(
+    private static final Map<String, String> xmlTemplates = Map.of(
             "content_types_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">" +
                     "    <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.printerSettings\"/>" +
@@ -53,12 +54,12 @@ class Utils {
                     "    <Override PartName=\"/xl/worksheets/sheet2.xml\"" +
                     "              ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>" +
                     "              -->" +
-                    "</Types>").getBytes(StandardCharsets.UTF_8),
+                    "</Types>"),
             "rels_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
                     "    <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\"" +
                     "                  Target=\"xl/workbook.xml\"/>" +
-                    "</Relationships>").getBytes(StandardCharsets.UTF_8),
+                    "</Relationships>"),
             "sheet_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
                     "    <sheetViews>" +
@@ -77,7 +78,7 @@ class Utils {
                     "        </row>" +
                     "        -->" +
                     "    </sheetData>" +
-                    "</worksheet>").getBytes(StandardCharsets.UTF_8),
+                    "</worksheet>"),
             "styles_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
                     "    <!-- http://officeopenxml.com/SSstyles.php -->" +
@@ -185,7 +186,7 @@ class Utils {
                     "        <cellStyle name=\"Currency [0]\" xfId=\"18\" builtinId=\"7\" customBuiltin=\"false\"/>" +
                     "        <cellStyle name=\"Percent\" xfId=\"19\" builtinId=\"5\" customBuiltin=\"false\"/>" +
                     "    </cellStyles>" +
-                    "</styleSheet>").getBytes(StandardCharsets.UTF_8),
+                    "</styleSheet>"),
             "workbook_rels_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
                     "    <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>" +
@@ -195,7 +196,7 @@ class Utils {
                     "    <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\"" +
                     "                  Target=\"worksheets/sheet2.xml\"/>" +
                     "    -->" +
-                    "</Relationships>").getBytes(StandardCharsets.UTF_8),
+                    "</Relationships>"),
             "workbook_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
                     "    <!-- https://github.com/jmcnamara/XlsxWriter/blob/b79f2b9ec2027bd1750c15c4612210dd3cff5be2/xlsxwriter/test/workbook/test_workbook03.py -->" +
@@ -210,7 +211,7 @@ class Utils {
                     "         -->" +
                     "    </sheets>" +
                     "    <calcPr calcId=\"124519\" fullCalcOnLoad=\"1\"/>" +
-                    "</workbook>").getBytes(StandardCharsets.UTF_8)
+                    "</workbook>")
     );
 
     static Element elementWithAttr(Function<String, Element> elementBuilder, String name, String attr, String value) {
@@ -235,7 +236,8 @@ class Utils {
     }
 
     static Document toDocument(String resource) {
-        try (InputStream is = new ByteArrayInputStream(xmlTemplates.get(resource))) {
+        try {
+            InputSource is = new InputSource(new StringReader(xmlTemplates.get(resource)));
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setNamespaceAware(true);
             dbFactory.setIgnoringComments(true);
