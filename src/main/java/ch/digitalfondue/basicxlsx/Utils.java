@@ -38,8 +38,8 @@ class Utils {
 
     static final String NS_SPREADSHEETML_2006_MAIN = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
-    static final Map<String, String> xmlTemplates = Map.ofEntries(
-            new AbstractMap.SimpleEntry<>("content_types_template.xml", /* language=XML */ "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+    static final Map<String, byte[]> xmlTemplates = Map.of(
+            "content_types_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">" +
                     "    <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.printerSettings\"/>" +
                     "    <Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>" +
@@ -53,13 +53,13 @@ class Utils {
                     "    <Override PartName=\"/xl/worksheets/sheet2.xml\"" +
                     "              ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml\"/>" +
                     "              -->" +
-                    "</Types>"),
-            new AbstractMap.SimpleEntry<>("rels_template.xml", /* language=XML */ "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "</Types>").getBytes(StandardCharsets.UTF_8),
+            "rels_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
                     "    <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\"" +
                     "                  Target=\"xl/workbook.xml\"/>" +
-                    "</Relationships>"),
-            new AbstractMap.SimpleEntry<>("sheet_template.xml", /* language=XML */ "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "</Relationships>").getBytes(StandardCharsets.UTF_8),
+            "sheet_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
                     "    <sheetViews>" +
                     "        <sheetView workbookViewId=\"0\" tabSelected=\"true\"/>" +
@@ -77,8 +77,8 @@ class Utils {
                     "        </row>" +
                     "        -->" +
                     "    </sheetData>" +
-                    "</worksheet>"),
-            new AbstractMap.SimpleEntry<>("styles_template.xml", /* language=XML */ "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "</worksheet>").getBytes(StandardCharsets.UTF_8),
+            "styles_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
                     "    <!-- http://officeopenxml.com/SSstyles.php -->" +
                     "    <numFmts count=\"1\">" +
@@ -185,8 +185,8 @@ class Utils {
                     "        <cellStyle name=\"Currency [0]\" xfId=\"18\" builtinId=\"7\" customBuiltin=\"false\"/>" +
                     "        <cellStyle name=\"Percent\" xfId=\"19\" builtinId=\"5\" customBuiltin=\"false\"/>" +
                     "    </cellStyles>" +
-                    "</styleSheet>"),
-            new AbstractMap.SimpleEntry<>("workbook_rels_template.xml", /* language=XML */ "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "</styleSheet>").getBytes(StandardCharsets.UTF_8),
+            "workbook_rels_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">" +
                     "    <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>" +
                     "    <!--" +
@@ -195,8 +195,8 @@ class Utils {
                     "    <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\"" +
                     "                  Target=\"worksheets/sheet2.xml\"/>" +
                     "    -->" +
-                    "</Relationships>"),
-            new AbstractMap.SimpleEntry<>("workbook_template.xml", /* language=XML */ "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                    "</Relationships>").getBytes(StandardCharsets.UTF_8),
+            "workbook_template.xml", /* language=XML */ ("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">" +
                     "    <!-- https://github.com/jmcnamara/XlsxWriter/blob/b79f2b9ec2027bd1750c15c4612210dd3cff5be2/xlsxwriter/test/workbook/test_workbook03.py -->" +
                     "    <workbookPr defaultThemeVersion=\"124226\"/>" +
@@ -210,7 +210,7 @@ class Utils {
                     "         -->" +
                     "    </sheets>" +
                     "    <calcPr calcId=\"124519\" fullCalcOnLoad=\"1\"/>" +
-                    "</workbook>")
+                    "</workbook>").getBytes(StandardCharsets.UTF_8)
     );
 
     static Element elementWithAttr(Function<String, Element> elementBuilder, String name, String attr, String value) {
@@ -235,7 +235,7 @@ class Utils {
     }
 
     static Document toDocument(String resource) {
-        try (InputStream is = new ByteArrayInputStream(xmlTemplates.get(resource).getBytes())) {
+        try (InputStream is = new ByteArrayInputStream(xmlTemplates.get(resource))) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setNamespaceAware(true);
             dbFactory.setIgnoringComments(true);
@@ -262,10 +262,10 @@ class Utils {
         try {
 
             Transformer tf = TransformerFactory.newInstance().newTransformer();
-            if(omitXmlPrologue) {
+            if (omitXmlPrologue) {
                 tf.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
             }
-            return  tf;
+            return tf;
         } catch (TransformerConfigurationException e) {
             throw new IllegalStateException(e);
         }
